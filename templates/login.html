@@ -1,22 +1,39 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>STEM Learning Platform</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM Learning Platform - Welcome</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
 
-<h2>Login</h2>
+    <div class="login-container">
+        <div class="card login-card text-center" style="max-width: 500px;">
+            
+            <div class="mb-2">
+                <i class="fa-solid fa-atom game-icon" style="font-size: 4rem; margin-bottom: 0.5rem;"></i>
+                <h1 style="color: var(--text-main); font-size: 1.75rem;">Welcome to STEM Learning</h1>
+                <p class="text-muted mt-2">To get started, please tell us who you are.</p>
+            </div>
+            
+            <div class="options-grid" style="margin-top: 2rem;">
+                <!-- Student Option -->
+                <div class="card game-card" style="box-shadow: var(--shadow-sm); padding: 1.5rem;" onclick="window.location.href='/login/student'">
+                    <i class="fa-solid fa-user-graduate" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.1rem;">I am a Student</h3>
+                </div>
 
-<a href="/student">
-<button>Login as Student</button>
-</a>
-
-<a href="/teacher">
-<button>Login as Teacher</button>
-</a>
+                <!-- Teacher Option -->
+                <div class="card game-card" style="box-shadow: var(--shadow-sm); padding: 1.5rem;" onclick="window.location.href='/login/teacher'">
+                    <i class="fa-solid fa-chalkboard-user" style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.1rem;">I am a Teacher</h3>
+                </div>
+            </div>
+            
+        </div>
+    </div>
 
 </body>
-
 </html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - STEM Learning</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2><i class="fa-solid fa-chalkboard-user"></i> Teacher Dashboard</h2>
+        <ul>
+            <li><a href="/teacher" class="active">Analytics</a></li>
+            <li><a href="#">Students</a></li>
+            <li><a href="#">Assignments</a></li>
+            <li><button class="btn-logout" onclick="window.location.href='/logout'">Logout</button></li>
+        </ul>
+    </nav>
+
+    <main class="main">
+        <h1 class="page-header">Welcome, {{ session.get('name', 'Teacher') }}</h1>
+
+        <!-- Analytics Cards -->
+        <div class="analytics-grid">
+            <div class="card stat-card">
+                <div class="stat-icon" style="background: rgba(79, 70, 229, 0.1); color: var(--primary);">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div class="stat-details">
+                    <h4>Average Score</h4>
+                    <p>84%</p>
+                </div>
+            </div>
+            
+            <div class="card stat-card">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="stat-details">
+                    <h4>Active Students</h4>
+                    <p>28 / 30</p>
+                </div>
+            </div>
+            
+            <div class="card stat-card">
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+                <div class="stat-details">
+                    <h4>Modules Completed</h4>
+                    <p>142</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Performance Table -->
+        <div class="card">
+            <h2 class="mb-2">Student Performance</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Total Score</th>
+                            <th>Current Level</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fa-solid fa-user text-muted mr-1"></i> Alice Johnson</td>
+                            <td style="font-weight: 600;">920 XP</td>
+                            <td><span class="level-badge">Level 4</span></td>
+                            <td><span style="color: #10b981;"><i class="fa-solid fa-circle text-xs"></i> Online</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-solid fa-user text-muted mr-1"></i> Bob Smith</td>
+                            <td style="font-weight: 600;">750 XP</td>
+                            <td><span class="level-badge" style="background: #f3f4f6; color: var(--text-muted);">Level 2</span></td>
+                            <td><span style="color: var(--text-muted);"><i class="fa-regular fa-circle text-xs"></i> Offline</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-solid fa-user text-muted mr-1"></i> Charlie Davis</td>
+                            <td style="font-weight: 600;">1150 XP</td>
+                            <td><span class="level-badge" style="background: rgba(236, 72, 153, 0.1); color: var(--secondary);">Level 5</span></td>
+                            <td><span style="color: #10b981;"><i class="fa-solid fa-circle text-xs"></i> Online</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

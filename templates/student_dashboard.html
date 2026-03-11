@@ -1,17 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-<title>Student Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - STEM Learning</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
 
-<h1>Student Dashboard</h1>
+    <nav class="navbar">
+        <h2><i class="fa-solid fa-atom"></i> STEM Learning</h2>
+        <ul>
+            <li><a href="/student" class="active">Dashboard</a></li>
+            <li><a href="/quiz">Games</a></li>
+            <li><a href="#">Progress</a></li>
+            <li><a href="#">Leaderboard</a></li>
+            <li><button class="btn-logout" onclick="window.location.href='/logout'">Logout</button></li>
+        </ul>
+    </nav>
 
-<button onclick="alert('Game will start!')">
-Play STEM Game
-</button>
+    <main class="main">
+        <h1 class="page-header">Welcome back, {{ session.get('name', 'Student') }} 👋</h1>
+
+        <div class="dashboard-grid">
+
+            <!-- Games Grid Area -->
+            <div>
+                <h2 class="mb-2" style="color: white;">Learning Modules</h2>
+                <div class="card-grid">
+
+                    <div class="card game-card" onclick="window.location.href='/quiz'">
+                        <i class="fa-solid fa-calculator game-icon"></i>
+                        <h3>Math Challenge</h3>
+                        <p class="text-muted mt-2">Improve your math skills</p>
+                    </div>
+
+                    <div class="card game-card" onclick="window.location.href='/quiz'">
+                        <i class="fa-solid fa-flask game-icon"></i>
+                        <h3>Science Quiz</h3>
+                        <p class="text-muted mt-2">Test your science knowledge</p>
+                    </div>
+
+                    <div class="card game-card" onclick="window.location.href='/quiz'">
+                        <i class="fa-solid fa-cogs game-icon"></i>
+                        <h3>Engineering Puzzle</h3>
+                        <p class="text-muted mt-2">Solve engineering problems</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Progress Area -->
+            <div>
+                <div class="card progress-section">
+                    <h2>Your Progress</h2>
+
+                    <div>
+                        <div class="progress-header">
+                            <span style="font-weight: 600;">XP: 1240 / 2000</span>
+                            <span class="level-badge">Level 3</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 62%;"></div>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-2" style="font-size: 1rem;">Earned Badges</h3>
+                    <div class="badge-container">
+                        <div class="badge" title="First Quiz Completed"><i class="fa-solid fa-star"></i></div>
+                        <div class="badge" title="Perfect Math Score" style="background:#dbeafe; color:#2563eb;"><i
+                                class="fa-solid fa-calculator"></i></div>
+                        <div class="badge" title="7 Day Streak" style="background:#fce7f3; color:#db2777;"><i
+                                class="fa-solid fa-fire"></i></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
 
 </body>
 
