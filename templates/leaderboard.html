@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Brainiac</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .leaderboard-table th {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .rank-1 { color: #f59e0b; font-weight: bold; }
+        .rank-2 { color: #94a3b8; font-weight: bold; }
+        .rank-3 { color: #b45309; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div style="display: flex; flex-direction: column;">
+            <h2 style="margin: 0;">Brainiac</h2>
+            <p style="font-weight: 600; color: #0e0d30; font-size: 0.85rem; margin-top: 0.15rem; letter-spacing: 0.5px;">Learn • Play • Grow 🚀</p>
+        </div>
+        <ul style="list-style: none; display: flex; gap: 1.5rem; margin: 0; padding: 0; align-items: center;">
+            <li><a href="/student">Dashboard</a></li>
+            <li><a href="/student/progress">Progress</a></li>
+            <li><a href="/leaderboard" class="active" style="font-weight:600; color:var(--primary);">Leaderboard</a></li>
+            <li><button class="btn-logout" onclick="window.location.href='/logout'">Logout</button></li>
+        </ul>
+    </nav>
+
+    <main class="main">
+        <h1 class="page-header">Grade Leaderboard 🏆</h1>
+        
+        <div class="card" style="margin-top: 2rem;">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Student Name</th>
+                        <th>Total Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in leaderboard %}
+                    <tr>
+                        <td>
+                            {% if loop.index == 1 %}
+                            <span class="rank-1"><i class="fa-solid fa-crown"></i> 1</span>
+                            {% elif loop.index == 2 %}
+                            <span class="rank-2"><i class="fa-solid fa-medal"></i> 2</span>
+                            {% elif loop.index == 3 %}
+                            <span class="rank-3"><i class="fa-solid fa-award"></i> 3</span>
+                            {% else %}
+                            <span style="padding-left: 8px;">{{ loop.index }}</span>
+                            {% endif %}
+                        </td>
+                        <td><i class="fa-solid fa-user text-muted" style="margin-right: 8px;"></i> {{ student[0] }}</td>
+                        <td style="font-weight: 600; color: var(--primary);">{{ student[1] }} XP</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--text-muted);">No scores available for your grade yet!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+
+</html>

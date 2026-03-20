@@ -5,8 +5,8 @@
   --primary: #4f46e5;
   --primary-hover: #4338ca;
   --secondary: #ec4899;
-  --bg-gradient-start: #667eea;
-  --bg-gradient-end: #764ba2;
+  --bg-gradient-start: #2c324b;
+  --bg-gradient-end: #201f3f;
   --surface: #ffffff;
   --surface-hover: #f9fafb;
   --text-main: #1f2937;
@@ -122,6 +122,167 @@ button:hover {
   margin-top: 1.5rem;
 }
 
+/* Layout - New Landing Design */
+.login-bg-v2 {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-icon {
+  position: absolute;
+  font-size: 3rem;
+  opacity: 0.6;
+  z-index: 0;
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-icon.beaker {
+  top: 15%;
+  left: 10%;
+  color: #10b981;
+}
+
+.floating-icon.lightbulb {
+  bottom: 15%;
+  right: 10%;
+  color: #f59e0b;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.welcome-card-v2 {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  max-width: 900px;
+  width: 100%;
+  padding: 3rem;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-header-v2 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.welcome-title-v2 {
+  color: #000;
+  font-family: 'Magneto', cursive;
+  font-size: 4.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.welcome-subtitle-v2 {
+  color: #374151;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.welcome-prompt-v2 {
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.welcome-body-v2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .welcome-body-v2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.welcome-illustration-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.welcome-illustration-img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  mix-blend-mode: multiply;
+}
+
+.welcome-buttons-v2 {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.btn-student-login {
+  background-color: #3b82f6;
+  color: white;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  font-size: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+  flex: 1;
+}
+.btn-student-login:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-teacher-login {
+  background-color: #ec4899;
+  color: white;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  font-size: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);
+  flex: 1;
+}
+
+.btn-teacher-login:hover {
+  background-color: #db2777;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(236, 72, 153, 0.4);
+}
+
+.btn-icon-large {
+  font-size: 2.5rem;
+}
+
 /* Navbar */
 .navbar {
   display: flex;
@@ -137,10 +298,12 @@ button:hover {
 
 .navbar h2 {
   color: var(--primary);
-  font-size: 1.25rem;
+  font-size: 1.5rem;
+  font-family: 'Magneto', cursive;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  letter-spacing: 1px;
 }
 
 .navbar ul {
@@ -427,4 +590,25 @@ tr:hover td {
 
 .quiz-footer button {
   width: auto;
+}
+
+/* Notification Classes */
+.message-card.unread {
+  border-left: 4px solid #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.message-card.read {
+  border-left: 4px solid var(--primary);
+  background: rgba(79, 70, 229, 0.05);
+}
+
+.doubt-card.unread {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.doubt-card.read {
+  border-color: var(--border);
+  background: white;
 }

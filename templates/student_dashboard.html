@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - STEM Learning</title>
+    <title>Student Dashboard - Brainiac</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,42 +12,42 @@
 <body>
 
     <nav class="navbar">
-        <h2><i class="fa-solid fa-atom"></i> STEM Learning</h2>
+        <div style="display: flex; flex-direction: column;">
+            <h2 style="margin: 0;"><i class="fa-solid fa-atom"></i> Brainiac</h2>
+            <p style="font-weight: 600; color: #0e0d30; font-size: 0.85rem; margin-top: 0.15rem; letter-spacing: 0.5px;">Learn • Play • Grow 🚀</p>
+        </div>
         <ul>
-            <li><a href="/student" class="active">Dashboard</a></li>
-            <li><a href="/quiz">Games</a></li>
-            <li><a href="#">Progress</a></li>
-            <li><a href="#">Leaderboard</a></li>
+            <li><a href="/student" {% if active_tab=='dashboard' %}class="active" {% endif %}>Dashboard</a></li>
+            <li><a href="/student/learn" {% if active_tab=='learn' %}class="active" {% endif %}>Learn</a></li>
+            <li><a href="/student/play" {% if active_tab=='play' %}class="active" {% endif %}>Play</a></li>
+            <li><a href="/student/messages" {% if active_tab=='messages' %}class="active" {% endif %}>Announcements {% if unread_msgs > 0 %}<span style="background: #ef4444; color: white; padding: 0.1rem 0.4rem; border-radius: 9999px; font-size: 0.75rem; margin-left: 0.25rem;">{{ unread_msgs }}</span>{% endif %}</a></li>
+            <li><a href="/student/doubts" {% if active_tab=='doubts' %}class="active" {% endif %}>Ask Teacher {% if unread_doubts > 0 %}<span style="background: #ef4444; color: white; padding: 0.1rem 0.4rem; border-radius: 9999px; font-size: 0.75rem; margin-left: 0.25rem;">{{ unread_doubts }}</span>{% endif %}</a></li>
+            <li><a href="/student/progress" {% if active_tab=='progress' %}class="active" {% endif %}>Progress</a></li>
+            <li><a href="/leaderboard">Leaderboard</a></li>
             <li><button class="btn-logout" onclick="window.location.href='/logout'">Logout</button></li>
         </ul>
     </nav>
 
     <main class="main">
-        <h1 class="page-header">Welcome back, {{ session.get('name', 'Student') }} 👋</h1>
+        <h1 class="page-header">Welcome back, {{ session.get('name', 'Student') }}👋</h1>
 
+        {% if active_tab == 'dashboard' %}
         <div class="dashboard-grid">
-
             <!-- Games Grid Area -->
             <div>
-                <h2 class="mb-2" style="color: white;">Learning Modules</h2>
+                <h2 class="mb-2" style="color: white;">Recommended For You</h2>
                 <div class="card-grid">
 
-                    <div class="card game-card" onclick="window.location.href='/quiz'">
-                        <i class="fa-solid fa-calculator game-icon"></i>
-                        <h3>Math Challenge</h3>
-                        <p class="text-muted mt-2">Improve your math skills</p>
+                    <div class="card game-card" onclick="window.location.href='/student/learn'">
+                        <i class="fa-solid fa-book-open game-icon"></i>
+                        <h3>Learn STEM</h3>
+                        <p class="text-muted mt-2">Study lessons & notes</p>
                     </div>
 
-                    <div class="card game-card" onclick="window.location.href='/quiz'">
-                        <i class="fa-solid fa-flask game-icon"></i>
-                        <h3>Science Quiz</h3>
-                        <p class="text-muted mt-2">Test your science knowledge</p>
-                    </div>
-
-                    <div class="card game-card" onclick="window.location.href='/quiz'">
-                        <i class="fa-solid fa-cogs game-icon"></i>
-                        <h3>Engineering Puzzle</h3>
-                        <p class="text-muted mt-2">Solve engineering problems</p>
+                    <div class="card game-card" onclick="window.location.href='/student/play'">
+                        <i class="fa-solid fa-gamepad game-icon"></i>
+                        <h3>Play Games</h3>
+                        <p class="text-muted mt-2">Earn XP by playing</p>
                     </div>
 
                 </div>
@@ -60,7 +60,7 @@
 
                     <div>
                         <div class="progress-header">
-                            <span style="font-weight: 600;">XP: 1240 / 2000</span>
+                            <span style="font-weight: 600;">Overall Progress</span>
                             <span class="level-badge">Level 3</span>
                         </div>
                         <div class="progress-bar">
@@ -78,8 +78,228 @@
                     </div>
                 </div>
             </div>
-
         </div>
+
+        {% elif active_tab == 'learn' %}
+        <div class="card">
+            <h2 class="mb-2">📘 Learn STEM</h2>
+            <p class="text-muted mb-2">Study these modules before taking the quizzes.</p>
+            <div class="card-grid">
+                <div class="card game-card" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-calculator text-primary" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    <h3>Math Basics</h3>
+                    <p class="text-muted text-sm mt-1">Fractions & Algebra</p>
+                    <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i
+                            class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+                <div class="card game-card" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-flask text-success" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    <h3>Science Concepts</h3>
+                    <p class="text-muted text-sm mt-1">Physics & Chemistry</p>
+                    <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i
+                            class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+                <div class="card game-card" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-cogs text-warning" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    <h3>Engineering</h3>
+                    <p class="text-muted text-sm mt-1">Design & Build</p>
+                    <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i
+                            class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+                <div class="card game-card" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-microchip text-secondary" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    <h3>Technology</h3>
+                    <p class="text-muted text-sm mt-1">Coding basics</p>
+                    <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i
+                            class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+
+        {% elif active_tab == 'play' %}
+        <div class="card">
+            <h2 class="mb-2">🎮 Play & Earn XP</h2>
+            <p class="text-muted mb-2">Select a gamified quiz to earn points for your leaderboard ranking!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/quiz'">
+                    <i class="fa-solid fa-calculator game-icon"></i>
+                    <h3>Math Challenge</h3>
+                    <span class="level-badge mt-1" style="display:inline-block;">+50 XP</span>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/quiz'">
+                    <i class="fa-solid fa-flask game-icon"
+                        style="background: rgba(16, 185, 129, 0.1); color: #10b981;"></i>
+                    <h3>Science Quiz</h3>
+                    <span class="level-badge mt-1"
+                        style="display:inline-block; background:rgba(16,185,129,0.1); color:#10b981;">+50 XP</span>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/quiz'">
+                    <i class="fa-solid fa-cogs game-icon"
+                        style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"></i>
+                    <h3>Engineering Puzzle</h3>
+                    <span class="level-badge mt-1"
+                        style="display:inline-block; background:rgba(245,158,11,0.1); color:#f59e0b;">+50 XP</span>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/quiz'">
+                    <i class="fa-solid fa-laptop-code game-icon"
+                        style="background: rgba(236, 72, 153, 0.1); color: #ec4899;"></i>
+                    <h3>Tech Trivia</h3>
+                    <span class="level-badge mt-1"
+                        style="display:inline-block; background:rgba(236,72,153,0.1); color:#ec4899;">+50 XP</span>
+                </div>
+            </div>
+        </div>
+
+        {% elif active_tab == 'messages' %}
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 class="mb-2" style="margin: 0;">📢 Announcements</h2>
+                {% if unread_msgs > 0 %}
+                <form action="/mark_read/message/all" method="POST" style="margin: 0;">
+                    <button type="submit" style="background: var(--text-muted); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Mark All as Read <i class="fa-solid fa-check-double"></i></button>
+                </form>
+                {% endif %}
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for msg in messages %}
+                <div class="message-card {% if msg[4] == 0 %}unread{% else %}read{% endif %}" style="padding: 1rem; border-radius: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                            {{ msg[1] }}
+                            {% if msg[4] == 0 %}<span style="background: #ef4444; color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem;">NEW</span>{% endif %}
+                        </span>
+                        <span class="text-muted text-sm">{{ msg[3] }}</span>
+                    </div>
+                    <p style="margin-bottom: 0.5rem;">• {{ msg[2] }}</p>
+                    {% if msg[4] == 0 %}
+                    <form action="/mark_read/message/{{ msg[0] }}" method="POST" style="text-align: right; margin: 0;">
+                        <button type="submit" style="background: none; color: var(--primary); border: none; font-size: 0.8rem; cursor: pointer; text-decoration: underline;">Mark as Read</button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-muted">No new announcements from teachers.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% elif active_tab == 'doubts' %}
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2 class="mb-2">🤔 Ask your teacher</h2>
+                <form action="/student/doubts" method="POST">
+                    <select name="teacher_name" required
+                        style="width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-family: inherit; margin-bottom: 1rem; appearance: none; background-color: var(--surface); color: var(--text-main);">
+                        <option value="" disabled selected>Select a Teacher...</option>
+                        {% for teacher in teachers %}
+                        <option value="{{ teacher[0] }}">{{ teacher[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    <textarea name="question" rows="4"
+                        style="width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-family: inherit; margin-bottom: 1rem; resize: vertical;"
+                        placeholder="Type your question here... e.g. I didn't understand Newton's law. Can you explain?"
+                        required></textarea>
+                    <button type="submit" class="menu-btn" style="width: 100%;">Send Question <i
+                            class="fa-regular fa-paper-plane ml-1"></i></button>
+                </form>
+            </div>
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 class="mb-2" style="margin: 0;">Your Q&A</h2>
+                    {% if unread_doubts > 0 %}
+                    <form action="/mark_read/all_doubts_student" method="POST" style="margin: 0;">
+                        <button type="submit" style="background: var(--text-muted); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Mark All as Read <i class="fa-solid fa-check-double"></i></button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 400px; overflow-y: auto;">
+                    {% for doubt in doubts %}
+                    <div class="doubt-card {% if doubt[6] == 0 and doubt[2] %}unread{% else %}read{% endif %}" style="border-width: 1px; border-style: solid; border-radius: 8px; padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">To: {{ doubt[3] }}</span>
+                            {% if doubt[4] %}
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">{{ doubt[4] }}</span>
+                            {% endif %}
+                        </div>
+                        <p style="font-weight: 500; margin-bottom: 0.5rem;"><i class="fa-solid fa-circle-question text-muted mr-1"></i> {{ doubt[1] }}</p>
+                        {% if doubt[2] %}
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                <span style="color: #065f46; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                    Teacher
+                                    {% if doubt[6] == 0 %}<span style="background: #ef4444; color: white; padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.6rem;">NEW REPLY</span>{% endif %}
+                                </span>
+                                {% if doubt[5] %}
+                                <span style="font-size: 0.75rem; color: #065f46; opacity: 0.8;">{{ doubt[5] }}</span>
+                                {% endif %}
+                            </div>
+                            <p style="color: #065f46; font-size: 0.9rem; margin-top: 0.25rem;">{{ doubt[2] }}</p>
+                        </div>
+                        {% if doubt[6] == 0 %}
+                        <form action="/mark_read/doubt_student/{{ doubt[0] }}" method="POST" style="text-align: right; margin: 0;">
+                            <button type="submit" style="background: none; color: var(--primary); border: none; font-size: 0.8rem; cursor: pointer; text-decoration: underline;">Mark as Read</button>
+                        </form>
+                        {% endif %}
+                        {% else %}
+                        <p class="text-muted text-sm"><i class="fa-regular fa-clock"></i> Waiting for teacher's reply...</p>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">You haven't asked any questions yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% elif active_tab == 'progress' %}
+        <div class="card">
+            <h2 class="mb-2">📈 Subject Progress Tracker</h2>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for score_entry in scores %}
+                <div style="padding: 1rem; border: 1px solid var(--border); border-radius: 8px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            {% if score_entry[0] == 'Math' %}
+                            <i class="fa-solid fa-calculator text-primary"></i>
+                            {% elif score_entry[0] == 'Science' %}
+                            <i class="fa-solid fa-flask text-success"></i>
+                            {% elif score_entry[0] == 'Engineering' %}
+                            <i class="fa-solid fa-cogs text-warning"></i>
+                            {% else %}
+                            <i class="fa-solid fa-microchip text-secondary"></i>
+                            {% endif %}
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-weight: 600;">{{ score_entry[0] }} Module</span>
+                                {% if score_entry[2] %}
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Teacher: {{ score_entry[2]
+                                    }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if score_entry[1] >= 1000 %}
+                        <span style="color: #10b981; font-weight: 500;">✓ Completed</span>
+                        {% else %}
+                        <span style="font-weight: 600; color: var(--primary);">{{ (score_entry[1] / 1000 * 100)|int
+                            }}%</span>
+                        {% endif %}
+                    </div>
+                    <div class="progress-bar" style="height: 8px;">
+                        {% if score_entry[1] >= 1000 %}
+                        <div class="progress" style="width: 100%; background: #10b981;"></div>
+                        {% else %}
+                        {% set style_str = 'style="width: ' ~ ((score_entry[1] / 1000 * 100)|int) ~ '%;"' %}
+                        <div class="progress" {{ style_str | safe }}></div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted">No progress data available yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
     </main>
 
 </body>

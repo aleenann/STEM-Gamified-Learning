@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Module - STEM Learning</title>
+    <title>Quiz Module - Brainiac</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <nav class="navbar">
-        <h2><i class="fa-solid fa-atom"></i> STEM Learning</h2>
+        <div style="display: flex; flex-direction: column;">
+            <h2 style="margin: 0;"><i class="fa-solid fa-atom"></i> Brainiac</h2>
+            <p style="font-weight: 600; color: #0e0d30; font-size: 0.85rem; margin-top: 0.15rem; letter-spacing: 0.5px;">Learn • Play • Grow 🚀</p>
+        </div>
         <ul>
             <li><a href="/student">Dashboard</a></li>
-            <li><button class="btn-logout" onclick="window.location.href='/'">Exit Game</button></li>
+            <li><button class="btn-logout" onclick="window.location.href='/student'">Exit Game</button></li>
         </ul>
     </nav>
 

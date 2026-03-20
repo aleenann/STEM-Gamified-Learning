@@ -1,26 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard - STEM Learning</title>
+    <title>Teacher Dashboard - Brainiac</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
 
     <nav class="navbar">
-        <h2><i class="fa-solid fa-chalkboard-user"></i> Teacher Dashboard</h2>
+        <div style="display: flex; flex-direction: column;">
+            <h2 style="margin: 0;"><i class="fa-solid fa-chalkboard-user"></i> Brainiac</h2>
+            <p style="font-weight: 600; color: #0e0d30; font-size: 0.85rem; margin-top: 0.15rem; letter-spacing: 0.5px;">Learn • Play • Grow 🚀</p>
+        </div>
         <ul>
-            <li><a href="/teacher" class="active">Analytics</a></li>
-            <li><a href="#">Students</a></li>
-            <li><a href="#">Assignments</a></li>
+            <li><a href="/teacher" {% if active_tab != 'messages' %}class="active"{% endif %}>Analytics</a></li>
+            <li><a href="/teacher/messages" {% if active_tab == 'messages' %}class="active"{% endif %}>Messages {% if unread_doubts > 0 %}<span style="background: #ef4444; color: white; padding: 0.1rem 0.4rem; border-radius: 9999px; font-size: 0.75rem; margin-left: 0.25rem;">{{ unread_doubts }}</span>{% endif %}</a></li>
             <li><button class="btn-logout" onclick="window.location.href='/logout'">Logout</button></li>
         </ul>
     </nav>
 
     <main class="main">
-        <h1 class="page-header">Welcome, {{ session.get('name', 'Teacher') }}</h1>
+        <h1 class="page-header">Welcome back, {{ session.get('name', 'Teacher') }}👋</h1>
+        <p style="color:var(--text-muted); margin-top:-10px; margin-bottom:20px;">
+            {{ session.get('subject', 'STEM') }} Teacher
+            {% if selected_grade %}<span style="color:var(--primary); font-weight:600;"> | {{ selected_grade }}</span>{% endif %}
+        </p>
+
+        {% if active_tab == 'messages' %}
+        <div class="dashboard-grid">
+            <!-- Left Column: Student Doubts -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h2 class="mb-2" style="margin: 0;">❓ Student Doubts</h2>
+                        {% if unread_doubts > 0 %}
+                        <form action="/mark_read/all_doubts_teacher" method="POST" style="margin: 0;">
+                            <button type="submit" style="background: var(--text-muted); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">Mark All as Read <i class="fa-solid fa-check-double"></i></button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for doubt in doubts %}
+                        <div class="card doubt-card {% if doubt[4] == 0 %}unread{% else %}read{% endif %}" style="border-width: 1px; border-style: solid; box-shadow: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <h3 style="color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+                                    {{ doubt[1] }} asks:
+                                    {% if doubt[4] == 0 %}<span style="background: #ef4444; color: white; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase;">New Doubt</span>{% endif %}
+                                </h3>
+                                <div style="text-align: right;">
+                                    {% if doubt[5] %}
+                                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">{{ doubt[5] }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <p class="mt-1" style="font-size: 1.1rem; font-weight: 500;">"{{ doubt[2] }}"</p>
+                            
+                            {% if doubt[3] %}
+                            <div class="mt-2" style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                    <span style="color: #10b981; font-weight: 600; font-size: 0.9rem;">Your Reply:</span>
+                                    {% if doubt[6] %}
+                                    <span style="font-size: 0.8rem; color: #10b981; opacity: 0.8;">{{ doubt[6] }}</span>
+                                    {% endif %}
+                                </div>
+                                <p style="margin-top: 0.25rem;">{{ doubt[3] }}</p>
+                            </div>
+                            {% else %}
+                            <form action="/teacher/reply_doubt" method="POST" class="mt-2 text-right">
+                                <input type="hidden" name="doubt_id" value="{{ doubt[0] }}">
+                                <input type="text" name="reply" placeholder="Type your reply here..." required style="margin-bottom: 0.5rem;">
+                                <button type="submit" style="width: auto;">Reply <i class="fa-solid fa-paper-plane"></i></button>
+                            </form>
+                            {% endif %}
+                            {% if doubt[4] == 0 %}
+                            <form action="/mark_read/doubt_teacher/{{ doubt[0] }}" method="POST" style="text-align: right; margin-top: 1rem;">
+                                <button type="submit" style="background: none; color: var(--primary); border: none; font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0;">Mark as Read</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">No student doubts at the moment. Great!</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Send Messages -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="card" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;">
+                    <h2 style="color: white; margin-bottom: 1rem;"><i class="fa-solid fa-paper-plane"></i> Send Message</h2>
+                    <form action="/teacher/send_message" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <select name="target_student" required style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.8rem; border-radius: 8px;">
+                            <option value="ALL" style="color: #333;">Broadcast to All Students</option>
+                            {% for student in assigned_students %}
+                            <option value="{{ student }}" style="color: #333;">{{ student }}</option>
+                            {% endfor %}
+                        </select>
+                        <textarea name="message" placeholder="Type message here..." required style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 1rem; border-radius: 8px; font-family: inherit; resize: vertical; min-height: 80px;"></textarea>
+                        <button type="submit" style="background: white; color: var(--primary); font-weight: 600; padding: 0.8rem; border-radius: 8px; border: none; cursor: pointer;">Send <i class="fa-solid fa-paper-plane" style="margin-left: 0.5rem;"></i></button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h3 class="mb-2">Your Sent Messages</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for msg in announcements %}
+                        <div style="padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                <span style="font-weight: 600; font-size: 0.9rem; color: var(--primary);">
+                                    {% if msg[0] == 'ALL' %}
+                                    <i class="fa-solid fa-bullhorn" style="margin-right: 0.25rem;"></i> Broadcast
+                                    {% else %}
+                                    <i class="fa-solid fa-user" style="margin-right: 0.25rem;"></i> To: {{ msg[0] }}
+                                    {% endif %}
+                                </span>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">{{ msg[2] }}</span>
+                            </div>
+                            <p style="margin-top: 0.25rem;">{{ msg[1] }}</p>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">You haven't sent any messages yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+
+        {% if not selected_grade %}
+        <div class="card">
+            <h2 class="mb-2">Select a Grade Class</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+                {% for grade in grades %}
+                <div class="card game-card" onclick="window.location.href='/teacher?grade={{ grade }}'" style="text-align: center; cursor: pointer;">
+                    <i class="fa-solid fa-users game-icon" style="font-size: 2.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                    <h3 style="margin-bottom: 0.5rem;">{{ selected_subject }} {{ grade }}</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">View Roster & Analytics</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+
+        <div style="margin-bottom: 1.5rem;">
+            <a href="/teacher" style="color: var(--primary); text-decoration: none; font-weight: 500;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Classes
+            </a>
+        </div>
 
         <!-- Analytics Cards -->
         <div class="analytics-grid">
@@ -29,35 +160,35 @@
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
                 <div class="stat-details">
-                    <h4>Average Score</h4>
-                    <p>84%</p>
+                    <h4>{{ selected_grade }} {{ session.get('subject', 'STEM') }} Average</h4>
+                    <p>{{ avg_score }} XP</p>
                 </div>
             </div>
-            
+
             <div class="card stat-card">
                 <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
                     <i class="fa-solid fa-users"></i>
                 </div>
                 <div class="stat-details">
                     <h4>Active Students</h4>
-                    <p>28 / 30</p>
+                    <p>{{ active_students }}</p>
                 </div>
             </div>
-            
+
             <div class="card stat-card">
                 <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
                     <i class="fa-solid fa-check-circle"></i>
                 </div>
                 <div class="stat-details">
                     <h4>Modules Completed</h4>
-                    <p>142</p>
+                    <p>--</p>
                 </div>
             </div>
         </div>
 
         <!-- Student Performance Table -->
         <div class="card">
-            <h2 class="mb-2">Student Performance</h2>
+            <h2 class="mb-2">{{ selected_grade }} Performance</h2>
             <div class="table-container">
                 <table>
                     <thead>
@@ -69,30 +200,28 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for student in students %}
                         <tr>
-                            <td><i class="fa-solid fa-user text-muted mr-1"></i> Alice Johnson</td>
-                            <td style="font-weight: 600;">920 XP</td>
-                            <td><span class="level-badge">Level 4</span></td>
-                            <td><span style="color: #10b981;"><i class="fa-solid fa-circle text-xs"></i> Online</span></td>
+                            <td><i class="fa-solid fa-user text-muted mr-1"></i> {{ student[0] }}</td>
+                            <td style="font-weight: 600;">{{ student[1] }} XP</td>
+                            <td><span class="level-badge" {% if student[1] >= 1000 %}style="background: rgba(236, 72, 153, 0.1); color: var(--secondary);"{% elif student[1] <= 600 %}style="background: #f3f4f6; color: var(--text-muted);"{% endif %}>Level {{ (student[1] // 300) + 1 }}</span></td>
+                            <td><span style="color: #10b981;"><i class="fa-solid fa-circle text-xs"></i> Enrolled</span>
+                            </td>
                         </tr>
+                        {% else %}
                         <tr>
-                            <td><i class="fa-solid fa-user text-muted mr-1"></i> Bob Smith</td>
-                            <td style="font-weight: 600;">750 XP</td>
-                            <td><span class="level-badge" style="background: #f3f4f6; color: var(--text-muted);">Level 2</span></td>
-                            <td><span style="color: var(--text-muted);"><i class="fa-regular fa-circle text-xs"></i> Offline</span></td>
+                            <td colspan="4" style="text-align: center; color: var(--text-muted);">No student data available.</td>
                         </tr>
-                        <tr>
-                            <td><i class="fa-solid fa-user text-muted mr-1"></i> Charlie Davis</td>
-                            <td style="font-weight: 600;">1150 XP</td>
-                            <td><span class="level-badge" style="background: rgba(236, 72, 153, 0.1); color: var(--secondary);">Level 5</span></td>
-                            <td><span style="color: #10b981;"><i class="fa-solid fa-circle text-xs"></i> Online</span></td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+        {% endif %}
+
+        {% endif %}
 
     </main>
 
 </body>
+
 </html>
