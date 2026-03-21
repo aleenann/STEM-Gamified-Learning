@@ -24,9 +24,12 @@ def teacher_login_page():
 @app.route("/login", methods=["POST"])
 def login():
 
-    username = request.form["username"]
-    password = request.form["password"]
-    role = request.form["role"]
+    username = request.form.get("username", "")
+    password = request.form.get("password", "")
+    role = request.form.get("role", "student")
+
+    if not username or not password:
+        return render_template(f"{role}_login.html", error="Please enter both your username and password.")
 
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
@@ -47,7 +50,7 @@ def login():
         if role == "teacher":
             return redirect("/teacher")
 
-    return f"Invalid Login. Please try again from the <a href='/login/{role}'>login page</a>."
+    return render_template(f"{role}_login.html", error="Invalid username or password. Please try again.")
 
 # Logout route
 @app.route("/logout")
@@ -145,13 +148,19 @@ def mark_all_doubts_teacher_read():
 def student():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("student_dashboard.html", active_tab="dashboard")
+    username = session.get("username", "")
+    grade = username.split('-')[0] if '-' in username else "Student"
+    return render_template("student_dashboard.html", active_tab="dashboard", grade=grade)
 
 @app.route("/student/learn")
 def student_learn():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("student_dashboard.html", active_tab="learn")
+    username = session.get("username", "")
+    grade = username.split('-')[0] if '-' in username else "Student"
+    subject = request.args.get("subject")
+    chapter = request.args.get("chapter")
+    return render_template("student_dashboard.html", active_tab="learn", grade=grade, subject=subject, chapter=chapter)
 
 @app.route("/student/play")
 def student_play():
@@ -218,10 +227,11 @@ def student_progress():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT s.subject, s.score, a.teacher_name 
+        SELECT s.subject, SUM(s.score) as total_score, MIN(a.teacher_name) as teacher_name 
         FROM scores s
         LEFT JOIN student_teacher_assignments a ON s.subject = a.subject AND a.student_name = ?
         WHERE s.username = ?
+        GROUP BY s.subject
     """, (student_name, username))
     scores = cursor.fetchall()
     
@@ -283,10 +293,11 @@ def teacher():
     
     # Get students and their scores for the teacher's subject in this grade
     cursor.execute("""
-        SELECT u.name, COALESCE(s.score, 0) as score
+        SELECT u.name, COALESCE(SUM(s.score), 0) as score
         FROM users u
         LEFT JOIN scores s ON u.username = s.username AND s.subject = ?
         WHERE u.role = 'student' AND u.username LIKE ?
+        GROUP BY u.id, u.name
         ORDER BY score DESC
     """, (subject, grade_prefix))
     
@@ -365,6 +376,13 @@ def teacher_reply_doubt():
     return redirect("/teacher/messages")
 
 
+# Grade 6 Maths Game Route
+@app.route("/student/play/maths/g6/ch1")
+def play_g6_maths_ch1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g6_maths_ch1.html")
+
 # Quiz / Game Page
 @app.route("/quiz")
 def quiz():
@@ -374,21 +392,26 @@ def quiz():
 # Save game score
 @app.route("/save_score", methods=["POST"])
 def save_score():
-
     username = request.form["username"]
     score = request.form["score"]
     subject = request.form.get("subject", "Math")
+    game_name = request.form.get("game_name", "Demo_Quiz")
 
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
-    cursor.execute("INSERT INTO scores(username,score,subject) VALUES (?,?,?)",
-                   (username,score,subject))
+    # Check if this user already has a score for this specific game
+    cursor.execute("SELECT id FROM scores WHERE username=? AND game_name=?", (username, game_name))
+    existing = cursor.fetchone()
 
-    conn.commit()
+    if not existing:
+        cursor.execute("INSERT INTO scores(username,score,subject,game_name) VALUES (?,?,?,?)",
+                       (username,score,subject,game_name))
+        conn.commit()
+
     conn.close()
 
-    return "Score Saved"
+    return "Score Processed"
 
 
 if __name__ == "__main__":

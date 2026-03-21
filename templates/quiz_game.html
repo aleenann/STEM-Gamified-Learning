@@ -11,8 +11,8 @@
 
     <nav class="navbar">
         <div style="display: flex; flex-direction: column;">
-            <h2 style="margin: 0;"><i class="fa-solid fa-atom"></i> Brainiac</h2>
-            <p style="font-weight: 600; color: #0e0d30; font-size: 0.85rem; margin-top: 0.15rem; letter-spacing: 0.5px;">Learn • Play • Grow 🚀</p>
+            <h2 style="margin: 0;">Brainiac</h2>
+            <p style="font-weight: 600; color: #1F2937; font-size: 0.85rem; margin-top: 0.15rem; letter-spacing: 0.5px;">Learn • Play • Grow</p>
         </div>
         <ul>
             <li><a href="/student">Dashboard</a></li>
@@ -42,13 +42,15 @@
 
                 <div class="options-grid">
                     <button class="option-btn">40 km/h</button>
-                    <button class="option-btn selected">60 km/h</button>
+                    <button class="option-btn">60 km/h</button>
                     <button class="option-btn">80 km/h</button>
                     <button class="option-btn">100 km/h</button>
                 </div>
 
+                <div id="feedback-msg" style="margin-top: 1.5rem; font-weight: 600; text-align: center; display: none; padding: 1rem; border-radius: 8px;"></div>
+
                 <div class="quiz-footer">
-                    <button>Submit Answer <i class="fa-solid fa-check ml-1"></i></button>
+                    <button id="submit-btn" style="transition: all 0.2sease;">Submit Answer <i class="fa-solid fa-check ml-1"></i></button>
                 </div>
             </div>
             
@@ -56,5 +58,91 @@
 
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const options = document.querySelectorAll('.option-btn');
+            const submitBtn = document.getElementById('submit-btn');
+            const feedbackMsg = document.getElementById('feedback-msg');
+            const timerElement = document.querySelector('.timer');
+            let selectedAnswer = null; 
+
+            // Timer Logic
+            let timeLeft = 45;
+            let timerInterval = setInterval(() => {
+                timeLeft--;
+                let seconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+                timerElement.innerHTML = `<i class="fa-regular fa-clock"></i> 00:${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerElement.style.color = '#22C55E'; // turn red
+                    timerElement.style.background = 'rgba(34, 197, 94, 0.4)';
+                    
+                    // Only show message if they haven't submitted yet
+                    if (feedbackMsg.style.display !== 'block') {
+                        feedbackMsg.style.display = 'block';
+                        feedbackMsg.style.color = "#1F2937"; 
+                        feedbackMsg.style.backgroundColor = "rgba(34, 197, 94, 0.4)";
+                        feedbackMsg.style.border = "1px solid #22C55E";
+                        feedbackMsg.innerHTML = '<i class="fa-solid fa-clock" style="margin-right: 0.5rem;"></i> Time is up! You didn\'t answer in time.';
+                        options.forEach(b => b.disabled = true);
+                        submitBtn.disabled = true;
+                    }
+                }
+            }, 1000);
+
+            // Handle option selection
+            options.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (timeLeft <= 0) return; // Prevent clicking if time is up
+                    options.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedAnswer = btn.innerText;
+                    feedbackMsg.style.display = 'none'; // Clear feedback on new selection
+                });
+            });
+
+            // Handle answer submission
+            submitBtn.addEventListener('click', () => {
+                if (timeLeft <= 0) return; // Prevent submitting if time is up
+                
+                if (!selectedAnswer) {
+                    feedbackMsg.style.display = 'block';
+                    feedbackMsg.style.color = "#1F2937"; // warning orange
+                    feedbackMsg.style.backgroundColor = "rgba(34, 197, 94, 0.4)";
+                    feedbackMsg.style.border = "1px solid #22C55E";
+                    feedbackMsg.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="margin-right: 0.5rem;"></i> Please select an answer first!';
+                    return;
+                }
+
+                clearInterval(timerInterval); // Stop timer on valid submit
+                feedbackMsg.style.display = 'block';
+                options.forEach(b => b.disabled = true);
+                submitBtn.disabled = true;
+                
+                if (selectedAnswer === "60 km/h") {
+                    feedbackMsg.style.color = "#1F2937";
+                    feedbackMsg.style.backgroundColor = "rgba(147, 197, 253, 0.4)";
+                    feedbackMsg.style.border = "1px solid #93C5FD";
+                    feedbackMsg.innerHTML = '<i class="fa-solid fa-circle-check" style="margin-right: 0.5rem;"></i> Correct! The train travels 120 km / 2 hours = 60 km/h. +50 XP!';
+                    
+                    // Optional: save score if user is logged in
+                    const username = "{{ session.get('username', '') }}";
+                    if (username) {
+                        const formData = new FormData();
+                        formData.append('username', username);
+                        formData.append('score', 50);
+                        formData.append('subject', 'Maths');
+                        fetch('/save_score', { body: formData, method: "post" });
+                    }
+                } else {
+                    feedbackMsg.style.color = "#1F2937";
+                    feedbackMsg.style.backgroundColor = "rgba(34, 197, 94, 0.4)";
+                    feedbackMsg.style.border = "1px solid #22C55E";
+                    feedbackMsg.innerHTML = '<i class="fa-solid fa-circle-xmark" style="margin-right: 0.5rem;"></i> Incorrect! Remember, Average Speed = Distance ÷ Time. Try again!';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascending Order - Wardrobe Prices</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        .game-board {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            max-width: 900px;
+            margin: 2rem auto;
+        }
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .timer-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .attempts-badge {
+            background: #fee2e2;
+            color: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        .wardrobe-list {
+            display: flex;
+            gap: 1rem;
+            list-style: none;
+            overflow-x: auto;
+            padding: 1rem 0;
+            min-height: 250px;
+        }
+        .wardrobe-card {
+            flex: 1;
+            min-width: 140px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .wardrobe-card img {
+            max-width: 100%;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+            pointer-events: none;
+        }
+        .wardrobe-card .price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .wardrobe-card:active {
+            cursor: grabbing;
+        }
+        .sortable-ghost {
+            opacity: 0.4;
+            background: #f8fafc;
+            border: 2px dashed var(--primary);
+        }
+        .btn-check {
+            background: var(--accent);
+            color: white;
+            padding: 1.25rem 2rem;
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-check:hover {
+            background: #16a34a;
+        }
+        /* Modal */
+        #success-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+            .header-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2 style="margin: 0;">Brainiac</h2>
+        <button class="btn-logout" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    </nav>
+
+    <div class="game-board">
+        <div class="header-controls">
+            <div>
+                <h1 style="color: var(--text-main); margin-bottom: 0.25rem;">Arrange the Wardrobes</h1>
+                <p class="text-muted">Drag and drop to arrange them in <strong>Ascending Order</strong> of price.</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <div class="attempts-badge">Attempts: <span id="attempts-val">0</span></div>
+                <div class="timer-badge"><i class="fa-solid fa-stopwatch"></i> <span id="time-val">00:00</span></div>
+            </div>
+        </div>
+
+        <ul id="wardrobe-list" class="wardrobe-list">
+            <li class="wardrobe-card" data-price="2635">
+                <img src="/static/games/grade6/maths/g6l1.1.png" alt="Wardrobe 1">
+                <div class="price">Rs 2635</div>
+            </li>
+            <li class="wardrobe-card" data-price="1870">
+                <img src="/static/games/grade6/maths/g6l1.2.png" alt="Wardrobe 2">
+                <div class="price">Rs 1870</div>
+            </li>
+            <li class="wardrobe-card" data-price="1699">
+                <img src="/static/games/grade6/maths/g6l1.3.png" alt="Wardrobe 3">
+                <div class="price">Rs 1699</div>
+            </li>
+            <li class="wardrobe-card" data-price="3975">
+                <img src="/static/games/grade6/maths/g6l1.4.png" alt="Wardrobe 4">
+                <div class="price">Rs 3975</div>
+            </li>
+            <li class="wardrobe-card" data-price="2300">
+                <img src="/static/games/grade6/maths/g6l1.5.png" alt="Wardrobe 5">
+                <div class="price">Rs 2300</div>
+            </li>
+        </ul>
+
+        <div id="error-msg" style="color: #ef4444; font-weight: 600; text-align: center; margin-top: 1.5rem; display: none; padding: 1rem; background: #fee2e2; border-radius: 8px;">
+            <i class="fa-solid fa-circle-xmark"></i> Incorrect order! Check the prices carefully and try again.
+        </div>
+
+        <button class="btn-check" onclick="checkAnswer()"><i class="fa-solid fa-check-double"></i> Submit Arrangement</button>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-circle-check" style="font-size: 5rem; color: #22C55E; margin-bottom: 1rem;"></i>
+            <h2 style="margin-bottom: 0.5rem; font-size: 2.5rem; color: var(--text-main);">Perfect!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">You successfully arranged them in ascending order.</p>
+            
+            <div style="background: #f0fdf4; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid #bbf7d0;">
+                <h3 style="color: #166534; font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;" id="final-score">100</h3>
+                <span style="color: #166534; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Final XP Score</span>
+            </div>
+            
+            <button onclick="window.location.href='/student/play'" style="width: 100%; padding: 1.25rem; font-size: 1.25rem;">Return to Games <i class="fa-solid fa-arrow-right ml-1"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // Init state
+        let timeSeconds = 0;
+        let attempts = 0;
+        let timerInterval;
+        let username = "{{ session.get('username') }}";
+
+        // Randomly shuffle cards on load
+        const list = document.getElementById('wardrobe-list');
+        for (let i = list.children.length; i >= 0; i--) {
+            list.appendChild(list.children[Math.random() * i | 0]);
+        }
+
+        // Initialize Sortable drag-and-drop
+        new Sortable(list, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+        });
+
+        // Start timer
+        timerInterval = setInterval(() => {
+            timeSeconds++;
+            const mins = String(Math.floor(timeSeconds / 60)).padStart(2, '0');
+            const secs = String(timeSeconds % 60).padStart(2, '0');
+            document.getElementById('time-val').innerText = `${mins}:${secs}`;
+        }, 1000);
+
+        function checkAnswer() {
+            const cards = list.querySelectorAll('.wardrobe-card');
+            let isCorrect = true;
+            let currentPrice = 0;
+
+            cards.forEach(card => {
+                const price = parseInt(card.getAttribute('data-price'));
+                if (price < currentPrice) {
+                    isCorrect = false;
+                }
+                currentPrice = price;
+            });
+
+            if (isCorrect) {
+                // Win
+                clearInterval(timerInterval);
+                document.getElementById('error-msg').style.display = 'none';
+                
+                // Calculate score
+                // Score = 100 - (Attempts × 20) - (Time × 0.2)
+                let scoreRaw = 100 - (attempts * 20) - (timeSeconds * 0.2);
+                let score = Math.max(0, Math.round(scoreRaw)); // Ensure score doesn't go below 0
+                
+                document.getElementById('final-score').innerText = score;
+                
+                // Save score to DB
+                fetch('/save_score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `username=${encodeURIComponent(username)}&score=${score}&subject=Maths&game_name=G6_Maths_Ch1`
+                }).then(() => {
+                    document.getElementById('success-modal').style.display = 'flex';
+                }).catch(err => {
+                    console.error("Error saving score", err);
+                    document.getElementById('success-modal').style.display = 'flex'; // show anyway
+                });
+                
+            } else {
+                // Incorrect
+                attempts++;
+                document.getElementById('attempts-val').innerText = attempts;
+                document.getElementById('error-msg').style.display = 'block';
+                // Trigger a shake animation on error message
+                const errMsg = document.getElementById('error-msg');
+                errMsg.style.transform = 'translateY(-5px)';
+                setTimeout(() => errMsg.style.transform = 'translateY(0)', 100);
+            }
+        }
+    </script>
+</body>
+</html>
