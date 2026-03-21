@@ -118,36 +118,66 @@
 
         {% elif active_tab == 'play' %}
         <div class="card">
-            <h2 class="mb-2">🎮 Play & Earn XP</h2>
-            <p class="text-muted mb-2">Select a gamified quiz to earn points for your leaderboard ranking!</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 class="mb-2" style="margin: 0;">🎮 {{ grade }} Games Catalog</h2>
+                {% if subject or sub_subject %}
+                <button class="btn-logout" style="padding: 0.4rem 1rem; width: auto;" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                {% endif %}
+            </div>
+            
+            {% if not subject %}
+            <p class="text-muted mb-2">Select a subject to explore available games for your grade!</p>
             <div class="card-grid">
-                <div class="card game-card" onclick="window.location.href='/quiz'">
-                    <i class="fa-solid fa-calculator game-icon"></i>
-                    <h3>Math Challenge</h3>
-                    <span class="level-badge mt-1" style="display:inline-block;">+50 XP</span>
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-flask text-success" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Science</h3>
                 </div>
-                <div class="card game-card" onclick="window.location.href='/quiz'">
-                    <i class="fa-solid fa-flask game-icon"
-                        style="background: rgba(16, 185, 129, 0.1); color: #10b981;"></i>
-                    <h3>Science Quiz</h3>
-                    <span class="level-badge mt-1"
-                        style="display:inline-block; background:rgba(16,185,129,0.1); color:#10b981;">+50 XP</span>
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Technology'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-laptop-code text-secondary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Technology</h3>
                 </div>
-                <div class="card game-card" onclick="window.location.href='/quiz'">
-                    <i class="fa-solid fa-cogs game-icon"
-                        style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"></i>
-                    <h3>Engineering Puzzle</h3>
-                    <span class="level-badge mt-1"
-                        style="display:inline-block; background:rgba(245,158,11,0.1); color:#f59e0b;">+50 XP</span>
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Engineering'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-cogs text-warning" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Engineering</h3>
                 </div>
-                <div class="card game-card" onclick="window.location.href='/quiz'">
-                    <i class="fa-solid fa-laptop-code game-icon"
-                        style="background: rgba(236, 72, 153, 0.1); color: #ec4899;"></i>
-                    <h3>Tech Trivia</h3>
-                    <span class="level-badge mt-1"
-                        style="display:inline-block; background:rgba(236,72,153,0.1); color:#ec4899;">+50 XP</span>
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Maths'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-calculator text-primary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Maths</h3>
                 </div>
             </div>
+            {% elif subject == 'Science' and not sub_subject %}
+            <p class="text-muted mb-2">Select a Science branch to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Chemistry'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-vial text-success" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Chemistry</h3>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-magnet text-primary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Physics</h3>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Biology'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-leaf text-warning" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Biology</h3>
+                </div>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 2rem 1rem;">
+                <i class="fa-solid fa-person-digging text-muted" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">New Games Coming Soon!</h3>
+                <p class="text-muted mb-2">The exciting new <strong>{{ grade }} {{ sub_subject or subject }}</strong> games are currently under construction.</p>
+                <div style="margin-top: 2rem; max-width: 400px; margin-left: auto; margin-right: auto; text-align: left;">
+                    <h4 class="mb-1" style="text-align: center; color: var(--primary);">In the meantime, try the demo:</h4>
+                    <div class="card game-card" onclick="window.location.href='/quiz'" style="border: 2px solid var(--primary);">
+                        <i class="fa-solid fa-gamepad game-icon"></i>
+                        <h3 style="text-align: center;">Demo Quiz</h3>
+                        <div style="text-align: center;">
+                            <span class="level-badge mt-1" style="display:inline-block;">+50 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         {% elif active_tab == 'messages' %}

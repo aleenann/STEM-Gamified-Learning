@@ -157,7 +157,13 @@ def student_learn():
 def student_play():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("student_dashboard.html", active_tab="play")
+        
+    subject = request.args.get("subject")
+    sub_subject = request.args.get("sub_subject")
+    username = session.get("username", "")
+    grade = username.split('-')[0] if '-' in username else "Student"
+    
+    return render_template("student_dashboard.html", active_tab="play", subject=subject, sub_subject=sub_subject, grade=grade)
 
 @app.route("/student/messages")
 def student_messages():
