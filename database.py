@@ -8,7 +8,6 @@ cursor = conn.cursor()
 cursor.execute("DROP TABLE IF EXISTS users")
 cursor.execute("DROP TABLE IF EXISTS scores")
 cursor.execute("DROP TABLE IF EXISTS messages")
-cursor.execute("DROP TABLE IF EXISTS messages")
 cursor.execute("DROP TABLE IF EXISTS doubts")
 cursor.execute("DROP TABLE IF EXISTS assignments")
 cursor.execute("DROP TABLE IF EXISTS student_teacher_assignments")
@@ -29,7 +28,8 @@ CREATE TABLE scores(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 username TEXT,
 score INTEGER,
-subject TEXT
+subject TEXT,
+game_name TEXT
 )
 """)
 
@@ -117,9 +117,10 @@ for student in students:
     for subject in subjects:
         # Generate a random score between 100 and 1500
         score = random.randint(100, 1500)
-        scores.append((username, score, subject))
+        game_name = f"{username}_{subject}_Quiz"
+        scores.append((username, score, subject, game_name))
 
-cursor.executemany("INSERT INTO scores(username,score,subject) VALUES (?,?,?)", scores)
+cursor.executemany("INSERT INTO scores(username,score,subject,game_name) VALUES (?,?,?,?)", scores)
 
 # demo student-teacher assignments
 # Assign specific teachers to each grade cohort

@@ -51,7 +51,9 @@ body {
 .topbar-logo {
   font-size: 17px; font-weight: 900;
   background: linear-gradient(135deg, #16a34a, #0d9488);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text; 
+  -webkit-text-fill-color: transparent;
 }
 .stats-row { display: flex; gap: 8px; }
 .stat-pill {
@@ -1005,6 +1007,9 @@ function handleCorrectMix(challenge, compound) {
   renderChallengeList();
   spawnFXParticles(compound.e, 14);
 
+  // Save score to database
+  saveScoreToDatabase(state.xp);
+
   openFeedback({
     type:    'correct',
     emoji:   compound.e,
@@ -1406,6 +1411,32 @@ function showToast(msg) {
   el.classList.add('show');
   clearTimeout(el._t);
   el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// Save score to database
+function saveScoreToDatabase(xp) {
+  fetch('/student/games/save_score', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      xp: xp,
+      subject: 'Science',
+      game_name: 'Chemistry_Game'
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Score saved successfully:', data.saved);
+    } else {
+      console.error('Failed to save score:', data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error saving score:', error);
+  });
 }
 
 /* ══════════════════════════════════════════════════════════

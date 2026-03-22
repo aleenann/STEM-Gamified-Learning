@@ -181,18 +181,6 @@ def student_play():
     
     return render_template("student_dashboard.html", active_tab="play", subject=subject, sub_subject=sub_subject, chapter=chapter, grade=grade, completed_games=completed_games)
 
-    # get values safely
-    subject = request.args.get("subject", "").strip().lower()
-    sub_subject = request.args.get("sub_subject", "").strip().lower()
-
-    print("DEBUG -> subject:", subject, "| sub_subject:", sub_subject)
-
-    # ✅ OPEN CHEMISTRY GAME
-    if subject == "Science" and sub_subject == "Chemistry":
-        return render_template("chemistry_game.html")
-
-    # default page
-    return render_template("student_dashboard.html", active_tab="play")
 @app.route("/student/messages")
 def student_messages():
     if "name" not in session or session.get("role") != "student":
@@ -282,7 +270,8 @@ def leaderboard():
         return redirect("/")
         
     username = session.get("username", "")
-    grade_prefix = username.split('-')[0] + "-%"
+    grade = username.split('-')[0] if '-' in username else "Student"
+    grade_prefix = grade + "-%"
     
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
@@ -327,7 +316,7 @@ def leaderboard():
             subject_leaderboards[subj] = []
         subject_leaderboards[subj].append((name, score))
     
-    return render_template("leaderboard.html", leaderboard=leaderboard_data, subject_leaderboards=subject_leaderboards)
+    return render_template("leaderboard.html", leaderboard=leaderboard_data, subject_leaderboards=subject_leaderboards, grade=format_grade(grade))
 
 # Teacher dashboard
 @app.route("/teacher")
@@ -482,12 +471,6 @@ def play_g6_maths_ch1_l3():
     
     return render_template("g6_maths_ch1_l3.html")
 
-# Quiz / Game Page
-@app.route("/quiz")
-def quiz():
-    return render_template("quiz_game.html")
-
-
 # Save game score
 @app.route("/save_score", methods=["POST"])
 def save_score():
@@ -521,6 +504,11 @@ def chemistry_game():
         return redirect("/")
     return render_template("chemistry_game.html")
 
+@app.route("/student/play/chemistry/g8")
+def chemistry_game_g8():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("chemistry_game.html")
 
 @app.route("/student/games/save_score", methods=["POST"])
 def save_game_score():
@@ -532,12 +520,13 @@ def save_game_score():
     username = session.get("username")
     score    = int(data.get("xp", 0))          # XP earned in the game
     subject  = data.get("subject", "Science")   # always "Science" for chemistry game
+    game_name = data.get("game_name", "Chemistry_Game")
 
     conn   = sqlite3.connect("database.db")
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO scores(username, score, subject) VALUES (?, ?, ?)",
-        (username, score, subject)
+        "INSERT INTO scores(username, score, subject, game_name) VALUES (?, ?, ?, ?)",
+        (username, score, subject, game_name)
     )
     conn.commit()
     conn.close()
