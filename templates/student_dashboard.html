@@ -78,21 +78,21 @@
             {% if not subject %}
             <p class="text-muted mb-2">Select a subject to explore study modules.</p>
             <div class="card-grid">
-                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Maths'" style="border: 2px solid var(--border);">
-                    <i class="fa-solid fa-calculator text-primary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
-                    <h3>Maths</h3>
-                </div>
                 <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science'" style="border: 2px solid var(--border);">
                     <i class="fa-solid fa-flask text-success" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
-                    <h3>Science Concepts</h3>
+                    <h3>Science</h3>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Technology'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-microchip text-secondary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Technology</h3>
                 </div>
                 <div class="card game-card" onclick="window.location.href='/student/learn?subject=Engineering'" style="border: 2px solid var(--border);">
                     <i class="fa-solid fa-cogs text-warning" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
                     <h3>Engineering</h3>
                 </div>
-                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Technology'" style="border: 2px solid var(--border);">
-                    <i class="fa-solid fa-microchip text-secondary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
-                    <h3>Technology</h3>
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Maths'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-calculator text-primary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Maths</h3>
                 </div>
             </div>
             {% elif subject == 'Maths' and grade|lower == 'g6' and not chapter %}
@@ -181,37 +181,336 @@
             </style>
 
             <div class="math-notes-container">
-                <h2 style="color: var(--primary); margin-bottom: 1.5rem;"><i class="fa-solid fa-book-open"></i> Chapter 1: Knowing Our Numbers</h2>
-                
-                <p class="text-muted mb-2 text-lg">As we compare numbers, we often need to arrange them in specific orders to make sense of data.</p>
+                <div id="topic-comparing">
+                    <h2 style="color: var(--primary); margin-bottom: 1.5rem;"><i class="fa-solid fa-book-open"></i> Chapter 1: Knowing Our Numbers</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">Comparing Numbers</h3>
+                    <p class="text-muted mb-2 text-lg">As we compare numbers, we often need to arrange them in specific orders to make sense of data.</p>
 
-                <div class="concept-card">
-                    <h3 style="color: var(--primary);"><i class="fa-solid fa-arrow-up-right-dots"></i> Ascending Order</h3>
-                    <p style="font-size: 1.1rem; line-height: 1.6; margin-top: 0.5rem;">
-                        <strong>Ascending order</strong> means arrangement from the smallest to the greatest.
-                    </p>
+                    <div class="concept-card">
+                        <h3 style="color: var(--primary);"><i class="fa-solid fa-arrow-up-right-dots"></i> Ascending Order</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6; margin-top: 0.5rem;">
+                            <strong>Ascending order</strong> means arrangement from the smallest to the greatest.
+                        </p>
+                        
+                        <div class="anim-container">
+                            <div class="anim-box ascend-box">1</div>
+                            <div class="anim-box ascend-box">2</div>
+                            <div class="anim-box ascend-box">3</div>
+                            <div class="anim-box ascend-box">4</div>
+                            <div class="anim-box ascend-box">5</div>
+                        </div>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: var(--accent);">
+                        <h3 style="color: var(--accent);"><i class="fa-solid fa-arrow-down-right-dots"></i> Descending Order</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6; margin-top: 0.5rem;">
+                            <strong>Descending order</strong> means arrangement from the greatest to the smallest.
+                        </p>
+                        
+                        <div class="anim-container">
+                            <div class="anim-box descend-box">9</div>
+                            <div class="anim-box descend-box">8</div>
+                            <div class="anim-box descend-box">7</div>
+                            <div class="anim-box descend-box">6</div>
+                            <div class="anim-box descend-box">5</div>
+                        </div>
+                    </div>
                     
-                    <div class="anim-container">
-                        <div class="anim-box ascend-box">1</div>
-                        <div class="anim-box ascend-box">2</div>
-                        <div class="anim-box ascend-box">3</div>
-                        <div class="anim-box ascend-box">4</div>
-                        <div class="anim-box ascend-box">5</div>
+                    <div style="text-align: right; margin-top: 2rem;">
+                        <button class="menu-btn" onclick="document.getElementById('topic-comparing').style.display='none'; document.getElementById('topic-rounding').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next Topic: Rounding Off Numbers <i class="fa-solid fa-arrow-right ml-1"></i></button>
                     </div>
                 </div>
 
-                <div class="concept-card" style="border-left-color: var(--accent);">
-                    <h3 style="color: var(--accent);"><i class="fa-solid fa-arrow-down-right-dots"></i> Descending Order</h3>
-                    <p style="font-size: 1.1rem; line-height: 1.6; margin-top: 0.5rem;">
-                        <strong>Descending order</strong> means arrangement from the greatest to the smallest.
-                    </p>
+                <div id="topic-rounding" style="display: none;">
+                    <h2 style="color: var(--primary); margin-bottom: 1.5rem;"><i class="fa-solid fa-book-open"></i> Chapter 1: Knowing Our Numbers</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">Rounding Off Numbers</h3>
+                    <p class="text-muted mb-2 text-lg">Rounding makes numbers easier to work with when you don't need an exact answer.</p>
+
+                    <div class="concept-card" style="border-left-color: #f59e0b;">
+                        <h3 style="color: #d97706; margin-bottom: 1rem;"><i class="fa-solid fa-thumbtack"></i> The Golden Rule</h3>
+                        <div style="background: #fffbeb; padding: 1.5rem; border-radius: 8px; font-size: 1.1rem; line-height: 1.6;">
+                            <p style="margin-bottom: 0.5rem;"><i class="fa-solid fa-circle-down text-success mr-1"></i> If the digit is <strong>0–4</strong> &rarr; round <strong>DOWN</strong></p>
+                            <p><i class="fa-solid fa-circle-up text-primary mr-1"></i> If the digit is <strong>5–9</strong> &rarr; round <strong>UP</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: var(--primary);">
+                        <h3 style="color: var(--primary); margin-bottom: 1rem;"><i class="fa-solid fa-location-dot"></i> Rounding to Nearest 10</h3>
+                        <p class="mb-1" style="font-size: 1.1rem;"><i class="fa-solid fa-hand-point-right text-muted"></i> Look at the <strong>ones</strong> place:</p>
+                        <ul style="list-style: none; padding: 0; font-size: 1.5rem; font-family: monospace;">
+                            <li style="margin-bottom: 0.5rem; background: #FFFFFF; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block; box-shadow: var(--shadow-sm);">4<span style="color: #ef4444; font-weight: bold;">3</span> &rarr; 40</li>
+                            <li style="background: #FFFFFF; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block; margin-left: 1rem; box-shadow: var(--shadow-sm);">6<span style="color: #10b981; font-weight: bold;">7</span> &rarr; 70</li>
+                        </ul>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: var(--accent);">
+                        <h3 style="color: var(--accent); margin-bottom: 1rem;"><i class="fa-solid fa-location-dot"></i> Rounding to Nearest 100</h3>
+                        <p class="mb-1" style="font-size: 1.1rem;"><i class="fa-solid fa-hand-point-right text-muted"></i> Look at the <strong>tens</strong> place:</p>
+                        <ul style="list-style: none; padding: 0; font-size: 1.5rem; font-family: monospace;">
+                            <li style="margin-bottom: 0.5rem; background: #FFFFFF; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block; box-shadow: var(--shadow-sm);">4<span style="color: #ef4444; font-weight: bold;">3</span>2 &rarr; 400</li>
+                            <li style="background: #FFFFFF; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block; margin-left: 1rem; box-shadow: var(--shadow-sm);">7<span style="color: #10b981; font-weight: bold;">8</span>6 &rarr; 800</li>
+                        </ul>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: #8b5cf6;">
+                        <h3 style="color: #7c3aed; margin-bottom: 1rem;"><i class="fa-solid fa-location-dot"></i> Rounding to Nearest 1000</h3>
+                        <p class="mb-1" style="font-size: 1.1rem;"><i class="fa-solid fa-hand-point-right text-muted"></i> Look at the <strong>hundreds</strong> place:</p>
+                        <ul style="list-style: none; padding: 0; font-size: 1.5rem; font-family: monospace;">
+                            <li style="margin-bottom: 0.5rem; background: #FFFFFF; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block; box-shadow: var(--shadow-sm);">4,<span style="color: #ef4444; font-weight: bold;">3</span>21 &rarr; 4,000</li>
+                            <li style="background: #FFFFFF; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block; margin-left: 1rem; box-shadow: var(--shadow-sm);">7,<span style="color: #10b981; font-weight: bold;">6</span>89 &rarr; 8,000</li>
+                        </ul>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('topic-rounding').style.display='none'; document.getElementById('topic-comparing').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous Topic: Comparing Numbers</button>
+                        <button class="menu-btn" onclick="document.getElementById('topic-rounding').style.display='none'; document.getElementById('topic-bodmas').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next Topic: Using Brackets (BODMAS) <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <div id="topic-bodmas" style="display: none;">
+                    <h2 style="color: var(--primary); margin-bottom: 1.5rem;"><i class="fa-solid fa-book-open"></i> Chapter 1: Knowing Our Numbers</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">Using Brackets (BODMAS Rule)</h3>
+                    <p class="text-muted mb-2 text-lg">This topic teaches the correct order to solve mathematical expressions.</p>
+
+                    <div class="concept-card" style="border-left-color: #ef4444;">
+                        <h3 style="color: #ef4444; margin-bottom: 1rem;"><i class="fa-solid fa-brain"></i> 1. What is BODMAS?</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6;">BODMAS tells us exactly which operation to do first.</p>
+                        <ul style="list-style: none; margin-top: 1rem; line-height: 2;">
+                            <li><strong style="color: var(--text-main); font-size: 1.2rem;">B</strong> &rarr; Brackets</li>
+                            <li><strong style="color: var(--text-main); font-size: 1.2rem;">O</strong> &rarr; Of (means multiplication)</li>
+                            <li><strong style="color: var(--text-main); font-size: 1.2rem;">D</strong> &rarr; Division</li>
+                            <li><strong style="color: var(--text-main); font-size: 1.2rem;">M</strong> &rarr; Multiplication</li>
+                            <li><strong style="color: var(--text-main); font-size: 1.2rem;">A</strong> &rarr; Addition</li>
+                            <li><strong style="color: var(--text-main); font-size: 1.2rem;">S</strong> &rarr; Subtraction</li>
+                        </ul>
+                        <div style="margin-top: 1rem; background: #e0e7ff; padding: 1rem; border-radius: 8px;">
+                            <p style="font-weight: 600; color: #1e40af;"><i class="fa-solid fa-hand-point-right mr-1"></i> We follow this order <strong>left to right</strong> when needed.</p>
+                        </div>
+                    </div>
                     
-                    <div class="anim-container">
-                        <div class="anim-box descend-box">9</div>
-                        <div class="anim-box descend-box">8</div>
-                        <div class="anim-box descend-box">7</div>
-                        <div class="anim-box descend-box">6</div>
-                        <div class="anim-box descend-box">5</div>
+                    <div class="concept-card" style="border-left-color: #f59e0b;">
+                        <h3 style="color: #d97706; margin-bottom: 1rem;"><i class="fa-solid fa-triangle-exclamation"></i> 2. Why is BODMAS Important?</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6;">Without order, answers can be wrong ❌</p>
+                        <div style="background: #fffbeb; padding: 1.5rem; border-radius: 8px; font-size: 1.1rem; line-height: 1.6; margin-top: 1rem; border: 1px solid #fde68a;">
+                            <p style="margin-bottom: 0.5rem; font-family: monospace; font-size: 1.4rem;"><strong>Example: 8 + 2 &times; 5</strong></p>
+                            <p style="color: #ef4444; margin-bottom: 0.5rem;"><i class="fa-solid fa-xmark mr-1"></i> Wrong way: (8 + 2) &times; 5 = 50</p>
+                            <p style="color: #10b981; font-weight: bold;"><i class="fa-solid fa-check mr-1"></i> Correct way: 8 + (2 &times; 5) = 18</p>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card" style="border-left-color: var(--primary);">
+                        <h3 style="color: var(--primary); margin-bottom: 1rem;"><i class="fa-solid fa-list-ol"></i> 3. Steps to Solve</h3>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-size: 1.2rem; color: #1e40af; margin-bottom: 0.5rem;">Step 1️⃣: Solve Brackets first</h4>
+                            <p style="font-family: monospace; font-size: 1.2rem; background: #f8fafc; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block;">(6 + 2) &times; 3 = 8 &times; 3 = 24</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-size: 1.2rem; color: #1e40af; margin-bottom: 0.5rem;">Step 2️⃣: Solve Of (multiplication)</h4>
+                            <p style="font-family: monospace; font-size: 1.2rem; background: #f8fafc; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block;">&frac12; of 20 = 10</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-size: 1.2rem; color: #1e40af; margin-bottom: 0.5rem;">Step 3️⃣: Division and Multiplication (Left to Right)</h4>
+                            <div style="font-family: monospace; font-size: 1.2rem; background: #f8fafc; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block;">
+                                20 &divide; 5 &times; 2<br>
+                                = 4 &times; 2<br>
+                                = 8
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: #1e40af; margin-bottom: 0.5rem;">Step 4️⃣: Addition and Subtraction (Left to Right)</h4>
+                            <div style="font-family: monospace; font-size: 1.2rem; background: #f8fafc; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block;">
+                                10 - 2 + 3<br>
+                                = 8 + 3<br>
+                                = 11
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card" style="border-left-color: #10b981;">
+                        <h3 style="color: #059669; margin-bottom: 1rem;"><i class="fa-solid fa-bullseye"></i> 4. Mixed Example</h3>
+                        <p style="font-weight: 600; font-size: 1.3rem; margin-bottom: 1rem; font-family: monospace; background: #ecfdf5; padding: 0.5rem 1rem; border-radius: 8px; display: inline-block;">Solve: 12 + 6 &times; (5 - 2)</p>
+                        <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                            <li><i class="fa-solid fa-arrow-right text-muted mr-2"></i> <strong>Step 1: Bracket</strong> &rarr; (5 - 2) = 3</li>
+                            <li><i class="fa-solid fa-arrow-right text-muted mr-2"></i> <strong>Step 2: Multiply</strong> &rarr; 6 &times; 3 = 18</li>
+                            <li><i class="fa-solid fa-arrow-right text-muted mr-2"></i> <strong>Step 3: Add</strong> &rarr; 12 + 18 = 30</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="concept-card" style="border-left-color: #ef4444; background: #fef2f2;">
+                        <h3 style="color: #dc2626; margin-bottom: 1rem;"><i class="fa-solid fa-circle-exclamation"></i> Common Mistakes</h3>
+                        <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                            <li style="color: #b91c1c;"><i class="fa-solid fa-xmark mr-2"></i> Ignoring brackets</li>
+                            <li style="color: #b91c1c;"><i class="fa-solid fa-xmark mr-2"></i> Doing addition before multiplication</li>
+                            <li style="color: #b91c1c;"><i class="fa-solid fa-xmark mr-2"></i> Not following left-to-right rule</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #fffbeb; padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border: 2px dashed #fbbf24; text-align: center;">
+                        <h3 style="color: #b45309; margin-bottom: 1rem;"><i class="fa-regular fa-lightbulb text-warning mr-1"></i> Quick Tricks to Remember</h3>
+                        <p style="font-size: 1.35rem; font-weight: 800; color: #d97706; font-style: italic; margin-bottom: 1.5rem;">“Brackets first, then multiply/divide, then add/subtract”</p>
+                        
+                        <div style="background: #fef08a; padding: 1rem; border-radius: 8px; display: inline-block; text-align: left; box-shadow: var(--shadow-sm);">
+                            <p style="font-weight: 600; color: #b45309; margin-bottom: 0.5rem;"><i class="fa-solid fa-hand-point-right mr-1"></i> Solve from innermost to outermost</p>
+                            <p style="font-family: monospace; font-size: 1.3rem; color: #92400e;">[10 - <span style="color: #ef4444;">(2 + 3)</span>] = [10 - 5] = 5</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('topic-bodmas').style.display='none'; document.getElementById('topic-rounding').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous Topic: Rounding Off Numbers</button>
+                        <button class="menu-btn" onclick="document.getElementById('topic-bodmas').style.display='none'; document.getElementById('topic-roman-intro').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next Topic: Roman Numerals <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- ROMAN NUMERALS: PART 1 -->
+                <div id="topic-roman-intro" style="display: none;">
+                    <h2 style="color: var(--primary); margin-bottom: 1.5rem;"><i class="fa-solid fa-book-open"></i> Chapter 1: Knowing Our Numbers</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">Roman Numerals – Intro & Symbols</h3>
+                    <p class="text-muted mb-2 text-lg">Roman numerals are a number system used in ancient Rome. We still see them today in clocks 🕒, book chapters 📖, and movie names 🎬.</p>
+
+                    <div class="concept-card" style="border-left-color: #3b82f6;">
+                        <h3 style="color: #2563eb; margin-bottom: 1rem;"><i class="fa-solid fa-font"></i> 1. Basic Symbols</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem;">Here are the seven basic Roman symbols and their values:</p>
+                        
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 1.2rem; background: white; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-sm);">
+                                <thead>
+                                    <tr style="background: #e0e7ff; color: #1e40af;">
+                                        <th style="padding: 1rem; border-bottom: 2px solid #bfdbfe;">Symbol</th>
+                                        <th style="padding: 1rem; border-bottom: 2px solid #bfdbfe;">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; font-family: monospace;">I</td><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0;">1</td></tr>
+                                    <tr><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; font-family: monospace;">V</td><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0;">5</td></tr>
+                                    <tr><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; font-family: monospace;">X</td><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0;">10</td></tr>
+                                    <tr><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; font-family: monospace;">L</td><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0;">50</td></tr>
+                                    <tr><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; font-weight: bold; font-family: monospace;">C</td><td style="padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0;">100</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('topic-roman-intro').style.display='none'; document.getElementById('topic-bodmas').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous Topic: BODMAS</button>
+                        <button class="menu-btn" onclick="document.getElementById('topic-roman-intro').style.display='none'; document.getElementById('topic-roman-rules').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next: Rules of Roman Numerals <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- ROMAN NUMERALS: PART 2 -->
+                <div id="topic-roman-rules" style="display: none;">
+                    <h2 style="color: var(--primary); margin-bottom: 1.5rem;"><i class="fa-solid fa-book-open"></i> Chapter 1: Knowing Our Numbers</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">📏 Rules of Roman Numerals</h3>
+                    <p class="text-muted mb-2 text-lg">Follow these 5 logical rules to construct any Roman numeral perfectly.</p>
+
+                    <div class="concept-card" style="border-left-color: #10b981;">
+                        <h3 style="color: #059669; margin-bottom: 1rem;"><i class="fa-solid fa-square-check"></i> Rule 1: Repetition (Adding)</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6;"><i class="fa-solid fa-arrow-right text-muted mr-1"></i> Same symbols can be repeated up to 3 times.<br><i class="fa-solid fa-arrow-right text-muted mr-1"></i> Values are <strong>added</strong> together.</p>
+                        <div style="background: #ecfdf5; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <p style="font-family: monospace; font-size: 1.2rem;">III = 1 + 1 + 1 = 3</p>
+                            <p style="font-family: monospace; font-size: 1.2rem;">XX = 10 + 10 = 20</p>
+                        </div>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: #ef4444; background: #fef2f2;">
+                        <h3 style="color: #dc2626; margin-bottom: 1rem;"><i class="fa-solid fa-ban"></i> Rule 2: No more than 3 repetitions</h3>
+                        <p style="color: #b91c1c; font-weight: 600; font-size: 1.1rem;"><i class="fa-solid fa-xmark mr-1"></i> IIII is wrong for 4.</p>
+                        <p style="color: #059669; font-weight: 600; font-size: 1.1rem;"><i class="fa-solid fa-check mr-1"></i> 4 is written correctly as IV.</p>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: #f59e0b;">
+                        <h3 style="color: #d97706; margin-bottom: 1rem;"><i class="fa-solid fa-minus"></i> Rule 3: Smaller before bigger &rarr; Subtract</h3>
+                        <div style="background: #fffbeb; padding: 1rem; border-radius: 8px;">
+                            <p style="font-family: monospace; font-size: 1.2rem;">IV = 5 - 1 = 4</p>
+                            <p style="font-family: monospace; font-size: 1.2rem;">IX = 10 - 1 = 9</p>
+                        </div>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: #6366f1;">
+                        <h3 style="color: #4f46e5; margin-bottom: 1rem;"><i class="fa-solid fa-plus"></i> Rule 4: Smaller after bigger &rarr; Add</h3>
+                        <div style="background: #eef2ff; padding: 1rem; border-radius: 8px;">
+                            <p style="font-family: monospace; font-size: 1.2rem;">VI = 5 + 1 = 6</p>
+                            <p style="font-family: monospace; font-size: 1.2rem;">XV = 10 + 5 = 15</p>
+                        </div>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: #8b5cf6;">
+                        <h3 style="color: #7c3aed; margin-bottom: 1rem;"><i class="fa-solid fa-triangle-exclamation"></i> Rule 5: Only certain symbols subtract</h3>
+                        <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                            <li><i class="fa-solid fa-arrow-right text-muted mr-2"></i> <strong>I</strong> can subtract from V and X &rarr; IV (4), IX (9)</li>
+                            <li><i class="fa-solid fa-arrow-right text-muted mr-2"></i> <strong>X</strong> can subtract from L and C &rarr; XL (40), XC (90)</li>
+                        </ul>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('topic-roman-rules').style.display='none'; document.getElementById('topic-roman-intro').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Intro & Symbols</button>
+                        <button class="menu-btn" onclick="document.getElementById('topic-roman-rules').style.display='none'; document.getElementById('topic-roman-advanced').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next: Conversions & Practice <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- ROMAN NUMERALS: PART 3 -->
+                <div id="topic-roman-advanced" style="display: none;">
+                    <h2 style="color: var(--primary); margin-bottom: 1.5rem;"><i class="fa-solid fa-book-open"></i> Chapter 1: Knowing Our Numbers</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">🔢 Converting & Common Numbers</h3>
+                    <p class="text-muted mb-2 text-lg">Mastering Roman Numeral conversions and common pitfalls.</p>
+
+                    <div class="concept-card" style="border-left-color: #8b5cf6;">
+                        <h3 style="color: #7c3aed; margin-bottom: 1rem;"><i class="fa-solid fa-hashtag"></i> 3. Common Numbers</h3>
+                        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                            <ul style="list-style: none; padding: 0; font-size: 1.2rem; font-family: monospace; flex: 1; min-width: 150px;">
+                                <li style="margin-bottom: 0.5rem; background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">1 = I</li>
+                                <li style="margin-bottom: 0.5rem; background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">4 = IV</li>
+                                <li style="margin-bottom: 0.5rem; background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">5 = V</li>
+                                <li style="margin-bottom: 0.5rem; background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">9 = IX</li>
+                                <li style="background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">10 = X</li>
+                            </ul>
+                            <ul style="list-style: none; padding: 0; font-size: 1.2rem; font-family: monospace; flex: 1; min-width: 150px;">
+                                <li style="margin-bottom: 0.5rem; background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">20 = XX</li>
+                                <li style="margin-bottom: 0.5rem; background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">40 = XL</li>
+                                <li style="margin-bottom: 0.5rem; background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">50 = L</li>
+                                <li style="margin-bottom: 0.5rem; background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">90 = XC</li>
+                                <li style="background: #f5f3ff; padding: 0.5rem 1rem; border-radius: 6px;">100 = C</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: var(--primary);">
+                        <h3 style="color: var(--primary); margin-bottom: 1rem;"><i class="fa-solid fa-arrows-rotate"></i> 4. How to Convert</h3>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-size: 1.2rem; color: #1e40af; margin-bottom: 0.5rem;"><i class="fa-solid fa-arrow-right text-muted mr-1"></i> Roman &rarr; Number</h4>
+                            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 1.2rem; box-shadow: var(--shadow-sm); display: inline-block;">
+                                Example: XIV = X (10) + IV (4) = 14
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: #1e40af; margin-bottom: 0.5rem;"><i class="fa-solid fa-arrow-right text-muted mr-1"></i> Number &rarr; Roman</h4>
+                            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 1.2rem; box-shadow: var(--shadow-sm); display: inline-block;">
+                                Example: 23 = 20 + 3<br>
+                                = XX + III = XXIII
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="concept-card" style="border-left-color: #ef4444; background: #fef2f2;">
+                        <h3 style="color: #dc2626; margin-bottom: 1rem;"><i class="fa-solid fa-circle-exclamation"></i> Common Mistakes</h3>
+                        <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+                            <li style="color: #b91c1c;"><i class="fa-solid fa-xmark mr-2"></i> Writing <strong>IC</strong> for 99 (wrong) &rarr; <span style="color: #059669; font-weight: bold;"><i class="fa-solid fa-check ml-1 mr-1"></i> Correct: XCIX</span></li>
+                            <li style="color: #b91c1c;"><i class="fa-solid fa-xmark mr-2"></i> Repeating <strong>V, L, C</strong> &rarr; <span style="color: var(--text-main);">These are never repeated</span></li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #fffbeb; padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border: 2px dashed #fbbf24; text-align: center;">
+                        <h3 style="color: #b45309; margin-bottom: 1rem;"><i class="fa-regular fa-lightbulb text-warning mr-1"></i> Quick Trick to Remember</h3>
+                        <p style="font-size: 1.35rem; font-weight: 800; color: #d97706; font-style: italic;">“If a smaller number comes before &rarr; subtract, after &rarr; add”</p>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('topic-roman-advanced').style.display='none'; document.getElementById('topic-roman-rules').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Rules of Roman Numerals</button>
                     </div>
                 </div>
             </div>
@@ -269,16 +568,77 @@
                     <h3>Biology</h3>
                 </div>
             </div>
-            {% elif subject == 'Maths' and grade|lower == 'g6' %}
-            <p class="text-muted mb-2">Grade 6 Mathematics Modules</p>
+            {% elif subject == 'Maths' and grade|lower == 'g6' and not chapter %}
+            <p class="text-muted mb-2">Select a Chapter to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Maths&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
+                    <h3 style="color: #1e3a8a; font-size: 1.5rem;">Chapter 1</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Knowing Our Numbers</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #e0e7ff; color: #3b82f6; border: 1px solid #bfdbfe;">3 Games</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Maths' and grade|lower == 'g6' and chapter == '1' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #1e3a8a; background: #e0e7ff; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 1: Knowing Our Numbers</p>
+            </div>
             <div class="card-grid">
                 <div class="card game-card" onclick="window.location.href='/student/play/maths/g6/ch1'" style="border: 2px solid var(--border);">
-                    <i class="fa-solid fa-hashtag text-primary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
-                    <h3>Knowing Our Numbers</h3>
+                    <i class="fa-solid fa-arrow-up-9-1 text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary);"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Order the Closet</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Beginner</p>
                     <div style="text-align: center;">
                         <span class="level-badge mt-1" style="display:inline-block;">Play Game</span>
                     </div>
                 </div>
+
+                {% if completed_games and 'G6_Maths_Ch1' in completed_games %}
+                <div class="card game-card" onclick="window.location.href='/student/play/maths/g6/ch1_l2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-basket-shopping text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #16a34a;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Catch & Round</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Intermediate</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #16a34a;">Play Game</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card game-card" style="border: 2px solid var(--border); opacity: 0.6; cursor: not-allowed;" title="Complete Level 1 to unlock!">
+                    <i class="fa-solid fa-lock text-muted" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 class="text-muted" style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Catch & Round</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Intermediate</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if completed_games and 'G6_Maths_Ch1_L2' in completed_games %}
+                <div class="card game-card" onclick="window.location.href='/student/play/maths/g6/ch1_l3'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-elevator text-danger" style="color: #ef4444; font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 3</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Elevator Escape</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Hard</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #ef4444;">Play Game</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card game-card" style="border: 2px solid var(--border); opacity: 0.6; cursor: not-allowed;" title="Complete Level 2 to unlock!">
+                    <i class="fa-solid fa-lock text-muted" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 3</p>
+                    <h3 class="text-muted" style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Elevator Escape</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Hard</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
             {% else %}
             <div style="text-align: center; padding: 2rem 1rem;">
@@ -402,30 +762,141 @@
 
         {% elif active_tab == 'progress' %}
         <div class="card">
-            <h2 class="mb-2">📈 Subject Progress Tracker</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 class="mb-2" style="margin: 0;">📈 Subject Progress Tracker</h2>
+                {% if subject %}
+                <button class="btn-logout" style="padding: 0.4rem 1rem; width: auto;" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                {% endif %}
+            </div>
             
-            {% if scores and scores|length > 0 %}
-            <div class="progress-section" style="margin-top: 1.5rem;">
-                {% for score in scores %}
-                <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
-                    <div class="progress-header">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <h3 style="margin: 0; color: var(--text-main);">{{ score[0] }}</h3>
-                            {% if score[2] %}
-                            <span class="level-badge" style="background: var(--surface-hover); color: var(--text-muted); font-weight: 500;">Teacher: {{ score[2] }}</span>
-                            {% endif %}
+            {% if not subject %}
+            <p class="text-muted mb-2">Select a subject below to analyze your chapter-wise progress.</p>
+            
+            <div class="subject-list" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+                <a href="/student/progress?subject=Science" class="subject-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); text-decoration: none; color: var(--text-main); transition: all 0.2s ease;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: #dcfce7; padding: 1rem; border-radius: 12px;"><i class="fa-solid fa-flask text-success" style="font-size: 1.5rem; width: 30px; text-align: center;"></i></div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.25rem;">Science</h3>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                {% if assigned_teachers and assigned_teachers.get('Science') %}
+                                <i class="fa-solid fa-user-circle"></i> Teacher: {{ assigned_teachers.get('Science') }}
+                                {% else %}
+                                View modules and scores
+                                {% endif %}
+                            </span>
                         </div>
-                        <span class="level-badge" style="font-size: 1rem;"><i class="fa-solid fa-star"></i> {{ score[1] }} XP</span>
                     </div>
-                </div>
-                {% endfor %}
+                    <i class="fa-solid fa-chevron-right text-muted chevron-arrow" style="font-size: 1.25rem; transition: transform 0.2s;"></i>
+                </a>
+                
+                <a href="/student/progress?subject=Technology" class="subject-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); text-decoration: none; color: var(--text-main); transition: all 0.2s ease;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: #f3f4f6; padding: 1rem; border-radius: 12px;"><i class="fa-solid fa-microchip text-secondary" style="font-size: 1.5rem; width: 30px; text-align: center;"></i></div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.25rem;">Technology</h3>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                {% if assigned_teachers and assigned_teachers.get('Technology') %}
+                                <i class="fa-solid fa-user-circle"></i> Teacher: {{ assigned_teachers.get('Technology') }}
+                                {% else %}
+                                View modules and scores
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-muted chevron-arrow" style="font-size: 1.25rem; transition: transform 0.2s;"></i>
+                </a>
+                
+                <a href="/student/progress?subject=Engineering" class="subject-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); text-decoration: none; color: var(--text-main); transition: all 0.2s ease;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: #fef9c3; padding: 1rem; border-radius: 12px;"><i class="fa-solid fa-cogs text-warning" style="font-size: 1.5rem; width: 30px; text-align: center;"></i></div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.25rem;">Engineering</h3>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                {% if assigned_teachers and assigned_teachers.get('Engineering') %}
+                                <i class="fa-solid fa-user-circle"></i> Teacher: {{ assigned_teachers.get('Engineering') }}
+                                {% else %}
+                                View modules and scores
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-muted chevron-arrow" style="font-size: 1.25rem; transition: transform 0.2s;"></i>
+                </a>
+                
+                <a href="/student/progress?subject=Maths" class="subject-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); text-decoration: none; color: var(--text-main); transition: all 0.2s ease;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="background: #e0e7ff; padding: 1rem; border-radius: 12px;"><i class="fa-solid fa-calculator text-primary" style="font-size: 1.5rem; width: 30px; text-align: center;"></i></div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.25rem;">Maths</h3>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">
+                                {% if assigned_teachers and assigned_teachers.get('Maths') %}
+                                <i class="fa-solid fa-user-circle"></i> Teacher: {{ assigned_teachers.get('Maths') }}
+                                {% else %}
+                                View modules and scores
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-muted chevron-arrow" style="font-size: 1.25rem; transition: transform 0.2s;"></i>
+                </a>
             </div>
+            
+            <style>
+                .subject-list-item:hover {
+                    transform: translateX(5px);
+                    background: white !important;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                    border-color: var(--primary) !important;
+                }
+                .subject-list-item:hover .chevron-arrow {
+                    color: var(--primary) !important;
+                    transform: translateX(5px);
+                }
+            </style>
+            
             {% else %}
-            <div style="text-align: center; padding: 4rem 1rem;">
-                <i class="fa-solid fa-chart-line text-muted" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
-                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No Progress Yet!</h3>
-                <p class="text-muted text-lg">Play games and complete chapters to start tracking your subject progress here.</p>
-            </div>
+                {% if chapter_progress|length > 0 %}
+                <div class="progress-section" style="margin-top: 1.5rem;">
+                    {% for chap in chapter_progress %}
+                    <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+                        <div class="progress-header" style="margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="background: #e0e7ff; padding: 0.75rem; border-radius: 8px;"><i class="fa-solid fa-book-open text-primary" style="font-size: 1.2rem;"></i></div>
+                                <h3 style="margin: 0; color: var(--text-main);">Chapter {{ chap.chapter_num }}: {{ chap.chapter_name }}</h3>
+                            </div>
+                            <span class="level-badge" style="font-size: 1rem; color: white;"><i class="fa-solid fa-star"></i> {{ chap.xp }} XP</span>
+                        </div>
+                        
+                        <div style="background: #f8fafc; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                                <span style="font-weight: 600; color: var(--text-main);"><i class="fa-solid fa-graduation-cap text-primary mr-1"></i> Chapter Mastery</span>
+                                <span style="font-weight: 700; color: var(--primary);">{{ chap.completed }} / {{ chap.total }} Concepts</span>
+                            </div>
+                            {% set pct = (chap.completed / chap.total) * 100 %}
+                            <div class="progress-bar-bg" style="background: #e2e8f0; height: 14px; border-radius: 99px; overflow: hidden; width: 100%;">
+                                <div class="dynamic-progress-bar" data-width="{{ pct }}" style="background: linear-gradient(90deg, #3b82f6, #10b981); height: 100%; transition: width 1s ease-in-out; border-radius: 99px; width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        setTimeout(() => {
+                            document.querySelectorAll('.dynamic-progress-bar').forEach(el => {
+                                el.style.width = el.getAttribute('data-width') + '%';
+                            });
+                        }, 100);
+                    });
+                </script>
+                {% else %}
+                <div style="text-align: center; padding: 4rem 1rem;">
+                    <i class="fa-solid fa-folder-open text-muted" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No Curriculum Data Yet</h3>
+                    <p class="text-muted text-lg">You haven't played anything mapped to {{ subject }} chapters right now!</p>
+                </div>
+                {% endif %}
             {% endif %}
         </div>
         {% endif %}

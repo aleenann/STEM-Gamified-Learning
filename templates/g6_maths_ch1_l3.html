@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevator Escape - Level 3</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        body {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid #334155;
+            backdrop-filter: blur(10px);
+        }
+
+        .elevator-cabin {
+            position: relative;
+            max-width: 1200px;
+            width: 95%;
+            height: 750px;
+            margin: 2rem auto;
+            background: url('/static/elevator_illustration.png') center/cover no-repeat;
+            border: 12px solid #0f172a;
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(0,0,0,0.9);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .shaft-glass {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 120px, rgba(255,255,255,0.03) 120px, rgba(255,255,255,0.03) 125px);
+            background-size: 100% 200%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floor-floor {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 80px;
+            background: linear-gradient(to top, #020617, #1e293b);
+            border-top: 4px solid #334155;
+            z-index: 2;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+        }
+
+        .led-panel {
+            position: relative;
+            margin-top: 2rem;
+            background: #000;
+            padding: 1rem 3rem;
+            border-radius: 8px;
+            border: 4px solid #334155;
+            color: #ef4444;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 4.5rem;
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+            letter-spacing: 4px;
+            z-index: 5;
+            box-shadow: inset 0 0 15px rgba(0,0,0,1), 0 10px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .led-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(transparent, transparent 2px, rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 4px);
+            pointer-events: none;
+        }
+
+
+
+        .hologram-controls {
+            position: absolute;
+            top: 260px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 15;
+            gap: 1.5rem;
+        }
+
+        .hologram-row {
+            display: flex;
+            gap: 3rem;
+            width: 100%;
+            justify-content: center;
+            padding: 0 2rem;
+        }
+
+        .btn-holo {
+            background: rgba(15, 23, 42, 0.7);
+            border: 2px solid #38bdf8;
+            color: #38bdf8;
+            padding: 2.5rem 2rem;
+            font-size: 2.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3), inset 0 0 15px rgba(56, 189, 248, 0.2);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+            min-width: 400px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .btn-holo:hover {
+            transform: scale(1.05) translateY(-5px);
+            background: rgba(56, 189, 248, 0.15);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.6), inset 0 0 20px rgba(56, 189, 248, 0.4);
+            color: #fff;
+        }
+
+        .btn-holo.correct {
+            border-color: #10b981;
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6), inset 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-holo.wrong {
+            border-color: #ef4444;
+            color: #ef4444;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.6), inset 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .status-indicators {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 5;
+        }
+
+        .status-badge {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #475569;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @keyframes shake {
+            0% { transform: translateY(0); }
+            20% { transform: translateY(4px) translateX(-1px); }
+            40% { transform: translateY(-4px) translateX(1px); }
+            60% { transform: translateY(2px) translateX(-2px); }
+            80% { transform: translateY(-2px) translateX(2px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes motionBlur {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 1000px; }
+        }
+
+        @keyframes bounceTarget {
+            0%, 100% { transform: translateY(0); text-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+            50% { transform: translateY(-5px); text-shadow: 0 0 25px rgba(16, 185, 129, 0.8); }
+        }
+
+        .moving-up {
+            animation: shake 0.3s infinite;
+        }
+        .moving-up .shaft-glass {
+            animation: motionBlur 0.4s linear infinite;
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: #1e293b;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 2px solid #334155;
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar text-white">
+        <h2 style="margin: 0; color: #fff;">Brainiac</h2>
+        <button class="btn-logout" style="background: rgba(255,255,255,0.1); color: white;" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Abort Mission</button>
+    </nav>
+
+    <div id="elevator" class="elevator-cabin">
+        <div class="shaft-glass"></div>
+        
+        <div class="status-indicators">
+            <div class="status-badge">
+                <i class="fa-solid fa-bolt text-danger"></i> Energy Left: <span id="chances-left" style="color: #fff; font-size: 1.4rem; font-weight: bold;">20</span>
+            </div>
+            <div class="status-badge">
+                <i class="fa-solid fa-stopwatch text-warning"></i> Time ELP: <span id="time-elapsed" style="color: #fff; font-size: 1.4rem; font-weight: bold;">0s</span>
+            </div>
+            <div class="status-badge" style="border-color: #166534; color: #10b981;">
+                <i class="fa-solid fa-flag-checkered"></i> TARGET: <span style="color: #fff; font-size: 1.4rem; font-weight: bold;">1000</span>
+            </div>
+        </div>
+
+        <div class="led-panel">
+            <i class="fa-solid fa-caret-up" id="led-arrow" style="font-size: 3rem; opacity: 0.3;"></i>
+            <span id="floor-display">0000</span>
+        </div>
+
+        <div class="hologram-controls">
+            <h2 style="color: #e2e8f0; font-size: 1.8rem; font-weight: 600; text-shadow: 0 0 10px rgba(255,255,255,0.3); letter-spacing: 2px;">WHICH VALUE IS GREATER?</h2>
+            <div class="hologram-row">
+                <button id="btn-left" class="btn-holo" onclick="checkChoice('left')"></button>
+                <button id="btn-right" class="btn-holo" onclick="checkChoice('right')"></button>
+            </div>
+        </div>
+
+        <div class="floor-floor"></div>
+    </div>
+
+    <!-- Win Modal -->
+    <div id="win-modal" class="modal-overlay">
+        <div class="modal-content">
+            <i class="fa-solid fa-medal" style="font-size: 6rem; color: #fbbf24; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));"></i>
+            <h2 style="margin-bottom: 0.5rem; font-size: 2.5rem; color: #fff;">Floor 1000 Reached!</h2>
+            <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 1.2rem;">You successfully hacked the elevator drive system!</p>
+            
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid #059669;">
+                <h3 style="color: #34d399; font-size: 3.5rem; font-weight: 900; margin-bottom: 0.5rem; font-family: 'Share Tech Mono', monospace;" id="final-score">100</h3>
+                <span style="color: #10b981; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Total XP Awarded</span>
+            </div>
+            
+            <button onclick="window.location.href='/student/play'" class="menu-btn" style="width: 100%; padding: 1.25rem; font-size: 1.25rem; background: #3b82f6;">Return to Games <i class="fa-solid fa-arrow-right ml-1"></i></button>
+        </div>
+    </div>
+
+    <!-- Fail Modal -->
+    <div id="fail-modal" class="modal-overlay">
+        <div class="modal-content">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 5rem; color: #ef4444; margin-bottom: 1.5rem;"></i>
+            <h2 style="margin-bottom: 0.5rem; font-size: 2.5rem; color: #fff;">Out of Energy!</h2>
+            <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 1.2rem;">The elevator stalled out at <strong id="fail-floor" style="color: #fff;">Floor ?</strong>.</p>
+            <p style="color: #fca5a5; background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #7f1d1d;">You must always select the theoretically greater algebraic or numeral value to maintain ascension!</p>
+            
+            <button onclick="window.location.reload()" style="background: #3b82f6; width: 100%; padding: 1.25rem; font-size: 1.25rem; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-rotate-right mr-1"></i> Initiate Reboot</button>
+        </div>
+    </div>
+
+    <script>
+        const username = "{{ session.get('username') }}";
+        const TOTAL_FLOORS = 1000;
+        const TARGET_CHANCES = 20;
+        
+        let currentFloor = 0;
+        let chancesLeft = TARGET_CHANCES;
+        let attemptsUsed = 0;
+        let correctChoices = 0;
+        let wrongChoices = 0;
+        let startTime = Date.now();
+        let timerInterval;
+
+        let currentRoundTarget = 0;
+        let currentRoundLesser = 0;
+        let greaterSide = 'left';
+        let processing = false;
+
+        // Start dynamic timer
+        timerInterval = setInterval(() => {
+            let secs = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('time-elapsed').innerText = secs + "s";
+        }, 1000);
+
+        function formatDisplay(num) {
+            return num.toString().padStart(4, '0');
+        }
+
+        function toRoman(num) {
+            const lookup = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
+            let roman = '';
+            for (let i in lookup) {
+                while (num >= lookup[i]) {
+                    roman += i;
+                    num -= lookup[i];
+                }
+            }
+            return roman;
+        }
+
+        function generateBODMAS(target) {
+            let type = Math.floor(Math.random() * 4);
+            if (type === 0) {
+                let b = Math.floor(Math.random() * 7) + 2;
+                let c = Math.floor(Math.random() * 7) + 2;
+                if(b*c >= target) { c = Math.max(2, Math.floor((target-2)/b)); }
+                let a = target - (b * c);
+                if(a < 1) { a = 1; b = 1; c = target - 1; }
+                return `${a} + ${b} \u00d7 ${c}`;
+            } 
+            else if (type === 1) {
+                let factors = [];
+                for(let i=2; i<=10; i++) {
+                    if(target % i === 0) factors.push(i);
+                }
+                if(factors.length === 0) type = 2; 
+                else {
+                    let c = factors[Math.floor(Math.random() * factors.length)];
+                    let sumAb = target / c;
+                    let a = Math.floor(Math.random() * (sumAb - 1)) + 1;
+                    if(a < 1) a = 1;
+                    let b = sumAb - a;
+                    return `(${a} + ${b}) \u00d7 ${c}`;
+                }
+            }
+            if (type === 2) {
+                let a = Math.floor(Math.random() * 5) + 6;
+                let b = Math.floor(Math.random() * 5) + Math.ceil(target/a) + 1;
+                let c = (a * b) - target;
+                if(c < 1) { c = 1; b = Math.ceil((target+1)/a); }
+                return `${a} \u00d7 ${b} - ${c}`;
+            } 
+            else {
+                let factors = [];
+                for(let i=2; i<=10; i++) {
+                    if(target % i === 0) factors.push(i);
+                }
+                if(factors.length === 0) {
+                    let a = target + Math.floor(Math.random() * 10) + 5;
+                    let c = Math.floor(Math.random() * 8) + 2;
+                    let b = a - target + c;
+                    return `${a} - (${b} - ${c})`;
+                } else {
+                    let a = factors[Math.floor(Math.random() * factors.length)];
+                    let diff = target / a;
+                    let c = Math.floor(Math.random() * 10) + 2;
+                    let b = diff + c;
+                    return `${a} \u00d7 (${b} - ${c})`;
+                }
+            }
+        }
+
+        function loadRound() {
+            if (chancesLeft <= 0 || currentFloor >= TOTAL_FLOORS) {
+                endGame();
+                return;
+            }
+
+            document.getElementById('btn-left').classList.remove('correct', 'wrong');
+            document.getElementById('btn-right').classList.remove('correct', 'wrong');
+
+            let remaining = TOTAL_FLOORS - currentFloor;
+            if (remaining <= 80) {
+                currentRoundTarget = remaining;
+            } else {
+                currentRoundTarget = Math.floor(Math.random() * 30) + 55;
+            }
+            
+            let offset = Math.floor(Math.random() * (currentRoundTarget * 0.4)) + 3;
+            currentRoundLesser = currentRoundTarget - offset;
+            if (currentRoundLesser < 1) currentRoundLesser = 1;
+
+            let isRoman = Math.random() > 0.5;
+            let strGreater, strLesser;
+            if (isRoman) {
+                strGreater = toRoman(currentRoundTarget);
+                strLesser = toRoman(currentRoundLesser);
+            } else {
+                strGreater = generateBODMAS(currentRoundTarget);
+                strLesser = generateBODMAS(currentRoundLesser);
+            }
+
+            if(Math.random() > 0.5) {
+                greaterSide = 'left';
+                document.getElementById('btn-left').innerText = strGreater;
+                document.getElementById('btn-right').innerText = strLesser;
+            } else {
+                greaterSide = 'right';
+                document.getElementById('btn-left').innerText = strLesser;
+                document.getElementById('btn-right').innerText = strGreater;
+            }
+            
+            processing = false;
+        }
+
+        function animateFloorCounter(start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // ease out cubic
+                const ease = 1 - Math.pow(1 - progress, 3);
+                
+                const current = Math.floor(start + (end - start) * ease);
+                document.getElementById('floor-display').innerText = formatDisplay(current);
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    document.getElementById('floor-display').innerText = formatDisplay(end);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function triggerElevatorAscent(amountGained) {
+            let newFloor = currentFloor + amountGained;
+            if (newFloor > TOTAL_FLOORS) newFloor = TOTAL_FLOORS;
+            
+            // Visual feedback
+            const elevator = document.getElementById('elevator');
+            const arrow = document.getElementById('led-arrow');
+            
+            elevator.classList.add('moving-up');
+            arrow.style.opacity = '1';
+            arrow.style.color = '#fff';
+            
+            // Counter ticking
+            animateFloorCounter(currentFloor, newFloor, 1200);
+            
+            currentFloor = newFloor;
+            
+            setTimeout(() => {
+                elevator.classList.remove('moving-up');
+                arrow.style.opacity = '0.3';
+                arrow.style.color = '#ef4444';
+                
+                if (currentFloor >= TOTAL_FLOORS || chancesLeft <= 0) {
+                    endGame();
+                } else {
+                    loadRound();
+                }
+            }, 1200);
+        }
+
+        function checkChoice(side) {
+            if (processing) return;
+            processing = true;
+            
+            chancesLeft--;
+            attemptsUsed++;
+            document.getElementById('chances-left').innerText = chancesLeft;
+
+            const btnLeft = document.getElementById('btn-left');
+            const btnRight = document.getElementById('btn-right');
+            let pointsGained = 0;
+            
+            if (side === greaterSide) {
+                pointsGained = currentRoundTarget;
+                correctChoices++;
+                if (side === 'left') btnLeft.classList.add('correct');
+                else btnRight.classList.add('correct');
+            } else {
+                pointsGained = currentRoundLesser;
+                wrongChoices++;
+                if (side === 'left') btnLeft.classList.add('wrong');
+                else btnRight.classList.add('wrong');
+            }
+            
+            // Pause 400ms to show correct/wrong colour, then ascend
+            setTimeout(() => {
+                triggerElevatorAscent(pointsGained);
+            }, 400);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            if (currentFloor >= TOTAL_FLOORS) {
+                let timeTaken = Math.floor((Date.now() - startTime) / 1000);
+                
+                // Final Score = (Correct × 50) − (Wrong × 20) − (Time Taken × 0.5)
+                let finalScore = Math.floor((correctChoices * 50) - (wrongChoices * 20) - (timeTaken * 0.5));
+                if (finalScore < 0) finalScore = 0;
+                
+                document.getElementById('final-score').innerText = finalScore;
+                
+                fetch('/save_score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `username=${encodeURIComponent(username)}&score=${finalScore}&subject=Maths&game_name=G6_Maths_Ch1_L3`
+                }).then(() => {
+                    document.getElementById('win-modal').style.display = 'flex';
+                }).catch(err => {
+                    console.error("Error saving score", err);
+                    document.getElementById('win-modal').style.display = 'flex';
+                });
+            } else {
+                document.getElementById('fail-floor').innerText = `Floor ${formatDisplay(currentFloor)}`;
+                document.getElementById('fail-modal').style.display = 'flex';
+            }
+        }
+
+        // INIT
+        document.getElementById('floor-display').innerText = formatDisplay(0);
+        loadRound();
+
+    </script>
+</body>
+</html>

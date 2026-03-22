@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rounding Off - Basket Catcher</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { user-select: none; }
+        .game-board {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            max-width: 900px;
+            margin: 2rem auto;
+        }
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .timer-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .score-badge {
+            background: #fef9c3;
+            color: #a16207;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        #game-area {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: #f0f9ff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: ew-resize;
+            background-image: linear-gradient(to bottom, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        /* Falling Numbers */
+        .falling-number {
+            position: absolute;
+            top: -50px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transform: translateX(-50%);
+            z-index: 10;
+            transition: none; /* JS controlled */
+        }
+
+        /* Number value animations when caught */
+        .float-text {
+            position: absolute;
+            font-weight: 800;
+            font-size: 1.5rem;
+            animation: floatUp 1s forwards ease-out;
+            pointer-events: none;
+            z-index: 20;
+            transform: translateX(-50%);
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, 0) scale(1.5); }
+            100% { opacity: 0; transform: translate(-50%, -50px) scale(1); }
+        }
+
+        /* Catcher Array */
+        #catcher {
+            position: absolute;
+            bottom: 10px;
+            left: 50%; /* Center start */
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 15;
+            transition: transform 0.05s linear; /* Smooth mouse tracking */
+        }
+
+        .basket {
+            width: 100px;
+            height: 80px;
+            background: linear-gradient(to bottom, #d97706, #b45309);
+            border-radius: 8px 8px 24px 24px;
+            border: 3px solid #78350f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        /* Basket top hole illusion */
+        .basket::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            width: 90%;
+            height: 20px;
+            background: #78350f;
+            border-radius: 50%;
+        }
+
+        .basket span {
+            z-index: 2;
+            margin-top: 10px;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Modal */
+        #success-modal, #start-modal {
+            display: flex;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        #success-modal { display: none; }
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h2 style="margin: 0;">Brainiac</h2>
+        <button class="btn-logout" onclick="window.location.href='/student/play?subject=Maths'"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    </nav>
+
+    <!-- Start Overlay Modal -->
+    <div id="start-modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-basket-shopping" style="font-size: 5rem; color: #2563EB; margin-bottom: 1rem;"></i>
+            <h2 style="margin-bottom: 0.5rem; font-size: 2rem; color: var(--text-main);">Rounding Catcher</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem; text-align: left;">
+                Move your mouse (or drag) to slide the baskets left and right. Catch the falling numbers in the basket that represents their value rounded to the <strong>nearest 100</strong>.
+            </p>
+            <ul style="text-align: left; background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; font-weight: 600; font-size: 1.1em; color: var(--text-main);">
+                <li style="margin-bottom: 0.5rem; color: #16a34a;"><i class="fa-solid fa-check mr-1"></i> Correct Catch: +10 Points</li>
+                <li style="color: #ef4444;"><i class="fa-solid fa-xmark mr-1"></i> Wrong Catch: -5 Points</li>
+            </ul>
+            <button onclick="startGame()" style="width: 100%; padding: 1rem; font-size: 1.25rem;"><i class="fa-solid fa-play mr-1"></i> Start Game</button>
+        </div>
+    </div>
+
+    <!-- Game Board -->
+    <div class="game-board">
+        <div class="header-controls">
+            <div>
+                <h1 style="color: var(--text-main); margin-bottom: 0.25rem;">Rounding Off: Nearest 100</h1>
+                <p class="text-muted">Move the baskets to catch the correct numbers!</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <div class="score-badge">Score: <span id="score-val">0</span></div>
+                <div class="timer-badge"><i class="fa-solid fa-stopwatch"></i> <span id="time-val">01:00</span></div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <div id="catcher">
+                <div class="basket" data-value="100"><span>100</span></div>
+                <div class="basket" data-value="200"><span>200</span></div>
+                <div class="basket" data-value="300"><span>300</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-stopwatch" style="font-size: 5rem; color: #22C55E; margin-bottom: 1rem;"></i>
+            <h2 style="margin-bottom: 0.5rem; font-size: 2.5rem; color: var(--text-main);">Time's Up!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">Amazing effort catching those numbers.</p>
+            
+            <div style="background: #f0fdf4; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid #bbf7d0;">
+                <h3 style="color: #166534; font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;" id="final-score">0</h3>
+                <span style="color: #166534; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Final XP Score</span>
+            </div>
+            
+            <button onclick="window.location.href='/student/play'" style="width: 100%; padding: 1.25rem; font-size: 1.25rem;">Return to Games <i class="fa-solid fa-arrow-right ml-1"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('game-area');
+        const catcher = document.getElementById('catcher');
+        const scoreVal = document.getElementById('score-val');
+        const timeVal = document.getElementById('time-val');
+        
+        let score = 0;
+        let timeLeft = 60; // 60 seconds
+        let gameActive = false;
+        let gameLoopInt;
+        let spawnInt;
+        let fallingItems = [];
+        let numbersSpawned = 0;
+        let numbersProcessed = 0;
+        const MAX_NUMBERS = 20;
+        let username = "{{ session.get('username') }}";
+
+        // Catcher properties
+        const catcherWidth = 320; // 3 baskets * 100 + 20 gap = 320 approx
+        let catcherX = gameArea.clientWidth / 2;
+
+        // Baskets rules: Nearest 100
+        // Values rounded: 100, 200, 300
+        // To round to nearest 100, you divide by 100, round, multiply by 100.
+        // e.g. 120 / 100 = 1.2 => 1 => 100
+        // 270 / 100 = 2.7 => 3 => 300
+
+        // Track mouse movement
+        gameArea.addEventListener('mousemove', (e) => {
+            if (!gameActive) return;
+            const rect = gameArea.getBoundingClientRect();
+            let rawX = e.clientX - rect.left;
+            
+            // Scale movement so outer baskets can reach the opposite edges of the screen
+            let maxReach = 110;
+            let x = (rawX / rect.width) * (rect.width + 2 * maxReach) - maxReach;
+            
+            catcherX = x;
+            catcher.style.left = `${catcherX}px`;
+        });
+        
+        // Touch support
+        gameArea.addEventListener('touchmove', (e) => {
+            if (!gameActive) return;
+            const rect = gameArea.getBoundingClientRect();
+            let rawX = e.touches[0].clientX - rect.left;
+            
+            let maxReach = 110;
+            let x = (rawX / rect.width) * (rect.width + 2 * maxReach) - maxReach;
+            
+            catcherX = x;
+            catcher.style.left = `${catcherX}px`;
+        }, {passive:true});
+
+        function createFallingNumber() {
+            if (!gameActive) return;
+            
+            const areaWidth = gameArea.clientWidth;
+            // Spawn x between 30 and width-30
+            const x = 30 + Math.random() * (areaWidth - 60);
+            
+            // Random number between 50 and 349 (which round to 100, 200, or 300)
+            const val = Math.floor(Math.random() * 300) + 50;
+            
+            const el = document.createElement('div');
+            el.className = 'falling-number';
+            el.innerText = val;
+            el.style.left = `${x}px`;
+            el.style.top = `-60px`;
+            
+            gameArea.appendChild(el);
+            
+            fallingItems.push({
+                el: el,
+                x: x,
+                y: -60,
+                val: val,
+                speed: 2 + Math.random() * 1.5 // Speed between 2 and 3.5 px/frame
+            });
+
+            numbersSpawned++;
+            if (numbersSpawned >= MAX_NUMBERS) {
+                clearInterval(spawnInt); // Stop spawning
+            }
+        }
+
+        function showFloatText(x, y, text, color) {
+            const el = document.createElement('div');
+            el.className = 'float-text';
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            el.style.color = color;
+            el.innerText = text;
+            gameArea.appendChild(el);
+            setTimeout(() => { if (el.parentNode) el.remove(); }, 1000);
+        }
+
+        function updateGame() {
+            if (!gameActive) return;
+
+            const areaHeight = gameArea.clientHeight;
+            // Catcher Y bounds (bottom 10px + 80px height = from height-90 to height-10)
+            const catcherY = areaHeight - 90; 
+
+            for (let i = fallingItems.length - 1; i >= 0; i--) {
+                let item = fallingItems[i];
+                item.y += item.speed;
+                item.el.style.top = `${item.y}px`;
+
+                // Collision Detection
+                // Center of number is item.x, bottom is item.y + 60
+                let itemBottom = item.y + 60;
+                
+                if (itemBottom >= catcherY && item.y < areaHeight) {
+                    // It's in the Y range of the catcher. Check X.
+                    // Catcher is centered at catcherX. 
+                    // Width is 320. 
+                    // Baskets: 
+                    // 100: catcherX - 160 to catcherX - 50
+                    // 200: catcherX - 50 to catcherX + 50
+                    // 300: catcherX + 50 to catcherX + 160
+                    
+                    let caughtBasket = null;
+                    if (item.x > catcherX - 160 && item.x < catcherX - 50) caughtBasket = 100;
+                    else if (item.x > catcherX - 50 && item.x < catcherX + 50) caughtBasket = 200;
+                    else if (item.x > catcherX + 50 && item.x < catcherX + 160) caughtBasket = 300;
+
+                    if (caughtBasket !== null) {
+                        // Caught!
+                        // Calculate correct rounding:
+                        const correctRounding = Math.round(item.val / 100) * 100;
+                        
+                        if (caughtBasket === correctRounding) {
+                            score += 10;
+                            showFloatText(item.x, item.y, "+10", "#16a34a"); // Green
+                        } else {
+                            score -= 5;
+                            showFloatText(item.x, item.y, "-5", "#ef4444"); // Red
+                        }
+                        
+                        scoreVal.innerText = score;
+                        item.el.remove();
+                        fallingItems.splice(i, 1);
+                        numbersProcessed++;
+                        checkWinCondition();
+                        continue;
+                    }
+                }
+
+                // If it fell off screen, remove it. (No penalty)
+                if (item.y > areaHeight) {
+                    item.el.remove();
+                    fallingItems.splice(i, 1);
+                    numbersProcessed++;
+                    checkWinCondition();
+                }
+            }
+
+            requestAnimationFrame(updateGame);
+        }
+
+        function checkWinCondition() {
+            if (numbersProcessed >= MAX_NUMBERS) {
+                endGame();
+            }
+        }
+
+        function startGame() {
+            document.getElementById('start-modal').style.display = 'none';
+            gameActive = true;
+            
+            // Start spawning (1 number every 2 seconds)
+            spawnInt = setInterval(createFallingNumber, 2000); 
+            // Spawn the very first one immediately
+            createFallingNumber();
+            
+            // Start timer
+            gameLoopInt = setInterval(() => {
+                timeLeft--;
+                const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+                const secs = String(timeLeft % 60).padStart(2, '0');
+                timeVal.innerText = `${mins}:${secs}`;
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            requestAnimationFrame(updateGame);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(spawnInt);
+            clearInterval(gameLoopInt);
+            
+            // Remove remaining items
+            fallingItems.forEach(i => i.el.remove());
+            fallingItems = [];
+
+            // Score cannot be negative ultimately in the DB
+            let finalScore = Math.max(0, score);
+            document.getElementById('final-score').innerText = finalScore;
+
+            // Submit to DB
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(username)}&score=${finalScore}&subject=Maths&game_name=G6_Maths_Ch1_L2`
+            }).then(() => {
+                document.getElementById('success-modal').style.display = 'flex';
+            }).catch(err => {
+                console.error("Error saving score", err);
+                document.getElementById('success-modal').style.display = 'flex'; // show anyway
+            });
+        }
+    </script>
+</body>
+</html>

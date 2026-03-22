@@ -169,10 +169,17 @@ def student_play():
         
     subject = request.args.get("subject")
     sub_subject = request.args.get("sub_subject")
+    chapter = request.args.get("chapter")
     username = session.get("username", "")
     grade = username.split('-')[0] if '-' in username else "Student"
     
-    return render_template("student_dashboard.html", active_tab="play", subject=subject, sub_subject=sub_subject, grade=grade)
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT game_name FROM scores WHERE username=?", (username,))
+    completed_games = [row[0] for row in cursor.fetchall() if row[0]]
+    conn.close()
+    
+    return render_template("student_dashboard.html", active_tab="play", subject=subject, sub_subject=sub_subject, chapter=chapter, grade=grade, completed_games=completed_games)
 
 @app.route("/student/messages")
 def student_messages():
@@ -224,20 +231,37 @@ def student_progress():
         
     username = session.get("username")
     student_name = session.get("name")
+    subject = request.args.get("subject")
+    
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    cursor.execute("""
-        SELECT s.subject, SUM(s.score) as total_score, MIN(a.teacher_name) as teacher_name 
-        FROM scores s
-        LEFT JOIN student_teacher_assignments a ON s.subject = a.subject AND a.student_name = ?
-        WHERE s.username = ?
-        GROUP BY s.subject
-    """, (student_name, username))
-    scores = cursor.fetchall()
     
+    # Fetch teachers assigned to the student
+    cursor.execute("SELECT subject, teacher_name FROM student_teacher_assignments WHERE student_name = ?", (student_name,))
+    assigned_teachers = {row[0]: row[1] for row in cursor.fetchall()}
+    
+    chapter_progress = []
+    if subject:
+        # Compute grouped chapter analytics
+        if subject == "Maths":
+            cursor.execute("""
+                SELECT SUM(score) as xp, COUNT(DISTINCT game_name) as completed 
+                FROM scores 
+                WHERE username = ? AND subject = ? AND game_name LIKE 'G6_Maths_Ch1%'
+            """, (username, subject))
+            ch1_stats = cursor.fetchone()
+            
+            chapter_progress.append({
+                "chapter_num": 1,
+                "chapter_name": "Knowing Our Numbers",
+                "completed": ch1_stats[1] if ch1_stats[1] else 0,
+                "total": 2, # Level 1 and Level 2 games exist
+                "xp": ch1_stats[0] if ch1_stats[0] else 0
+            })
+            
     conn.close()
     
-    return render_template("student_dashboard.html", active_tab="progress", scores=scores)
+    return render_template("student_dashboard.html", active_tab="progress", subject=subject, chapter_progress=chapter_progress, assigned_teachers=assigned_teachers)
 
 # Student Leaderboard
 @app.route("/leaderboard")
@@ -259,12 +283,39 @@ def leaderboard():
         GROUP BY u.id, u.name
         ORDER BY total_score DESC
     """, (grade_prefix,))
-    
     leaderboard_data = cursor.fetchall()
+    
+    # Subject-wise Leaderboards
+    cursor.execute("""
+        SELECT s.subject, u.name, SUM(s.score) as subject_score
+        FROM users u
+        JOIN scores s ON u.username = s.username
+        WHERE u.role = 'student' AND u.username LIKE ?
+        GROUP BY s.subject, u.id, u.name
+        ORDER BY 
+            CASE s.subject
+                WHEN 'Science' THEN 1
+                WHEN 'Technology' THEN 2
+                WHEN 'Engineering' THEN 3
+                WHEN 'Maths' THEN 4
+                ELSE 5
+            END,
+            subject_score DESC
+    """, (grade_prefix,))
+    raw_subject_scores = cursor.fetchall()
+    
     conn.close()
     
-    return render_template("leaderboard.html", leaderboard=leaderboard_data)
-
+    subject_leaderboards = {}
+    for row in raw_subject_scores:
+        subj = row[0]
+        name = row[1]
+        score = row[2]
+        if subj not in subject_leaderboards:
+            subject_leaderboards[subj] = []
+        subject_leaderboards[subj].append((name, score))
+    
+    return render_template("leaderboard.html", leaderboard=leaderboard_data, subject_leaderboards=subject_leaderboards)
 
 # Teacher dashboard
 @app.route("/teacher")
@@ -382,6 +433,42 @@ def play_g6_maths_ch1():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
     return render_template("g6_maths_ch1.html")
+
+# Grade 6 Maths Game 2 Route (Rounding Catcher)
+@app.route("/student/play/maths/g6/ch1_l2")
+def play_g6_maths_ch1_l2():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+        
+    username = session.get("username", "")
+    # Check progression lock
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM scores WHERE username=? AND game_name='G6_Maths_Ch1'", (username,))
+    if not cursor.fetchone():
+        conn.close()
+        return redirect("/student/play?subject=Maths")
+    conn.close()
+    
+    return render_template("g6_maths_ch1_l2.html")
+
+# Grade 6 Maths Game 3 Route (Elevator Escape)
+@app.route("/student/play/maths/g6/ch1_l3")
+def play_g6_maths_ch1_l3():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+        
+    username = session.get("username", "")
+    # Check progression lock
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM scores WHERE username=? AND game_name='G6_Maths_Ch1_L2'", (username,))
+    if not cursor.fetchone():
+        conn.close()
+        return redirect("/student/play?subject=Maths")
+    conn.close()
+    
+    return render_template("g6_maths_ch1_l3.html")
 
 # Quiz / Game Page
 @app.route("/quiz")
