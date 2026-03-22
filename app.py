@@ -181,6 +181,18 @@ def student_play():
     
     return render_template("student_dashboard.html", active_tab="play", subject=subject, sub_subject=sub_subject, chapter=chapter, grade=grade, completed_games=completed_games)
 
+    # get values safely
+    subject = request.args.get("subject", "").strip().lower()
+    sub_subject = request.args.get("sub_subject", "").strip().lower()
+
+    print("DEBUG -> subject:", subject, "| sub_subject:", sub_subject)
+
+    # ✅ OPEN CHEMISTRY GAME
+    if subject == "Science" and sub_subject == "Chemistry":
+        return render_template("chemistry_game.html")
+
+    # default page
+    return render_template("student_dashboard.html", active_tab="play")
 @app.route("/student/messages")
 def student_messages():
     if "name" not in session or session.get("role") != "student":
@@ -499,6 +511,38 @@ def save_score():
     conn.close()
 
     return "Score Processed"
+
+
+# ─── CHEMISTRY GAME ──────────────────────────────────
+
+@app.route("/student/games/chemistry")
+def chemistry_game():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("chemistry_game.html")
+
+
+@app.route("/student/games/save_score", methods=["POST"])
+def save_game_score():
+    # Only logged-in students can save scores
+    if "name" not in session or session.get("role") != "student":
+        return {"error": "unauthorized"}, 401
+
+    data     = request.get_json()
+    username = session.get("username")
+    score    = int(data.get("xp", 0))          # XP earned in the game
+    subject  = data.get("subject", "Science")   # always "Science" for chemistry game
+
+    conn   = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO scores(username, score, subject) VALUES (?, ?, ?)",
+        (username, score, subject)
+    )
+    conn.commit()
+    conn.close()
+
+    return {"success": True, "saved": score}
 
 
 if __name__ == "__main__":

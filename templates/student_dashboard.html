@@ -640,6 +640,23 @@
                 </div>
                 {% endif %}
             </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Chemistry' and grade|lower == 'g8' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #16a34a; background: #ecfdf5; padding: 0.5rem 1rem; border-radius: 8px;">Grade 8 Chemistry Games</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play/chemistry/g8'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-flask-vial text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #16a34a;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Chemistry Game</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Explore Chemistry</h3>
+                    <p class="text-muted mt-1 text-sm">Interactive Chemistry Learning</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #16a34a;">Play Game</span>
+                    </div>
+                </div>
+            </div>
+
             {% else %}
             <div style="text-align: center; padding: 2rem 1rem;">
                 <i class="fa-solid fa-person-digging text-muted" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>

@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemistry Lab ⚗️</title>
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — 100% offline, system fonts
+═══════════════════════════════════════════ */
+:root {
+  --bg:       #f0fdf4;
+  --surface:  #ffffff;
+  --green:    #16a34a;
+  --green-l:  #dcfce7;
+  --green-b:  #86efac;
+  --teal:     #0d9488;
+  --blue:     #2563eb;
+  --blue-l:   #dbeafe;
+  --blue-b:   #93c5fd;
+  --indigo:   #4f46e5;
+  --yellow:   #d97706;
+  --yellow-l: #fef9c3;
+  --red:      #dc2626;
+  --red-l:    #fee2e2;
+  --orange:   #ea580c;
+  --purple:   #7c3aed;
+  --text:     #0f172a;
+  --muted:    #64748b;
+  --border:   #bbf7d0;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ══ TOPBAR ══ */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.97);
+  border-bottom: 2px solid var(--border);
+  box-shadow: 0 2px 12px rgba(22,163,74,0.08);
+}
+.topbar-logo {
+  font-size: 17px; font-weight: 900;
+  background: linear-gradient(135deg, #16a34a, #0d9488);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stats-row { display: flex; gap: 8px; }
+.stat-pill {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 12px; font-weight: 800;
+}
+.stat-pill .val { transition: color .3s; }
+.back-link {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--green-l); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 5px 12px;
+  font-size: 12px; font-weight: 800; color: var(--green);
+  text-decoration: none; transition: background .18s;
+}
+.back-link:hover { background: #bbf7d0; }
+
+/* ══ LEVEL BANNER ══ */
+.level-banner {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 7px 20px;
+  background: linear-gradient(135deg, var(--blue), var(--indigo));
+  color: white; font-size: 13px; font-weight: 800;
+  position: relative; overflow: hidden;
+}
+.level-banner::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+  animation: bannerShine 4s ease-in-out infinite;
+}
+@keyframes bannerShine { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+.lvl-dots { display: flex; gap: 5px; }
+.lvl-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,.28); transition: background .3s;
+}
+.lvl-dot.on { background: white; }
+.lvl-chip {
+  background: rgba(255,255,255,.18); border-radius: 8px;
+  padding: 2px 10px; font-size: 11px;
+}
+
+/* ══ MAIN LAYOUT ══ */
+.layout {
+  display: grid;
+  grid-template-columns: 172px 1fr 224px;
+  height: calc(100vh - 88px);
+}
+
+/* ════════════════════════════════════
+   LEFT — ELEMENT SHELF
+════════════════════════════════════ */
+.shelf {
+  background: rgba(255,255,255,.92);
+  border-right: 2px solid var(--border);
+  padding: 10px 8px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.shelf-title {
+  font-size: 9px; font-weight: 900; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 2px 3px; margin-top: 4px;
+}
+.el-card {
+  border-radius: 10px; padding: 7px 6px;
+  cursor: grab; text-align: center;
+  border: 2px solid transparent;
+  transition: transform .12s, box-shadow .15s, border-color .15s;
+  position: relative; user-select: none;
+}
+.el-card:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,.12);
+}
+.el-card:active { cursor: grabbing; transform: scale(.96); }
+.el-card.dragging-active { opacity: .5; transform: scale(.95); }
+.el-num  { font-size: 8px; position: absolute; top: 3px; left: 5px; opacity: .38; font-weight: 700; }
+.el-sym  { font-size: 19px; font-weight: 900; line-height: 1; }
+.el-name { font-size: 8px; font-weight: 700; opacity: .65; margin-top: 1px; }
+/* Group colours */
+.g-noble    { background: #fef9c3; border-color: #fde68a !important; }
+.g-metal    { background: #dbeafe; border-color: #bfdbfe !important; }
+.g-nonmetal { background: #dcfce7; border-color: #bbf7d0 !important; }
+.g-alkali   { background: #fce7f3; border-color: #fbcfe8 !important; }
+.g-halogen  { background: #ede9fe; border-color: #ddd6fe !important; }
+
+/* ════════════════════════════════════
+   CENTER — LAB BENCH
+════════════════════════════════════ */
+.lab {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 18px; gap: 14px; overflow-y: auto;
+}
+
+/* Challenge card */
+.challenge-card {
+  width: 100%; max-width: 500px;
+  background: var(--surface); border-radius: 16px;
+  border: 2px solid var(--blue-b); padding: 14px 18px;
+  box-shadow: 0 4px 20px rgba(37,99,235,.08);
+  animation: slideDown .4s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes slideDown {
+  from { opacity:0; transform:translateY(-10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.ch-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.ch-label { font-size: 10px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.diff-badge {
+  font-size: 10px; font-weight: 800; border-radius: 20px; padding: 2px 10px;
+}
+.diff-badge.easy   { background: var(--green-l); color: var(--green); }
+.diff-badge.medium { background: var(--yellow-l); color: var(--yellow); }
+.diff-badge.hard   { background: var(--red-l);   color: var(--red);   }
+.ch-target  { font-size: 21px; font-weight: 900; margin-bottom: 4px; }
+.ch-formula { font-size: 14px; font-weight: 800; color: var(--blue); margin-bottom: 6px; }
+.ch-hint-box {
+  display: none; background: var(--blue-l); border-radius: 8px;
+  padding: 7px 10px; font-size: 12px; font-weight: 700; color: var(--blue);
+  animation: fadeIn .3s both;
+}
+.ch-hint-box.visible { display: block; }
+
+/* ── Single Mixing Zone ── */
+.mixing-zone-wrap {
+  width: 100%; max-width: 500px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.mixing-zone-label {
+  font-size: 11px; font-weight: 900; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.mz-instruction {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+}
+
+/* The main drop container */
+.mixing-zone {
+  width: 100%; min-height: 160px;
+  background: linear-gradient(145deg, #f8faff 0%, #f0fdf4 100%);
+  border: 3px dashed var(--green-b);
+  border-radius: 24px;
+  position: relative;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 18px 16px;
+  transition: border-color .25s, background .25s, box-shadow .25s;
+  overflow: hidden;
+}
+.mixing-zone.drag-over {
+  border-color: var(--green);
+  border-style: solid;
+  background: linear-gradient(145deg, #eff6ff, #dcfce7);
+  box-shadow: 0 0 0 4px rgba(22,163,74,.12), inset 0 0 30px rgba(22,163,74,.06);
+}
+.mixing-zone.has-atoms {
+  border-style: solid;
+  border-color: var(--green-b);
+  min-height: 140px;
+}
+/* Glow ring that pulses while reacting */
+.mixing-zone.reacting {
+  animation: reactGlow .6s ease-in-out 3;
+}
+@keyframes reactGlow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+  50%      { box-shadow: 0 0 0 8px rgba(22,163,74,.25), inset 0 0 40px rgba(22,163,74,.12); }
+}
+/* Empty state */
+.mz-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  pointer-events: none;
+}
+.mz-empty-icon  { font-size: 36px; opacity: .35; animation: floatIcon 3s ease-in-out infinite alternate; }
+@keyframes floatIcon { from{transform:translateY(0)} to{transform:translateY(-7px)} }
+.mz-empty-text  { font-size: 13px; font-weight: 700; color: var(--muted); text-align: center; line-height: 1.5; }
+.mz-empty-sub   { font-size: 11px; font-weight: 600; color: #94a3b8; }
+
+/* Atom chips grid inside zone */
+.atoms-grid {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; align-items: center;
+  width: 100%;
+}
+.atom-chip {
+  display: flex; align-items: center; gap: 6px;
+  border-radius: 12px; padding: 8px 12px;
+  font-weight: 900; font-size: 14px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s, background .15s;
+  position: relative;
+  animation: chipDrop .3s cubic-bezier(.34,1.56,.64,1) both;
+  user-select: none;
+}
+@keyframes chipDrop {
+  from { transform: scale(0) translateY(-10px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);      opacity: 1; }
+}
+.atom-chip:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+.atom-chip:hover .chip-remove { opacity: 1; }
+.chip-sym { font-size: 16px; }
+.chip-count {
+  background: rgba(0,0,0,.12); border-radius: 7px;
+  padding: 1px 7px; font-size: 12px; font-weight: 900;
+  min-width: 22px; text-align: center;
+}
+.chip-btns { display: flex; flex-direction: column; gap: 2px; margin-left: 2px; }
+.chip-inc, .chip-dec {
+  background: rgba(0,0,0,.1); border: none; border-radius: 4px;
+  width: 18px; height: 16px; font-size: 10px; font-weight: 900;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .12s; color: inherit;
+  line-height: 1;
+}
+.chip-inc:hover { background: rgba(0,0,0,.22); }
+.chip-dec:hover { background: rgba(220,38,38,.25); }
+.chip-remove {
+  position: absolute; top: -6px; right: -6px;
+  background: var(--red); color: white; border: 2px solid white;
+  border-radius: 50%; width: 18px; height: 18px;
+  font-size: 9px; font-weight: 900; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .18s, transform .15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+.chip-remove:hover { transform: scale(1.2); }
+
+/* Atom chip colour palettes by group */
+.chip-nonmetal { background: #dcfce7; color: #14532d; border-color: #86efac; }
+.chip-metal    { background: #dbeafe; color: #1e3a8a; border-color: #93c5fd; }
+.chip-alkali   { background: #fce7f3; color: #831843; border-color: #f9a8d4; }
+.chip-halogen  { background: #ede9fe; color: #4c1d95; border-color: #c4b5fd; }
+.chip-noble    { background: #fef9c3; color: #713f12; border-color: #fde68a; }
+
+/* Floating bubble particles inside mixing zone */
+.bubble-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: bubbleRise var(--dur) ease-out forwards;
+  opacity: 0;
+}
+@keyframes bubbleRise {
+  0%   { transform: translateY(0) scale(0);   opacity: .7; }
+  40%  { opacity: .5; }
+  100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+}
+
+/* Formula preview */
+.formula-preview {
+  font-size: 13px; font-weight: 800; color: var(--blue);
+  background: var(--blue-l); border-radius: 8px; padding: 5px 14px;
+  border: 1.5px solid var(--blue-b); transition: opacity .2s;
+  min-height: 28px; display: flex; align-items: center;
+}
+
+/* ── Action row ── */
+.action-row {
+  display: flex; gap: 10px; align-items: center; justify-content: center;
+  flex-wrap: wrap;
+}
+.mix-btn {
+  padding: 13px 40px;
+  background: linear-gradient(135deg, var(--green), var(--teal));
+  color: white; border: none; border-radius: 14px;
+  font-size: 16px; font-weight: 900; cursor: pointer;
+  box-shadow: 0 6px 22px rgba(22,163,74,.3);
+  transition: transform .17s, box-shadow .2s;
+  position: relative; overflow: hidden; font-family: inherit;
+}
+.mix-btn:hover   { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(22,163,74,.42); }
+.mix-btn:active  { transform: translateY(0); }
+.mix-btn.wobble  { animation: mixWobble .4s ease; }
+@keyframes mixWobble { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.mix-btn::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+  animation: btnShimmer 2.5s 1.5s ease-in-out infinite;
+}
+@keyframes btnShimmer { 0%{left:-60%} 40%,100%{left:110%} }
+
+.hint-btn {
+  padding: 10px 16px; background: var(--yellow-l); border: 2px solid #fde68a;
+  border-radius: 10px; font-size: 12px; font-weight: 800; color: var(--yellow);
+  cursor: pointer; font-family: inherit; transition: background .18s, transform .14s;
+}
+.hint-btn:hover { background: #fef08a; transform: translateY(-2px); }
+
+.clear-btn {
+  padding: 10px 14px; background: var(--red-l); border: 2px solid #fecaca;
+  border-radius: 10px; font-size: 12px; font-weight: 800; color: var(--red);
+  cursor: pointer; font-family: inherit; transition: background .18s;
+}
+.clear-btn:hover { background: #fecaca; }
+
+/* ════════════════════════════════════
+   FEEDBACK MODAL
+════════════════════════════════════ */
+.fb-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,.45); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.fb-overlay.open { opacity: 1; pointer-events: all; }
+.fb-modal {
+  background: var(--surface); border-radius: 22px;
+  padding: 30px 26px; max-width: 390px; width: 92%;
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(0,0,0,.22);
+  transform: scale(.85) translateY(20px);
+  transition: transform .38s cubic-bezier(.34,1.56,.64,1);
+}
+.fb-overlay.open .fb-modal { transform: scale(1) translateY(0); }
+.fb-modal.correct { border: 3px solid var(--green-b); }
+.fb-modal.wrong   { border: 3px solid #fca5a5; }
+.fb-modal.boom    { border: 3px solid #fca5a5; background: #fff8f8; }
+.fb-emoji  { font-size: 52px; display: block; margin-bottom: 10px; animation: emojiBounce .5s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes emojiBounce { from{transform:scale(0)} to{transform:scale(1)} }
+.fb-title   { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+.fb-formula { font-size: 26px; font-weight: 900; margin-bottom: 10px; }
+.fb-formula.ok  { color: var(--green); }
+.fb-formula.err { color: var(--red); }
+.fb-explain {
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  line-height: 1.65; margin-bottom: 14px;
+  background: #f8faff; border-radius: 10px; padding: 10px 12px;
+  border-left: 3px solid var(--blue-b); text-align: left;
+  white-space: pre-line;
+}
+.fb-xp { font-size: 16px; font-weight: 900; margin-bottom: 16px; }
+.fb-xp.gain { color: var(--green); }
+.fb-xp.loss { color: var(--red);   }
+.fb-btn {
+  width: 100%; padding: 12px; border: none; border-radius: 12px;
+  font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: transform .15s;
+}
+.fb-btn:hover { transform: translateY(-2px); }
+.fb-btn.ok   { background: linear-gradient(135deg, var(--green), var(--teal)); color: white; }
+.fb-btn.err  { background: linear-gradient(135deg, #f97316, #ef4444); color: white; }
+
+/* ════════════════════════════════════
+   RIGHT PANEL
+════════════════════════════════════ */
+.right-panel {
+  background: rgba(255,255,255,.92);
+  border-left: 2px solid var(--border);
+  padding: 12px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.panel-section-title {
+  font-size: 9px; font-weight: 900; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* XP bar */
+.xp-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; color: var(--muted); margin-bottom: 3px; }
+.xp-track { background: #f1f5f9; border-radius: 20px; height: 8px; overflow: hidden; }
+.xp-fill  { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--green), var(--teal)); transition: width .6s cubic-bezier(.4,0,.2,1); }
+
+/* Challenge list */
+.ch-item {
+  background: var(--bg); border-radius: 10px; padding: 9px 10px;
+  border: 1.5px solid var(--border); cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: border-color .18s, transform .12s;
+}
+.ch-item:hover:not(.locked):not(.done) { border-color: var(--green); transform: translateX(-2px); }
+.ch-item.active { border-color: var(--blue); background: var(--blue-l); }
+.ch-item.done   { opacity: .55; cursor: default; }
+.ch-item.locked { opacity: .35; cursor: not-allowed; }
+.ch-item .ci-icon { font-size: 18px; flex-shrink: 0; }
+.ch-item .ci-body { flex: 1; min-width: 0; }
+.ch-item .ci-name { font-size: 11px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ch-item .ci-diff { font-size: 9px; color: var(--muted); font-weight: 600; }
+.ch-item .ci-status { font-size: 13px; flex-shrink: 0; }
+
+/* Discovered grid */
+.disc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.disc-chip { background: var(--green-l); border: 1.5px solid var(--green-b); border-radius: 8px; padding: 5px 6px; text-align: center; }
+.disc-chip .df { font-size: 11px; font-weight: 900; color: var(--green); }
+.disc-chip .dn { font-size: 8px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+.disc-empty { font-size: 10px; color: #94a3b8; font-weight: 600; grid-column: span 2; text-align: center; padding: 6px; }
+
+/* ════════════════════════════════════
+   BOOM + PARTICLES + TOAST
+════════════════════════════════════ */
+.boom-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0; transition: opacity .25s;
+}
+.boom-overlay.active { opacity: 1; }
+.boom-text {
+  font-size: 76px; font-weight: 900; color: var(--red);
+  text-shadow: 0 0 40px rgba(220,38,38,.5);
+  animation: boomPop .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes boomPop { from{transform:scale(0) rotate(-12deg)} to{transform:scale(1) rotate(0)} }
+
+.fx-particle {
+  position: fixed; pointer-events: none; z-index: 999;
+  font-size: var(--s); animation: fxFly var(--d) ease-out forwards;
+}
+@keyframes fxFly {
+  0%   { transform:translate(0,0) scale(1);   opacity:1; }
+  100% { transform:translate(var(--tx),var(--ty)) scale(.2); opacity:0; }
+}
+
+.toast {
+  position: fixed; bottom: 22px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: #1e293b; border-radius: 10px;
+  padding: 8px 18px; font-size: 12px; font-weight: 800;
+  color: white; z-index: 500; opacity: 0; white-space: nowrap;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+@keyframes bodyShake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">⚗️ Chemistry Lab</div>
+  <div class="stats-row">
+    <div class="stat-pill">⭐ <span class="val" id="statXP"  style="color:var(--yellow)">0</span> XP</div>
+    <div class="stat-pill">🔥 <span class="val" id="statStr" style="color:var(--orange)">0</span> streak</div>
+    <div class="stat-pill">🧪 <span class="val" id="statFnd" style="color:var(--green)">0</span> found</div>
+  </div>
+  <a href="/student/play?subject=Science&sub_subject=Chemistry" class="back-link">← Back</a>
+</div>
+
+<!-- LEVEL BANNER -->
+<div class="level-banner">
+  <div class="lvl-dots">
+    <div class="lvl-dot on"  id="ld0"></div>
+    <div class="lvl-dot"     id="ld1"></div>
+    <div class="lvl-dot"     id="ld2"></div>
+  </div>
+  <span id="lvlTitle">Level 1 — Easy</span>
+  <span class="lvl-chip" id="lvlDesc">Formula + hints always visible</span>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- ══ LEFT — ELEMENT SHELF ══ -->
+  <div class="shelf">
+    <div class="shelf-title">⚗️ Elements</div>
+    <div id="shelfEl"></div>
+    <div class="shelf-title" style="margin-top:8px">🎨 Groups</div>
+    <div style="font-size:9px;font-weight:700;line-height:2.3;color:var(--muted)">
+      <span style="background:#fef9c3;padding:1px 6px;border-radius:4px">Noble Gas</span><br>
+      <span style="background:#dbeafe;padding:1px 6px;border-radius:4px">Metal</span><br>
+      <span style="background:#dcfce7;padding:1px 6px;border-radius:4px">Non-Metal</span><br>
+      <span style="background:#fce7f3;padding:1px 6px;border-radius:4px">Alkali Metal</span><br>
+      <span style="background:#ede9fe;padding:1px 6px;border-radius:4px">Halogen</span>
+    </div>
+  </div>
+
+  <!-- ══ CENTER — LAB BENCH ══ -->
+  <div class="lab">
+
+    <!-- Challenge display -->
+    <div class="challenge-card" id="challengeCard">
+      <div class="ch-row">
+        <span class="ch-label" id="chLabel">Challenge 1/14</span>
+        <span class="diff-badge easy" id="chDiff">Easy</span>
+      </div>
+      <div class="ch-target"  id="chTarget">💧 Make Water</div>
+      <div class="ch-formula" id="chFormula">Formula: H₂O</div>
+      <div class="ch-hint-box" id="chHintBox">💡 Recipe: 2×H + 1×O</div>
+    </div>
+
+    <!-- Mixing zone -->
+    <div class="mixing-zone-wrap">
+      <div class="mixing-zone-label">
+        <span>⚗️ Mixing Zone</span>
+        <span class="mz-instruction" id="mzInstruction">Drag elements here to build your compound</span>
+      </div>
+
+      <!-- THE single drop zone -->
+      <div class="mixing-zone" id="mixingZone"
+           ondragover="handleDragOver(event)"
+           ondragleave="handleDragLeave(event)"
+           ondrop="handleDrop(event)">
+
+        <!-- Empty state (hidden when atoms present) -->
+        <div class="mz-empty" id="mzEmpty">
+          <div class="mz-empty-icon">⚗️</div>
+          <div class="mz-empty-text">Drop elements here<br>to build your compound!</div>
+          <div class="mz-empty-sub">🖱️ Drag from the shelf, or just click an element</div>
+        </div>
+
+        <!-- Atom chips (shown when atoms present) -->
+        <div class="atoms-grid" id="atomsGrid" style="display:none"></div>
+
+      </div>
+
+      <!-- Live formula preview -->
+      <div class="formula-preview" id="formulaPreview" style="opacity:.4">
+        Your mix: —
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <button class="mix-btn" id="mixBtn" onclick="handleMix()">🧪 MIX!</button>
+
+    <div class="action-row">
+      <button class="hint-btn" onclick="handleHint()">
+        💡 Hint <span id="hintCost" style="opacity:.6">(-10 XP)</span>
+      </button>
+      <button class="clear-btn" onclick="clearMixingZone()">🗑️ Clear</button>
+    </div>
+
+  </div>
+
+  <!-- ══ RIGHT — INFO PANEL ══ -->
+  <div class="right-panel">
+
+    <div class="panel-section-title">⚡ Progress</div>
+    <div class="xp-row">
+      <span id="xpLbl">XP: 0</span>
+      <span id="xpNext">Next level: 150 XP</span>
+    </div>
+    <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+
+    <div class="panel-section-title" style="margin-top:4px">🎯 Challenges</div>
+    <div id="chList" style="display:flex;flex-direction:column;gap:5px;"></div>
+
+    <div class="panel-section-title" style="margin-top:4px">🏆 Discovered</div>
+    <div class="disc-grid" id="discGrid">
+      <div class="disc-empty">Mix elements to<br>find compounds!</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FEEDBACK MODAL -->
+<div class="fb-overlay" id="fbOverlay" onclick="closeFeedback()">
+  <div class="fb-modal correct" id="fbModal" onclick="event.stopPropagation()">
+    <span class="fb-emoji"   id="fbEmoji">🎉</span>
+    <div  class="fb-title"   id="fbTitle">Correct!</div>
+    <div  class="fb-formula ok" id="fbFormula">H₂O</div>
+    <div  class="fb-explain" id="fbExplain"></div>
+    <div  class="fb-xp gain" id="fbXP">+30 XP</div>
+    <button class="fb-btn ok" id="fbBtn" onclick="closeFeedback()">Continue →</button>
+  </div>
+</div>
+
+<!-- Boom overlay -->
+<div class="boom-overlay" id="boomOverlay">
+  <div class="boom-text">💥 BOOM!</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+
+{% raw %}
+<script>
+/* ══════════════════════════════════════════════════════════
+   ① ELEMENT DEFINITIONS
+══════════════════════════════════════════════════════════ */
+const ELEMENTS = [
+  { s:'H',  n:'Hydrogen',  num:1,  g:'nonmetal' },
+  { s:'He', n:'Helium',    num:2,  g:'noble'    },
+  { s:'Li', n:'Lithium',   num:3,  g:'alkali'   },
+  { s:'C',  n:'Carbon',    num:6,  g:'nonmetal' },
+  { s:'N',  n:'Nitrogen',  num:7,  g:'nonmetal' },
+  { s:'O',  n:'Oxygen',    num:8,  g:'nonmetal' },
+  { s:'F',  n:'Fluorine',  num:9,  g:'halogen'  },
+  { s:'Na', n:'Sodium',    num:11, g:'alkali'   },
+  { s:'Mg', n:'Magnesium', num:12, g:'metal'    },
+  { s:'Al', n:'Aluminum',  num:13, g:'metal'    },
+  { s:'Si', n:'Silicon',   num:14, g:'nonmetal' },
+  { s:'S',  n:'Sulfur',    num:16, g:'nonmetal' },
+  { s:'Cl', n:'Chlorine',  num:17, g:'halogen'  },
+  { s:'K',  n:'Potassium', num:19, g:'alkali'   },
+  { s:'Ca', n:'Calcium',   num:20, g:'metal'    },
+  { s:'Fe', n:'Iron',      num:26, g:'metal'    },
+  { s:'Cu', n:'Copper',    num:29, g:'metal'    },
+  { s:'Zn', n:'Zinc',      num:30, g:'metal'    },
+];
+
+/* ══════════════════════════════════════════════════════════
+   ② COMPOUND DATABASE  (keyed by sorted atom string)
+      Every entry specifies exact stoichiometry.
+══════════════════════════════════════════════════════════ */
+const COMPOUNDS = {
+  'H:2,O:1':   { f:'H₂O',    n:'Water',               e:'💧', xp:30,
+    explain:'Hydrogen bonds to oxygen in a 2:1 ratio because oxygen needs 2 bonds and each hydrogen provides 1.\n\n🔬 Water covers 71% of Earth\'s surface and is essential for all life!' },
+  'H:2,O:2':   { f:'H₂O₂',   n:'Hydrogen Peroxide',   e:'🫧', xp:35,
+    explain:'Two H and two O form hydrogen peroxide — a mild antiseptic used to disinfect wounds.\n\n🔬 H₂O₂ breaks down into water + oxygen, releasing bubbles you can see!' },
+  'C:1,O:2':   { f:'CO₂',    n:'Carbon Dioxide',      e:'🌿', xp:30,
+    explain:'Carbon forms 4 bonds — two double bonds to two oxygens gives CO₂.\n\n🔬 Plants absorb CO₂ during photosynthesis to make glucose and oxygen!' },
+  'C:1,O:1':   { f:'CO',     n:'Carbon Monoxide',     e:'⚠️', xp:35,
+    explain:'Carbon bonds to only ONE oxygen here, forming the toxic gas CO instead of CO₂.\n\n⚠️ CO is produced by incomplete combustion and is deadly — it binds to haemoglobin!' },
+  'Cl:1,Na:1': { f:'NaCl',   n:'Table Salt',          e:'🧂', xp:30,
+    explain:'Sodium gives its 1 outer electron to chlorine, forming Na⁺ and Cl⁻ ions that attract.\n\n🔬 Humans have used NaCl to flavour and preserve food for thousands of years!' },
+  'Cl:1,H:1':  { f:'HCl',    n:'Hydrochloric Acid',   e:'🧴', xp:40,
+    explain:'Hydrogen and chlorine share one electron pair — a strong polar covalent bond.\n\n🔬 Your stomach produces HCl to break down food. It\'s strong enough to dissolve metals!' },
+  'F:1,H:1':   { f:'HF',     n:'Hydrofluoric Acid',   e:'⚠️', xp:50,
+    explain:'Hydrogen and fluorine form a very strong polar covalent bond.\n\n⚠️ HF is so corrosive it can etch glass — used professionally for glass engraving!' },
+  'F:1,Na:1':  { f:'NaF',    n:'Sodium Fluoride',     e:'🦷', xp:40,
+    explain:'Sodium (1+) and fluorine (1−) form a 1:1 ionic compound.\n\n🔬 Added to toothpaste to strengthen enamel and prevent cavities!' },
+  'Ca:1,Cl:2': { f:'CaCl₂',  n:'Calcium Chloride',    e:'❄️', xp:40,
+    explain:'Calcium (2+) needs two chloride (1−) ions to balance charges — 1:2 ratio.\n\n🔬 Sprinkled on icy roads to lower the freezing point of water!' },
+  'Cl:2,Mg:1': { f:'MgCl₂',  n:'Magnesium Chloride',  e:'🔷', xp:45,
+    explain:'Magnesium (2+) bonds to two chloride (1−) ions for charge balance.\n\n🔬 Found in seawater and used in food production and de-icing!' },
+  'H:3,N:1':   { f:'NH₃',    n:'Ammonia',             e:'💨', xp:35,
+    explain:'Nitrogen has 3 available bonds; each of 3 hydrogen atoms fills one bond.\n\n🔬 Used in fertilizers that feed more than half the world\'s population!' },
+  'N:1,O:2':   { f:'NO₂',    n:'Nitrogen Dioxide',    e:'🟠', xp:40,
+    explain:'Nitrogen forms up to 4 bonds; here it bonds to two oxygen atoms.\n\n🔬 The brown gas in smog — produced by car engines and contributes to acid rain!' },
+  'N:2,O:1':   { f:'N₂O',    n:'Nitrous Oxide',       e:'😄', xp:40,
+    explain:'Two nitrogen atoms bond to one oxygen in a linear molecule.\n\n🔬 Known as "laughing gas" — used as anaesthetic and in whipped cream cans!' },
+  'C:1,H:4':   { f:'CH₄',    n:'Methane',             e:'🔥', xp:40,
+    explain:'Carbon needs exactly 4 bonds — it bonds to 4 hydrogen atoms, each needing 1.\n\n🔬 Natural gas is mostly methane. It powers stoves, heaters, and power plants!' },
+  'C:2,H:6':   { f:'C₂H₆',   n:'Ethane',              e:'⛽', xp:50,
+    explain:'Two carbons bond to each other (C-C), then each fills remaining bonds with H.\n\n🔬 The C-C single bond is the foundation of all organic chemistry!' },
+  'C:2,H:2':   { f:'C₂H₂',   n:'Acetylene',           e:'🔩', xp:55,
+    explain:'Two carbons form a triple bond; each has one remaining bond to hydrogen.\n\n🔬 Used in welding torches — it burns at over 3500°C, hot enough to cut steel!' },
+  'O:2,S:1':   { f:'SO₂',    n:'Sulfur Dioxide',      e:'🌋', xp:35,
+    explain:'Sulfur forms double bonds to two oxygen atoms in a bent molecular shape.\n\n🔬 Volcanoes release SO₂. When mixed with rainwater it forms acid rain!' },
+  'O:3,S:1':   { f:'SO₃',    n:'Sulfur Trioxide',     e:'🌧️', xp:40,
+    explain:'Sulfur bonds to three oxygens — one more than in SO₂.\n\n🔬 SO₃ + H₂O → H₂SO₄ (sulfuric acid), one of the most important industrial chemicals!' },
+  'H:2,S:1':   { f:'H₂S',    n:'Hydrogen Sulfide',    e:'🤢', xp:35,
+    explain:'Like water (H₂O), sulfur bonds to two hydrogens — but sulfur makes it toxic!\n\n🔬 The "rotten egg" smell — produced by bacteria and found in volcanic gases.' },
+  'Fe:2,O:3':  { f:'Fe₂O₃',  n:'Iron Oxide (Rust)',   e:'🔴', xp:35,
+    explain:'Fe³⁺ and O²⁻ balance in 2:3 ratio. Total charge: (2×3+) + (3×2−) = 0.\n\n🔬 Bridges must be painted to prevent rusting — rust weakens iron structures!' },
+  'Cu:1,O:1':  { f:'CuO',    n:'Copper(II) Oxide',    e:'🟤', xp:35,
+    explain:'Cu²⁺ donates 2 electrons to O²⁻ — simple 1:1 ionic bond.\n\n🔬 The greenish patina on copper statues (like Statue of Liberty) involves this!' },
+  'O:1,Zn:1':  { f:'ZnO',    n:'Zinc Oxide',          e:'🌞', xp:35,
+    explain:'Zinc (2+) bonds ionically to oxygen (2−) in a 1:1 ratio.\n\n🔬 ZnO is the white cream lifeguards put on noses — it physically blocks UV rays!' },
+  'Mg:1,O:1':  { f:'MgO',    n:'Magnesium Oxide',     e:'⚪', xp:40,
+    explain:'Mg gives 2 electrons to O — a classic 1:1 ionic bond.\n\n🔬 Magnesium burns with an intensely bright white flame to form this white powder!' },
+  'Ca:1,O:1':  { f:'CaO',    n:'Quicklime',           e:'🪨', xp:40,
+    explain:'Ca²⁺ and O²⁻ bond 1:1 ionically.\n\n🔬 Quicklime is a key ingredient in cement — used to build almost every concrete structure!' },
+  'Al:2,O:3':  { f:'Al₂O₃',  n:'Alumina',             e:'💎', xp:50,
+    explain:'Al³⁺ and O²⁻ must balance: 2×(3+) = 6+, 3×(2−) = 6−. So ratio is 2:3.\n\n🔬 Sapphires and rubies are just alumina with trace impurities giving their colour!' },
+  'O:2,Si:1':  { f:'SiO₂',   n:'Silicon Dioxide',     e:'🏖️', xp:35,
+    explain:'Silicon (4+) bonds to two oxygens (2− each): 4+ + 2×(2−) = 0.\n\n🔬 Beach sand is mostly SiO₂ — also the basis of glass and computer chips!' },
+  'Fe:1,S:1':  { f:'FeS',    n:'Iron Sulfide',        e:'🖤', xp:35,
+    explain:'Fe²⁺ and S²⁻ bond 1:1 ionically.\n\n🔬 Fool\'s gold (pyrite) looks valuable but is just iron sulfide with no real value!' },
+  'K:2,O:1':   { f:'K₂O',    n:'Potassium Oxide',     e:'🌿', xp:40,
+    explain:'Two K⁺ ions bond to one O²⁻ to balance charges: 2×(1+) + (2−) = 0.\n\n🔬 Potassium compounds are essential fertilizers — they help plants grow strong!' },
+  'Na:2,O:1':  { f:'Na₂O',   n:'Sodium Oxide',        e:'🔶', xp:40,
+    explain:'Two Na⁺ ions bond to one O²⁻: 2×(1+) + (2−) = 0.\n\n🔬 Sodium oxide reacts violently with water to form the strong base NaOH!' },
+  // ── Explosions ──────────────────────────────────
+  'H:2,Li:2':  { f:'💥', n:'EXPLOSION!',  e:'💥', xp:0, boom:true,
+    explain:'Lithium reacts violently with hydrogen — producing intense heat and fire!\n\n⚠️ Alkali metals are extremely reactive. Never try this outside a lab!' },
+  'H:1,K:1':   { f:'💥', n:'KABOOM!',     e:'💥', xp:0, boom:true,
+    explain:'Potassium reacts violently — it can catch fire spontaneously in air!\n\n⚠️ Potassium burns with a lilac flame. Extremely dangerous without protection!' },
+  // ── No reaction ─────────────────────────────────
+  'He:1,O:1':  { f:'🚫', n:'No Reaction', e:'🚫', xp:5, noRx:true,
+    explain:'Helium has a full outer electron shell — it almost never reacts with anything.\n\n🔬 Noble gases are called "inert" for this reason. Helium is safely used in balloons!' },
+  'He:2':      { f:'🚫', n:'No Reaction', e:'🚫', xp:5, noRx:true,
+    explain:'Helium atoms can\'t bond with each other — their outer shells are already full.\n\n🔬 This is why noble gases exist as single free atoms in nature!' },
+};
+
+/* ══════════════════════════════════════════════════════════
+   ③ CHALLENGE DEFINITIONS
+══════════════════════════════════════════════════════════ */
+const CHALLENGES = [
+  // EASY — formula + hint always visible
+  { id:0,  icon:'💧', name:'Make Water',             diff:'easy',   target:{H:2,O:1},     unlockAfter:0 },
+  { id:1,  icon:'🧂', name:'Make Table Salt',         diff:'easy',   target:{Na:1,Cl:1},   unlockAfter:0 },
+  { id:2,  icon:'🔥', name:'Make Methane',             diff:'easy',   target:{C:1,H:4},     unlockAfter:1 },
+  { id:3,  icon:'🌿', name:'Make Carbon Dioxide',      diff:'easy',   target:{C:1,O:2},     unlockAfter:1 },
+  // MEDIUM — name only + optional hint button
+  { id:4,  icon:'💨', name:'Make Ammonia',             diff:'medium', target:{H:3,N:1},     unlockAfter:3 },
+  { id:5,  icon:'⚪', name:'Make Magnesium Oxide',     diff:'medium', target:{Mg:1,O:1},    unlockAfter:3 },
+  { id:6,  icon:'🫧', name:'Make Hydrogen Peroxide',   diff:'medium', target:{H:2,O:2},     unlockAfter:4 },
+  { id:7,  icon:'🌋', name:'Make Sulfur Dioxide',      diff:'medium', target:{S:1,O:2},     unlockAfter:4 },
+  { id:8,  icon:'❄️', name:'Make Calcium Chloride',    diff:'medium', target:{Ca:1,Cl:2},   unlockAfter:5 },
+  // HARD — name only, no hint
+  { id:9,  icon:'💎', name:'Make Alumina',             diff:'hard',   target:{Al:2,O:3},    unlockAfter:6 },
+  { id:10, icon:'🤢', name:'Make Hydrogen Sulfide',    diff:'hard',   target:{H:2,S:1},     unlockAfter:6 },
+  { id:11, icon:'🟠', name:'Make Nitrogen Dioxide',    diff:'hard',   target:{N:1,O:2},     unlockAfter:7 },
+  { id:12, icon:'🔩', name:'Make Acetylene',           diff:'hard',   target:{C:2,H:2},     unlockAfter:8 },
+  { id:13, icon:'⛽', name:'Make Ethane',              diff:'hard',   target:{C:2,H:6},     unlockAfter:9 },
+];
+
+const LEVEL_INFO = [
+  { name:'Level 1 — Easy',   desc:'Formula + hints always visible', xpNeeded:0   },
+  { name:'Level 2 — Medium', desc:'Compound name + hint button',    xpNeeded:150 },
+  { name:'Level 3 — Hard',   desc:'Compound name only, no hints',   xpNeeded:350 },
+];
+
+/* ══════════════════════════════════════════════════════════
+   ④ GAME STATE
+══════════════════════════════════════════════════════════ */
+const state = {
+  atoms:            {},   // { sym: count } — single mixing zone
+  xp:               0,
+  streak:           0,
+  level:            0,    // 0 / 1 / 2
+  activeChallengeId:0,
+  doneChallenges:   new Set(),
+  discovered:       new Set(),
+  hintShown:        false,
+  currentDragging:  null,
+};
+
+/* ══════════════════════════════════════════════════════════
+   ⑤ ATOM UTILITY FUNCTIONS
+══════════════════════════════════════════════════════════ */
+
+/**
+ * countAtoms()
+ * Returns a copy of the current mixing zone atom map.
+ * @returns {Object} e.g. { H:2, O:1 }
+ */
+function countAtoms() {
+  return { ...state.atoms };
+}
+
+/**
+ * atomMapToKey(map)
+ * Converts { H:2, O:1 } → "H:2,O:1" (alphabetical, canonical).
+ * Used for O(1) compound lookup.
+ */
+function atomMapToKey(map) {
+  return Object.entries(map)
+    .filter(([, c]) => c > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([s, c]) => `${s}:${c}`)
+    .join(',');
+}
+
+/**
+ * atomMapToFormula(map)
+ * Converts { H:2, O:1 } → "H₂O" (subscript notation).
+ */
+function atomMapToFormula(map) {
+  const subs = ['₀','₁','₂','₃','₄','₅','₆','₇','₈','₉'];
+  const toSub = n => String(n).split('').map(d => subs[+d]).join('');
+  return Object.entries(map)
+    .filter(([, c]) => c > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([s, c]) => c === 1 ? s : `${s}${toSub(c)}`)
+    .join('');
+}
+
+/**
+ * atomMapToRecipe(map)
+ * Converts { H:2, O:1 } → "2×H + 1×O" (human-readable recipe).
+ */
+function atomMapToRecipe(map) {
+  return Object.entries(map)
+    .filter(([, c]) => c > 0)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([s, c]) => `${c}×${s}`)
+    .join(' + ');
+}
+
+/**
+ * validateCompound(atomMap, challenge)
+ * Returns true only when atomMap exactly matches the challenge target.
+ */
+function validateCompound(atomMap, challenge) {
+  const userKey   = atomMapToKey(atomMap);
+  const targetKey = atomMapToKey(challenge.target);
+  return userKey === targetKey;
+}
+
+/**
+ * detectFormedCompound(atomMap)
+ * Looks up what compound (if any) the current atom mix would form.
+ * @returns compound object | null
+ */
+function detectFormedCompound(atomMap) {
+  const key = atomMapToKey(atomMap);
+  return COMPOUNDS[key] || null;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑥ DRAG-AND-DROP HANDLERS
+══════════════════════════════════════════════════════════ */
+
+/**
+ * handleDragStart(event, sym)
+ * Called on the element card's dragstart.
+ */
+function handleDragStart(event, sym) {
+  event.dataTransfer.setData('sym', sym);
+  event.dataTransfer.effectAllowed = 'copy';
+  state.currentDragging = sym;
+  event.target.classList.add('dragging-active');
+  setTimeout(() => event.target.classList.remove('dragging-active'), 300);
+}
+
+function handleDragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'copy';
+  document.getElementById('mixingZone').classList.add('drag-over');
+}
+
+function handleDragLeave(event) {
+  // Only remove if truly leaving the zone (not entering a child)
+  if (!event.currentTarget.contains(event.relatedTarget)) {
+    document.getElementById('mixingZone').classList.remove('drag-over');
+  }
+}
+
+/**
+ * handleDrop(event)
+ * Reads dragged element symbol, adds it to state.atoms, updates UI.
+ */
+function handleDrop(event) {
+  event.preventDefault();
+  document.getElementById('mixingZone').classList.remove('drag-over');
+  const sym = event.dataTransfer.getData('sym');
+  if (!sym) return;
+  addAtomToZone(sym);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑦ MIXING ZONE STATE MUTATIONS
+══════════════════════════════════════════════════════════ */
+
+/**
+ * addAtomToZone(sym)
+ * Adds one atom of `sym` to the mixing zone.
+ * Max 12 total atoms to keep UI manageable.
+ */
+function addAtomToZone(sym) {
+  const total = Object.values(state.atoms).reduce((a,b)=>a+b, 0);
+  if (total >= 12) { showToast('⚠️ Mixing zone full — max 12 atoms!'); return; }
+  state.atoms[sym] = (state.atoms[sym] || 0) + 1;
+  renderMixingZone();
+  updateFormulaPreview();
+  spawnDropBubbles();
+  state.hintShown = false;
+}
+
+/**
+ * incrementAtom(sym)  — called by + button on chip
+ */
+function incrementAtom(sym) {
+  const total = Object.values(state.atoms).reduce((a,b)=>a+b, 0);
+  if (total >= 12) { showToast('⚠️ Max 12 atoms!'); return; }
+  state.atoms[sym]++;
+  renderMixingZone();
+  updateFormulaPreview();
+}
+
+/**
+ * decrementAtom(sym)  — called by − button on chip
+ */
+function decrementAtom(sym) {
+  if (!state.atoms[sym]) return;
+  state.atoms[sym]--;
+  if (state.atoms[sym] === 0) delete state.atoms[sym];
+  renderMixingZone();
+  updateFormulaPreview();
+}
+
+/**
+ * removeAtomType(sym)  — removes ALL of a given element
+ */
+function removeAtomType(sym) {
+  delete state.atoms[sym];
+  renderMixingZone();
+  updateFormulaPreview();
+}
+
+/**
+ * clearMixingZone()  — resets everything
+ */
+function clearMixingZone(silent = false) {
+  state.atoms = {};
+  state.hintShown = false;
+  document.getElementById('chHintBox').classList.remove('visible');
+  renderMixingZone();
+  updateFormulaPreview();
+  if (!silent) showToast('🗑️ Mixing zone cleared!');
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑧ MIX LOGIC
+══════════════════════════════════════════════════════════ */
+
+/**
+ * handleMix()
+ * Main entry point when user clicks MIX.
+ * Validates atoms, dispatches to correct/wrong handlers.
+ */
+function handleMix() {
+  const atomMap   = countAtoms();
+  const totalAtoms = Object.values(atomMap).reduce((a,b)=>a+b, 0);
+
+  if (totalAtoms === 0) { showToast('⚠️ Add some elements first!'); wobbleMixBtn(); return; }
+  if (totalAtoms === 1) { showToast('⚠️ Need at least 2 atoms to react!'); wobbleMixBtn(); return; }
+
+  const challenge = CHALLENGES[state.activeChallengeId];
+  const isCorrect = validateCompound(atomMap, challenge);
+  const formed    = detectFormedCompound(atomMap);
+
+  // Trigger mix animation
+  const zone = document.getElementById('mixingZone');
+  zone.classList.add('reacting');
+  setTimeout(() => zone.classList.remove('reacting'), 2000);
+
+  if (isCorrect) {
+    handleCorrectMix(challenge, formed);
+  } else {
+    handleWrongMix(challenge, atomMap, formed);
+  }
+}
+
+function handleCorrectMix(challenge, compound) {
+  // FALLBACK: if key lookup returned null (safety net after key fixes),
+  // build a minimal compound from the challenge target so it never silently fails.
+  if (!compound) {
+    compound = {
+      f:       atomMapToFormula(challenge.target),
+      n:       challenge.name.replace('Make ', ''),
+      e:       challenge.icon,
+      xp:      25,
+      explain: `You combined the atoms in exactly the right ratio!\n\n🔬 Great job working out the correct stoichiometry for ${atomMapToFormula(challenge.target)}!`,
+    };
+  }
+  if (compound.boom) { triggerBoom(compound, true); return; }
+
+  const streakBonus = state.streak >= 3 ? 10 : 0;
+  const xpGain      = compound.xp + streakBonus;
+
+  state.xp += xpGain;
+  state.streak++;
+  state.doneChallenges.add(challenge.id);
+
+  if (!state.discovered.has(compound.n)) {
+    state.discovered.add(compound.n);
+    addDiscoveredCompound(compound.f, compound.n);
+  }
+
+  checkLevelUp();
+  renderStats();
+  renderChallengeList();
+  spawnFXParticles(compound.e, 14);
+
+  openFeedback({
+    type:    'correct',
+    emoji:   compound.e,
+    title:   '✅ Correct!',
+    formula: compound.f,
+    fClass:  'ok',
+    explain: compound.explain,
+    xpText:  `+${xpGain} XP${streakBonus ? ' 🔥 Streak bonus!' : ''}`,
+    xpClass: 'gain',
+    btnText: 'Next Challenge →',
+    btnClass:'ok',
+    onClose: () => { advanceChallenge(); clearMixingZone(true); },
+  });
+}
+
+function handleWrongMix(challenge, atomMap, formed) {
+  state.streak = 0;
+  const xpLoss = 5;
+  state.xp     = Math.max(0, state.xp - xpLoss);
+  renderStats();
+  wobbleMixBtn();
+
+  const targetCompound = detectFormedCompound(challenge.target);
+  const targetFormula  = targetCompound ? targetCompound.f : atomMapToFormula(challenge.target);
+  const targetRecipe   = atomMapToRecipe(challenge.target);
+
+  let title, formula, fClass, explain;
+
+  if (formed && formed.boom) { triggerBoom(formed, false); return; }
+
+  if (formed && !formed.noRx) {
+    // Recognisable but wrong compound
+    title   = `You made ${formed.f}!`;
+    formula = `${formed.f} ≠ ${targetFormula}`;
+    fClass  = 'err';
+    explain = `You formed ${formed.n} (${formed.f}), but the goal is ${targetFormula}.\n\nRecipe needed: ${targetRecipe}\n\n${formed.explain}`;
+  } else if (formed && formed.noRx) {
+    title   = 'No Reaction';
+    formula = '🚫 Inert';
+    fClass  = 'err';
+    explain = `${formed.explain}\n\nFor ${targetFormula} you need: ${targetRecipe}`;
+  } else {
+    // Unknown combination
+    const userFormula = atomMapToFormula(atomMap);
+    title   = 'Invalid Combination';
+    formula = `${userFormula} → ✗`;
+    fClass  = 'err';
+    explain = `"${userFormula}" doesn't form a stable compound.\n\nFor ${targetFormula} you need exactly: ${targetRecipe}`;
+  }
+
+  openFeedback({
+    type:    'wrong',
+    emoji:   '🤔',
+    title,
+    formula,
+    fClass,
+    explain,
+    xpText:  `-${xpLoss} XP`,
+    xpClass: 'loss',
+    btnText: 'Try Again',
+    btnClass:'err',
+    onClose: () => {},
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑨ HINT SYSTEM
+══════════════════════════════════════════════════════════ */
+function handleHint() {
+  const ch   = CHALLENGES[state.activeChallengeId];
+  const diff = ch.diff;
+
+  if (diff === 'easy') { showToast('💡 Formula is already shown!'); return; }
+  if (state.hintShown) { showToast('💡 Hint already visible!'); return; }
+  if (diff === 'hard')  { showToast('🔒 No hints on Hard mode!'); return; }
+
+  const cost = 10;
+  state.xp   = Math.max(0, state.xp - cost);
+  state.hintShown = true;
+  document.getElementById('chHintBox').classList.add('visible');
+  renderStats();
+  showToast(`💡 Hint shown! −${cost} XP`);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑩ CHALLENGE NAVIGATION
+══════════════════════════════════════════════════════════ */
+function selectChallenge(idx) {
+  const ch        = CHALLENGES[idx];
+  const completed = state.doneChallenges.size;
+  if (ch.unlockAfter > completed) { showToast('🔒 Complete more challenges to unlock!'); return; }
+
+  state.activeChallengeId = idx;
+  state.hintShown         = false;
+  clearMixingZone(true);
+  renderChallengeDisplay();
+  renderChallengeList();
+}
+
+function advanceChallenge() {
+  const done = state.doneChallenges.size;
+  for (let i = 0; i < CHALLENGES.length; i++) {
+    const ch = CHALLENGES[i];
+    if (!state.doneChallenges.has(ch.id) && ch.unlockAfter <= done) {
+      selectChallenge(i); return;
+    }
+  }
+  showToast('🎉 All available challenges complete!');
+}
+
+function checkLevelUp() {
+  let newLevel = 0;
+  for (let i = LEVEL_INFO.length - 1; i >= 0; i--) {
+    if (state.xp >= LEVEL_INFO[i].xpNeeded) { newLevel = i; break; }
+  }
+  if (newLevel > state.level) {
+    state.level = newLevel;
+    showToast(`🎉 Level Up → ${LEVEL_INFO[newLevel].name}!`);
+    spawnFXParticles('⭐', 18);
+    renderChallengeDisplay(); // update hint visibility rules
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑪ UI RENDER FUNCTIONS
+══════════════════════════════════════════════════════════ */
+
+/** Build element shelf on the left */
+function buildShelf() {
+  const wrap = document.getElementById('shelfEl');
+  wrap.innerHTML = '';
+  ELEMENTS.forEach(el => {
+    const card = document.createElement('div');
+    card.className  = `el-card g-${el.g}`;
+    card.draggable  = true;
+    card.dataset.sym = el.s;
+    card.innerHTML  = `
+      <div class="el-num">${el.num}</div>
+      <div class="el-sym">${el.s}</div>
+      <div class="el-name">${el.n}</div>
+    `;
+    card.addEventListener('dragstart', e => handleDragStart(e, el.s));
+    card.addEventListener('click',     () => { addAtomToZone(el.s); showToast(`➕ ${el.s} added`); });
+    wrap.appendChild(card);
+  });
+}
+
+/** Render atom chips inside the mixing zone */
+function renderMixingZone() {
+  const zone    = document.getElementById('mixingZone');
+  const grid    = document.getElementById('atomsGrid');
+  const empty   = document.getElementById('mzEmpty');
+  const total   = Object.values(state.atoms).reduce((a,b)=>a+b, 0);
+  const hasAtoms = total > 0;
+
+  zone.classList.toggle('has-atoms', hasAtoms);
+  empty.style.display = hasAtoms ? 'none' : 'flex';
+  grid.style.display  = hasAtoms ? 'flex'  : 'none';
+
+  if (!hasAtoms) return;
+
+  // Rebuild chips (preserve order by insertion)
+  grid.innerHTML = '';
+  Object.entries(state.atoms)
+    .filter(([, c]) => c > 0)
+    .forEach(([sym, count]) => {
+      const elDef  = ELEMENTS.find(e => e.s === sym) || { g:'nonmetal' };
+      const chip   = document.createElement('div');
+      chip.className = `atom-chip chip-${elDef.g}`;
+      chip.dataset.sym = sym;
+      chip.innerHTML = `
+        <button class="chip-remove" onclick="removeAtomType('${sym}')" title="Remove all ${sym}">✕</button>
+        <span class="chip-sym">${sym}</span>
+        <span class="chip-count">×${count}</span>
+        <div class="chip-btns">
+          <button class="chip-inc" onclick="incrementAtom('${sym}')" title="Add one more ${sym}">+</button>
+          <button class="chip-dec" onclick="decrementAtom('${sym}')" title="Remove one ${sym}">−</button>
+        </div>
+      `;
+      grid.appendChild(chip);
+    });
+
+  document.getElementById('mzInstruction').textContent =
+    total === 0 ? 'Drag elements here to build your compound' :
+    total === 1 ? '1 atom added — keep going!' :
+    total >= 2  ? `${total} atoms ready — use + / − to adjust, then MIX! ⚗️` :
+    'Build your compound!';
+}
+
+/** Live formula preview under the zone */
+function updateFormulaPreview() {
+  const preview = document.getElementById('formulaPreview');
+  const total   = Object.values(state.atoms).reduce((a,b)=>a+b, 0);
+  if (total === 0) {
+    preview.textContent = 'Your mix: —';
+    preview.style.opacity = '.4';
+    return;
+  }
+  const formula = atomMapToFormula(state.atoms);
+  const recipe  = atomMapToRecipe(state.atoms);
+  preview.textContent = `${formula}  (${recipe})`;
+  preview.style.opacity = '1';
+}
+
+/** Render challenge header card */
+function renderChallengeDisplay() {
+  const ch   = CHALLENGES[state.activeChallengeId];
+  const cmpd = detectFormedCompound(ch.target);
+  const diff = ch.diff;
+
+  document.getElementById('chLabel').textContent  = `Challenge ${state.activeChallengeId + 1}/${CHALLENGES.length}`;
+  document.getElementById('chTarget').textContent = `${ch.icon} ${ch.name}`;
+  document.getElementById('chDiff').textContent   = diff.charAt(0).toUpperCase() + diff.slice(1);
+  document.getElementById('chDiff').className     = `diff-badge ${diff}`;
+
+  // Formula visibility
+  const formulaEl = document.getElementById('chFormula');
+  formulaEl.style.display = diff === 'easy' && cmpd ? 'block' : 'none';
+  if (cmpd && diff === 'easy') formulaEl.textContent = `Formula: ${cmpd.f}`;
+
+  // Hint text
+  const hintEl  = document.getElementById('chHintBox');
+  const recipe  = atomMapToRecipe(ch.target);
+  hintEl.textContent = `💡 Recipe: ${recipe}`;
+  if (diff === 'easy') { hintEl.classList.add('visible'); }
+  else if (!state.hintShown) { hintEl.classList.remove('visible'); }
+
+  // Hint button cost
+  document.getElementById('hintCost').textContent = diff === 'hard' ? '(🔒 locked)' : '(−10 XP)';
+}
+
+/** Render the challenge list in the right panel */
+function renderChallengeList() {
+  const wrap     = document.getElementById('chList');
+  const completed = state.doneChallenges.size;
+  wrap.innerHTML  = '';
+
+  CHALLENGES.forEach((ch, i) => {
+    const done   = state.doneChallenges.has(ch.id);
+    const locked = ch.unlockAfter > completed;
+    const active = i === state.activeChallengeId;
+
+    const item = document.createElement('div');
+    item.className = `ch-item${active?' active':''}${done?' done':''}${locked?' locked':''}`;
+    item.innerHTML = `
+      <span class="ci-icon">${ch.icon}</span>
+      <div class="ci-body">
+        <div class="ci-name">${ch.name}</div>
+        <div class="ci-diff">${ch.diff}</div>
+      </div>
+      <span class="ci-status">${done ? '✅' : locked ? '🔒' : '▶️'}</span>
+    `;
+    if (!done && !locked) item.addEventListener('click', () => selectChallenge(i));
+    wrap.appendChild(item);
+  });
+}
+
+/** Render XP bar, streak, found count, level dots */
+function renderStats() {
+  const xp     = state.xp;
+  const level  = state.level;
+  const info   = LEVEL_INFO;
+  const nextXP = level < info.length - 1 ? info[level + 1].xpNeeded : info[info.length-1].xpNeeded + 300;
+  const prevXP = info[level].xpNeeded;
+  const pct    = Math.min(100, ((xp - prevXP) / (nextXP - prevXP)) * 100);
+
+  document.getElementById('xpFill').style.width   = pct + '%';
+  document.getElementById('xpLbl').textContent    = `XP: ${xp}`;
+  document.getElementById('xpNext').textContent   = level >= 2 ? 'Max level!' : `Next: ${nextXP} XP`;
+  document.getElementById('statXP').textContent   = xp;
+  document.getElementById('statStr').textContent  = state.streak;
+  document.getElementById('statFnd').textContent  = state.discovered.size;
+
+  [0,1,2].forEach(i => document.getElementById(`ld${i}`).classList.toggle('on', i <= level));
+  document.getElementById('lvlTitle').textContent = LEVEL_INFO[level].name;
+  document.getElementById('lvlDesc').textContent  = LEVEL_INFO[level].desc;
+}
+
+/** Add a chip to the discovered panel */
+function addDiscoveredCompound(formula, name) {
+  const grid = document.getElementById('discGrid');
+  if (grid.querySelector('.disc-empty')) grid.innerHTML = '';
+  const chip = document.createElement('div');
+  chip.className = 'disc-chip';
+  chip.innerHTML = `<div class="df">${formula}</div><div class="dn">${name}</div>`;
+  chip.style.animation = 'chipDrop .35s cubic-bezier(.34,1.56,.64,1) both';
+  grid.appendChild(chip);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑫ FEEDBACK MODAL
+══════════════════════════════════════════════════════════ */
+let _fbCallback = null;
+
+function openFeedback({ type, emoji, title, formula, fClass, explain, xpText, xpClass, btnText, btnClass, onClose }) {
+  document.getElementById('fbEmoji').textContent    = emoji;
+  document.getElementById('fbTitle').textContent    = title;
+  document.getElementById('fbFormula').textContent  = formula;
+  document.getElementById('fbFormula').className    = `fb-formula ${fClass}`;
+  document.getElementById('fbExplain').textContent  = explain;
+  document.getElementById('fbXP').textContent       = xpText;
+  document.getElementById('fbXP').className         = `fb-xp ${xpClass}`;
+  document.getElementById('fbBtn').textContent      = btnText;
+  document.getElementById('fbBtn').className        = `fb-btn ${btnClass}`;
+  document.getElementById('fbModal').className      = `fb-modal ${type}`;
+  document.getElementById('fbOverlay').classList.add('open');
+  _fbCallback = onClose;
+}
+
+function closeFeedback() {
+  document.getElementById('fbOverlay').classList.remove('open');
+  if (_fbCallback) { _fbCallback(); _fbCallback = null; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑬ VISUAL EFFECTS
+══════════════════════════════════════════════════════════ */
+/** Small bubbles that rise inside mixing zone on element drop */
+function spawnDropBubbles() {
+  const zone = document.getElementById('mixingZone');
+  const colors = ['#bbf7d0','#bfdbfe','#fde68a','#f9a8d4','#c4b5fd'];
+  for (let i = 0; i < 5; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble-particle';
+    const size = 8 + Math.random() * 12;
+    b.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${10 + Math.random()*80}%;
+      bottom:${5 + Math.random()*20}%;
+      --dur:${0.6 + Math.random()*0.6}s;
+      animation-delay:${Math.random()*0.2}s;
+    `;
+    zone.appendChild(b);
+    setTimeout(() => b.remove(), 1400);
+  }
+}
+
+/** Flying emoji particles on correct answer */
+function spawnFXParticles(emoji, count = 10) {
+  const btn = document.getElementById('mixBtn');
+  const r   = btn.getBoundingClientRect();
+  const cx  = r.left + r.width / 2;
+  const cy  = r.top;
+  for (let i = 0; i < count; i++) {
+    const p     = document.createElement('div');
+    p.className = 'fx-particle';
+    const angle = Math.random() * Math.PI * 2;
+    const dist  = 80 + Math.random() * 140;
+    p.textContent = emoji;
+    p.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      --s:${12+Math.random()*12}px;
+      --d:${.55+Math.random()*.7}s;
+      --tx:${Math.cos(angle)*dist}px;
+      --ty:${Math.sin(angle)*dist - 60}px;
+      animation-delay:${Math.random()*.18}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+function triggerBoom(compound, wasTarget) {
+  const overlay = document.getElementById('boomOverlay');
+  overlay.classList.add('active');
+  spawnFXParticles('💥', 10);
+  spawnFXParticles('🔥', 8);
+  document.body.style.animation = 'bodyShake .45s ease';
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    document.body.style.animation = '';
+    if (wasTarget) {
+      state.doneChallenges.add(CHALLENGES[state.activeChallengeId].id);
+      renderChallengeList();
+    }
+    state.streak = 0;
+    openFeedback({
+      type:'boom', emoji:'💥', title:'KABOOM!',
+      formula: compound.f, fClass:'err',
+      explain: compound.explain,
+      xpText: '⚠️ Never try this in real life!', xpClass:'loss',
+      btnText:'Back to Safety', btnClass:'err',
+      onClose: () => { clearMixingZone(true); advanceChallenge(); },
+    });
+  }, 900);
+}
+
+function wobbleMixBtn() {
+  const btn = document.getElementById('mixBtn');
+  btn.classList.remove('wobble');
+  void btn.offsetWidth;
+  btn.classList.add('wobble');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ══════════════════════════════════════════════════════════
+   ⑭ INIT
+══════════════════════════════════════════════════════════ */
+function init() {
+  buildShelf();
+  renderChallengeDisplay();
+  renderChallengeList();
+  renderStats();
+  renderMixingZone();
+  updateFormulaPreview();
+}
+
+init();
+</script>
+{% endraw %}
+</body>
+</html>
