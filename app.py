@@ -159,8 +159,9 @@ def student_learn():
     username = session.get("username", "")
     grade = username.split('-')[0] if '-' in username else "Student"
     subject = request.args.get("subject")
+    sub_subject = request.args.get("sub_subject")
     chapter = request.args.get("chapter")
-    return render_template("student_dashboard.html", active_tab="learn", grade=grade, subject=subject, chapter=chapter)
+    return render_template("student_dashboard.html", active_tab="learn", grade=grade, subject=subject, sub_subject=sub_subject, chapter=chapter)
 
 @app.route("/student/play")
 def student_play():
@@ -242,21 +243,33 @@ def student_progress():
     
     chapter_progress = []
     if subject:
-        # Compute grouped chapter analytics
         if subject == "Maths":
             cursor.execute("""
-                SELECT SUM(score) as xp, COUNT(DISTINCT game_name) as completed 
+                SELECT game_name, score 
                 FROM scores 
                 WHERE username = ? AND subject = ? AND game_name LIKE 'G6_Maths_Ch1%'
             """, (username, subject))
-            ch1_stats = cursor.fetchone()
+            ch1_scores = cursor.fetchall()
+            
+            completed_topics = 0
+            total_xp = 0
+            for row in ch1_scores:
+                game_name = row[0]
+                xp = row[1]
+                total_xp += xp
+                if game_name == 'G6_Maths_Ch1':
+                    completed_topics += 1
+                elif game_name == 'G6_Maths_Ch1_L2':
+                    completed_topics += 1
+                elif game_name == 'G6_Maths_Ch1_L3':
+                    completed_topics += 2
             
             chapter_progress.append({
                 "chapter_num": 1,
                 "chapter_name": "Knowing Our Numbers",
-                "completed": ch1_stats[1] if ch1_stats[1] else 0,
-                "total": 2, # Level 1 and Level 2 games exist
-                "xp": ch1_stats[0] if ch1_stats[0] else 0
+                "completed": completed_topics,
+                "total": 4, # 4 topics across 3 levels
+                "xp": total_xp
             })
             
     conn.close()
@@ -316,7 +329,7 @@ def leaderboard():
             subject_leaderboards[subj] = []
         subject_leaderboards[subj].append((name, score))
     
-    return render_template("leaderboard.html", leaderboard=leaderboard_data, subject_leaderboards=subject_leaderboards, grade=format_grade(grade))
+    return render_template("leaderboard.html", leaderboard=leaderboard_data, subject_leaderboards=subject_leaderboards, grade=grade)
 
 # Teacher dashboard
 @app.route("/teacher")
@@ -471,12 +484,21 @@ def play_g6_maths_ch1_l3():
     
     return render_template("g6_maths_ch1_l3.html")
 
+# Grade 6 Biology Game 2 Route (Vitamin Diagnosis)
+@app.route("/student/play/bio/g6/ch1_l2")
+def play_g6_bio_ch1_l2():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    
+    return render_template("g6_bio_ch1_l2.html")
+
+
 # Save game score
 @app.route("/save_score", methods=["POST"])
 def save_score():
     username = request.form["username"]
     score = request.form["score"]
-    subject = request.form.get("subject", "Math")
+    subject = request.form.get("subject", "Maths")
     game_name = request.form.get("game_name", "Demo_Quiz")
 
     conn = sqlite3.connect("database.db")

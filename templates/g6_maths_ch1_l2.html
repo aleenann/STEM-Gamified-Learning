@@ -16,6 +16,15 @@
             max-width: 900px;
             margin: 2rem auto;
         }
+        /* Navbar styling */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 3px solid var(--border);
+            width: 100%;
+            display: flex; justify-content: space-between;
+            padding: 1rem 2rem; align-items: center;
+            box-sizing: border-box;
+        }
         .header-controls {
             display: flex;
             justify-content: space-between;
@@ -167,8 +176,8 @@
 </head>
 <body>
     <nav class="navbar">
-        <h2 style="margin: 0;">Brainiac</h2>
-        <button class="btn-logout" onclick="window.location.href='/student/play?subject=Maths'"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <h2 style="margin: 0; color: #1e40af; font-size: 2rem; font-weight: 900;"><i class="fa-solid fa-basket-shopping mr-2"></i> Catch & Round <span style="font-size: 0.5em; color: #fff; vertical-align: super; background:#3b82f6; padding:3px 8px; border-radius:12px; margin-left:10px;">Lvl 2</span></h2>
+        <button class="btn-logout" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Back</button>
     </nav>
 
     <!-- Start Overlay Modal -->

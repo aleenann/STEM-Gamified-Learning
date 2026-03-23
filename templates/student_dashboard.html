@@ -95,6 +95,210 @@
                     <h3>Maths</h3>
                 </div>
             </div>
+            {% elif subject == 'Science' and not sub_subject %}
+            <p class="text-muted mb-2">Select a Science branch to explore study modules.</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Chemistry'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-flask text-success" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Chemistry</h3>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Physics'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-atom text-primary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Physics</h3>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Biology'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-leaf text-warning" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Biology</h3>
+                </div>
+            </div>
+            {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g6' and not chapter %}
+            <p class="text-muted mb-2">Grade 6 Biology Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Biology&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-book-medical text-success" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 1.3rem;">Chapter 1: Mindful Eating: A Path to a Healthy Body</h3>
+                    <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+            {% elif subject == 'Science' and sub_subject == 'Biology' and chapter == '1' %}
+            <style>
+                .bio-notes-container {
+                    background: var(--surface);
+                    border-radius: var(--radius-lg);
+                    border: 1px solid var(--border);
+                    padding: 2rem;
+                }
+                .bio-card {
+                    background: #f0fdf4;
+                    border-radius: var(--radius-md);
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                    border-left: 5px solid #16a34a;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                }
+                .bio-img {
+                    max-width: 100%;
+                    border-radius: 8px;
+                    border: 3px solid #16a34a;
+                    margin-top: 1rem;
+                    max-height: 250px;
+                    object-fit: cover;
+                }
+                .disease-name {
+                    color: #dc2626;
+                    font-weight: bold;
+                }
+            </style>
+
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-bed-pulse text-muted"></i> <strong>Symptoms:</strong> Poor vision, loss of vision in darkness, sometimes complete loss of vision</p>
+                        
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <p class="text-muted text-sm">Visual Example: Night Blindness</p>
+                            <img src="/static/games/grade6/biology/nightblindness.png" class="bio-img" alt="Night Blindness">
+                        </div>
+                    </div>
+                    
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('bio-vita').style.display='none'; document.getElementById('bio-t1-balance').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Balanced Diet</button>
+                        <button class="menu-btn" onclick="document.getElementById('bio-vita').style.display='none'; document.getElementById('bio-vitb1').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next: Vitamin B₁ <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+
+                </div>
+
+                <!-- Page 2: Vitamin B1 -->
+                <div id="bio-vitb1" style="display: none;">
+                    <h2 style="color: #16a34a; margin-bottom: 1.5rem;"><i class="fa-solid fa-leaf"></i> Vitamins and Minerals</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">2. Vitamin B₁</h3>
+                    
+                    <div class="bio-card" style="border-left-color: #3b82f6; background: #eff6ff;">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-heart-pulse text-danger"></i> <strong>Function:</strong> Keeps heart healthy and supports body functions</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-apple-whole text-success"></i> <strong>Sources:</strong> Legumes, nuts, whole grains, seeds, milk products</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-virus text-warning"></i> <strong>Deficiency Disease:</strong> <span class="disease-name">Beriberi</span></p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-bed-pulse text-muted"></i> <strong>Symptoms:</strong> Swelling, tingling or burning sensation in hands and feet, trouble in breathing</p>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('bio-vitb1').style.display='none'; document.getElementById('bio-vita').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Vitamin A</button>
+                        <button class="menu-btn" onclick="document.getElementById('bio-vitb1').style.display='none'; document.getElementById('bio-vitc').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next: Vitamin C <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Vitamin C -->
+                <div id="bio-vitc" style="display: none;">
+                    <h2 style="color: #16a34a; margin-bottom: 1.5rem;"><i class="fa-solid fa-leaf"></i> Vitamins and Minerals</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">3. Vitamin C</h3>
+                    
+                    <div class="bio-card" style="border-left-color: #f59e0b; background: #fffbeb;">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-heart-pulse text-danger"></i> <strong>Function:</strong> Helps body fight diseases</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-apple-whole text-success"></i> <strong>Sources:</strong> Amla, guava, green chilli, orange, lemon</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-virus text-warning"></i> <strong>Deficiency Disease:</strong> <span class="disease-name">Scurvy</span></p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-bed-pulse text-muted"></i> <strong>Symptoms:</strong> Bleeding gums, slow healing of wounds</p>
+                        
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <p class="text-muted text-sm">Visual Example: Scurvy</p>
+                            <img src="/static/games/grade6/biology/scurvy.png" class="bio-img" style="border-color: #f59e0b;" alt="Scurvy">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('bio-vitc').style.display='none'; document.getElementById('bio-vitb1').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Vitamin B₁</button>
+                        <button class="menu-btn" onclick="document.getElementById('bio-vitc').style.display='none'; document.getElementById('bio-vitd').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next: Vitamin D <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 4: Vitamin D -->
+                <div id="bio-vitd" style="display: none;">
+                    <h2 style="color: #16a34a; margin-bottom: 1.5rem;"><i class="fa-solid fa-leaf"></i> Vitamins and Minerals</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">4. Vitamin D</h3>
+                    
+                    <div class="bio-card" style="border-left-color: #8b5cf6; background: #f5f3ff;">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-heart-pulse text-danger"></i> <strong>Function:</strong> Helps body absorb calcium for bone and teeth health</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-apple-whole text-success"></i> <strong>Sources:</strong> Sunlight, milk, butter, fish, eggs</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-virus text-warning"></i> <strong>Deficiency Disease:</strong> <span class="disease-name">Rickets</span></p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-bed-pulse text-muted"></i> <strong>Symptoms:</strong> Soft and bent bones</p>
+                        
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <p class="text-muted text-sm">Visual Example: Rickets</p>
+                            <img src="/static/games/grade6/biology/rickets.png" class="bio-img" style="border-color: #8b5cf6;" alt="Rickets">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('bio-vitd').style.display='none'; document.getElementById('bio-vitc').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Vitamin C</button>
+                        <button class="menu-btn" onclick="document.getElementById('bio-vitd').style.display='none'; document.getElementById('bio-calcium').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next: Calcium <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 5: Calcium -->
+                <div id="bio-calcium" style="display: none;">
+                    <h2 style="color: #16a34a; margin-bottom: 1.5rem;"><i class="fa-solid fa-leaf"></i> Vitamins and Minerals</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">5. Calcium</h3>
+                    
+                    <div class="bio-card" style="border-left-color: #64748b; background: #f8fafc;">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-heart-pulse text-danger"></i> <strong>Function:</strong> Keeps bones and teeth healthy</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-apple-whole text-success"></i> <strong>Sources:</strong> Milk, soya milk, curd, cheese, paneer</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-virus text-warning"></i> <strong>Deficiency Disease:</strong> <span class="disease-name">Bone and tooth decay</span></p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-bed-pulse text-muted"></i> <strong>Symptoms:</strong> Weak bones, tooth decay</p>
+                        
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <p class="text-muted text-sm">Visual Example: Bone and Tooth Decay</p>
+                            <img src="/static/games/grade6/biology/tooth decay.png" class="bio-img" style="border-color: #64748b;" alt="Bone and tooth decay">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('bio-calcium').style.display='none'; document.getElementById('bio-vitd').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Vitamin D</button>
+                        <button class="menu-btn" onclick="document.getElementById('bio-calcium').style.display='none'; document.getElementById('bio-iodine').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next: Iodine <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 6: Iodine -->
+                <div id="bio-iodine" style="display: none;">
+                    <h2 style="color: #16a34a; margin-bottom: 1.5rem;"><i class="fa-solid fa-leaf"></i> Vitamins and Minerals</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">6. Iodine</h3>
+                    
+                    <div class="bio-card" style="border-left-color: #0ea5e9; background: #f0f9ff;">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-heart-pulse text-danger"></i> <strong>Function:</strong> Helps in physical and mental development</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-apple-whole text-success"></i> <strong>Sources:</strong> Seaweed, water chestnut (singhada), iodised salt</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-virus text-warning"></i> <strong>Deficiency Disease:</strong> <span class="disease-name">Goitre</span></p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-bed-pulse text-muted"></i> <strong>Symptoms:</strong> Swelling at the front of the neck</p>
+                        
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <p class="text-muted text-sm">Visual Example: Goitre</p>
+                            <img src="/static/games/grade6/biology/goitre.png" class="bio-img" style="border-color: #0ea5e9;" alt="Goitre">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('bio-iodine').style.display='none'; document.getElementById('bio-calcium').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Calcium</button>
+                        <button class="menu-btn" onclick="document.getElementById('bio-iodine').style.display='none'; document.getElementById('bio-iron').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;">Next: Iron <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 7: Iron -->
+                <div id="bio-iron" style="display: none;">
+                    <h2 style="color: #16a34a; margin-bottom: 1.5rem;"><i class="fa-solid fa-leaf"></i> Vitamins and Minerals</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">7. Iron</h3>
+                    
+                    <div class="bio-card" style="border-left-color: #b91c1c; background: #fef2f2;">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-heart-pulse text-danger"></i> <strong>Function:</strong> Important component of blood</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-apple-whole text-success"></i> <strong>Sources:</strong> Green leafy vegetables, beetroot, pomegranate</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-virus text-warning"></i> <strong>Deficiency Disease:</strong> <span class="disease-name">Anaemia</span></p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-bed-pulse text-muted"></i> <strong>Symptoms:</strong> Weakness, shortness of breath</p>
+                        
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <p class="text-muted text-sm">Visual Example: Anaemia</p>
+                            <img src="/static/games/grade6/biology/anemia.png" class="bio-img" style="border-color: #b91c1c;" alt="Anaemia">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('bio-iron').style.display='none'; document.getElementById('bio-iodine').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Iodine</button>
+                    </div>
+                </div>
+            </div>
+
             {% elif subject == 'Maths' and grade|lower == 'g6' and not chapter %}
             <p class="text-muted mb-2">Grade 6 Mathematics Chapters</p>
             <div class="card-grid">
@@ -577,6 +781,35 @@
                     <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Knowing Our Numbers</p>
                     <div style="text-align: center; margin-top: 1rem;">
                         <span class="level-badge mt-1" style="display:inline-block; background: #e0e7ff; color: #3b82f6; border: 1px solid #bfdbfe;">3 Games</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g6' and not chapter %}
+            <p class="text-muted mb-2">Select a Biology Chapter to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Biology&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #16a34a;"></i>
+                    <h3 style="color: #166534; font-size: 1.5rem;">Chapter 1</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Mindful Eating: A Path to a Healthy Body</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0;">1 Game</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g6' and chapter == '1' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #166534; background: #dcfce7; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 1: Mindful Eating: A Path to a Healthy Body</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play/bio/g6/ch1_l2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-user-doctor text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #16a34a;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Vitamin Diagnosis</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Intermediate</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #16a34a;">Play Game</span>
                     </div>
                 </div>
             </div>

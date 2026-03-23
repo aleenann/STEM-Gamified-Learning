@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitamin Diagnosis - Level 2</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap');
+
+        body {
+            background: #f0fdf4; /* Light medical green */
+            color: #1f2937;
+            font-family: 'Outfit', sans-serif;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 3px solid #bbf7d0;
+            width: 100%;
+            display: flex; justify-content: space-between;
+            padding: 1rem 2rem; align-items: center;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .game-layout {
+            max-width: 1100px;
+            width: 95%;
+            margin-top: 3rem;
+            display: flex;
+            gap: 3rem;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        /* Doctor Side */
+        .doctor-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 350px;
+            position: relative;
+        }
+
+        .speech-bubble {
+            background: white;
+            border: 4px solid #16a34a;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #166534;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            position: relative;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 15px 15px 0 15px;
+            border-style: solid;
+            border-color: #16a34a transparent transparent transparent;
+        }
+        
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0 10px;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+            z-index: 2;
+        }
+
+        .doctor-img {
+            max-width: 300px;
+            border-radius: 50%;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border: 6px solid white;
+            object-fit: cover;
+        }
+
+        /* Clipboard Side */
+        .clipboard-container {
+            background: #fff7ed; /* warm paper color */
+            border-radius: 12px 12px 5px 5px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid #d1d5db;
+            border-top: 25px solid #475569; /* Metal clip part */
+            position: relative;
+            width: 600px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .clipboard-container::after {
+            content: '';
+            position: absolute;
+            top: -35px; left: 50%;
+            transform: translateX(-50%);
+            width: 120px; height: 35px;
+            background: #94a3b8;
+            border-radius: 10px 10px 0 0;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.2);
+        }
+
+        .phase-badge {
+            background: #db2777;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            align-self: flex-start;
+        }
+
+        .patient-info {
+            width: 100%;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .q-title {
+            font-size: 1.4rem;
+            color: #4b5563;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .q-text {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #1f2937;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .q-image {
+            max-width: 80%;
+            max-height: 180px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 3px solid #cbd5e1;
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .btn-option {
+            background: white;
+            border: 3px solid #e5e7eb;
+            color: #374151;
+            font-size: 1.3rem;
+            font-weight: 800;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            font-family: inherit;
+        }
+
+        .btn-option:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-option:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-correct {
+            background: #22c55e !important;
+            color: white !important;
+            border-color: #16a34a !important;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5) !important;
+        }
+
+        .btn-wrong {
+            background: #ef4444 !important;
+            color: white !important;
+            border-color: #b91c1c !important;
+        }
+
+        .hud-stats {
+            position: absolute;
+            top: 100px; right: 30px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px 25px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .stat-row { display: flex; justify-content: space-between; gap: 20px; }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(17, 24, 39, 0.85);
+            align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(6px);
+        }
+        .modal-card {
+            background: white; padding: 40px; border-radius: 20px;
+            text-align: center; width: 90%; max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .btn-action {
+            padding: 15px 30px; font-size: 1.4rem; font-weight: 800;
+            border-radius: 10px; color: white; border: none; cursor: pointer;
+            margin: 0 10px; transition: transform 0.1s;
+        }
+        .bg-blue { background: #3b82f6; box-shadow: 0 6px 0 #1d4ed8; }
+        .bg-blue:active { transform: translateY(6px); box-shadow: 0 0 0 #1d4ed8; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2 style="margin: 0; color: #16a34a; font-size: 2rem; font-weight: 900;">
+            <i class="fa-solid fa-user-doctor mr-2"></i> Vitamin Diagnosis
+        </h2>
+        <button class="btn-logout" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    </nav>
+
+    <div class="hud-stats">
+        <div class="stat-row">
+            <span class="text-muted">Round:</span>
+            <span id="display-round" class="text-primary">1 / 10</span>
+        </div>
+        <div class="stat-row">
+            <span class="text-muted">XP Score:</span>
+            <span id="display-score" class="text-success">0</span>
+        </div>
+    </div>
+
+    <div class="game-layout">
+        <div class="doctor-side">
+            <div id="doctor-speech" class="speech-bubble">
+                Doctor: "We have a new patient today! What's the diagnosis here?"
+            </div>
+            <!-- Utilizing the requested image path -->
+            <img src="/static/games/grade6/biology/doc.png" onerror="this.src='/static/games/grade6/biology/doc.jpg'" class="doctor-img" alt="Doctor">
+        </div>
+
+        <div class="clipboard-container">
+            <div id="phase-badge" class="phase-badge">Phase 1: Identify Disease</div>
+            
+            <div class="patient-info">
+                <div id="q-title" class="q-title">Symptoms:</div>
+                <div id="q-text" class="q-text">Bleeding gums</div>
+                <img id="q-img" src="" class="q-image" style="display:none;" alt="Disease Reference">
+                
+                <div id="options-grid" class="options-grid">
+                    <!-- Buttons generated via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Result Modal -->
+    <div id="modal-end" class="modal-overlay">
+        <div class="modal-card">
+            <h2 style="font-size: 2.5rem; color: #16a34a; margin-bottom: 5px;">Shift Over!</h2>
+            <p style="font-size: 1.2rem; color: #6b7280; margin-bottom: 25px;">Great work today, Doctor.</p>
+            
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+                <h3 style="font-size: 1.8rem; margin: 0; color: #1f2937;">Final Score: <span id="final-score" style="color: #22c55e;">1000</span> XP</h3>
+            </div>
+            
+            <div>
+                <button class="btn-action bg-blue" onclick="window.location.reload()">Play Again</button>
+                <button class="btn-action bg-blue" style="background: #ef4444; box-shadow: 0 6px 0 #b91c1c;" onclick="window.location.href='/student/play?subject=Science&sub_subject=Biology&chapter=1'">Return to Levels</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const username = "{{ session.get('username') }}";
+
+        const questionsPool = {
+            phase1: [
+                { symptoms: "Bleeding gums<br>Slow healing of wounds", options: ["Rickets", "Scurvy", "Anaemia", "Goitre"], answer: "Scurvy", image: "/static/games/grade6/biology/scurvy.png" },
+                { symptoms: "Soft and bent bones", options: ["Beriberi", "Rickets", "Scurvy", "Night blindness"], answer: "Rickets", image: "/static/games/grade6/biology/rickets.png" },
+                { symptoms: "Swelling at the front of the neck", options: ["Anaemia", "Goitre", "Scurvy", "Beriberi"], answer: "Goitre", image: "/static/games/grade6/biology/goitre.png" },
+                { symptoms: "Weakness<br>Shortness of breath", options: ["Anaemia", "Rickets", "Goitre", "Night blindness"], answer: "Anaemia", image: "/static/games/grade6/biology/anemia.png" },
+                { symptoms: "Poor vision in darkness", options: ["Scurvy", "Beriberi", "Night blindness", "Anaemia"], answer: "Night blindness", image: "/static/games/grade6/biology/nightblindness.png" },
+                { symptoms: "Tingling in hands and feet<br>Trouble breathing", options: ["Beriberi", "Rickets", "Goitre", "Scurvy"], answer: "Beriberi", image: null }
+            ],
+            phase2: [
+                { disease: "Scurvy", options: ["Vitamin D", "Vitamin C", "Iron", "Iodine"], answer: "Vitamin C" },
+                { disease: "Rickets", options: ["Calcium", "Vitamin D", "Iron", "Vitamin A"], answer: "Vitamin D" },
+                { disease: "Goitre", options: ["Iron", "Iodine", "Vitamin C", "Calcium"], answer: "Iodine" },
+                { disease: "Anaemia", options: ["Vitamin B1", "Iron", "Vitamin D", "Iodine"], answer: "Iron" },
+                { disease: "Night blindness", options: ["Vitamin A", "Vitamin C", "Calcium", "Iron"], answer: "Vitamin A" },
+                { disease: "Beriberi", options: ["Vitamin B1", "Vitamin C", "Vitamin D", "Iron"], answer: "Vitamin B1" }
+            ],
+            phase3: [
+                { nutrient: "Vitamin C", options: ["Milk", "Orange, lemon", "Fish", "Rice"], answer: "Orange, lemon" },
+                { nutrient: "Vitamin D", options: ["Butter, fish, sunlight", "Lemon", "Spinach", "Rice"], answer: "Butter, fish, sunlight" },
+                { nutrient: "Iron", options: ["Milk", "Green leafy vegetables", "Bread", "Butter"], answer: "Green leafy vegetables" },
+                { nutrient: "Iodine", options: ["Sugar", "Iodised salt", "Rice", "Oil"], answer: "Iodised salt" },
+                { nutrient: "Calcium", options: ["Milk, cheese, paneer", "Lemon", "Fish", "Mango"], answer: "Milk, cheese, paneer" },
+                { nutrient: "Vitamin A", options: ["Carrot, mango", "Rice", "Egg", "Bread"], answer: "Carrot, mango" }
+            ],
+            phase4: [
+                { 
+                    symptoms: "Bleeding gums<br>Weakness", 
+                    diseaseOpts: ["Rickets", "Scurvy", "Anaemia", "Goitre"], diseaseAns: "Scurvy",
+                    foodOpts: ["Milk", "Orange, lemon", "Iodised salt", "Green leafy vegetables"], foodAns: "Orange, lemon",
+                    image: "/static/games/grade6/biology/scurvy.png" 
+                },
+                { 
+                    symptoms: "Soft bones<br>Bent legs", 
+                    diseaseOpts: ["Beriberi", "Rickets", "Scurvy", "Night blindness"], diseaseAns: "Rickets",
+                    foodOpts: ["Butter, fish, sunlight", "Lemon", "Milk, cheese, paneer", "Carrot, mango"], foodAns: "Butter, fish, sunlight",
+                    image: "/static/games/grade6/biology/rickets.png" 
+                }
+            ]
+        };
+
+        // Shuffle array helper
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Build the sequence
+        let gameSequence = [];
+        let p1 = shuffle([...questionsPool.phase1]).slice(0, 3);
+        p1.forEach(q => gameSequence.push({ ...q, phase: 1 }));
+        
+        let p2 = shuffle([...questionsPool.phase2]).slice(0, 3);
+        p2.forEach(q => gameSequence.push({ ...q, phase: 2 }));
+        
+        let p3 = shuffle([...questionsPool.phase3]).slice(0, 3);
+        p3.forEach(q => gameSequence.push({ ...q, phase: 3 }));
+        
+        let p4 = shuffle([...questionsPool.phase4]).slice(0, 1);
+        p4.forEach(q => gameSequence.push({ ...q, phase: 4 }));
+
+        let currentRound = 0;
+        let score = 0;
+        let isProcessing = false;
+        
+        let bonusPhaseStep = 1;
+        let bonusDiseasePicked = "";
+
+        const uiElements = {
+            speech: document.getElementById('doctor-speech'),
+            badge: document.getElementById('phase-badge'),
+            title: document.getElementById('q-title'),
+            text: document.getElementById('q-text'),
+            img: document.getElementById('q-img'),
+            grid: document.getElementById('options-grid'),
+            round: document.getElementById('display-round'),
+            score: document.getElementById('display-score')
+        };
+
+        function setDisplayData(q) {
+            uiElements.round.innerText = `${currentRound + 1} / 10`;
+
+            if(q.phase === 1) {
+                uiElements.badge.innerText = "Level 1: Identify Disease";
+                uiElements.badge.style.background = "#db2777";
+                uiElements.speech.innerText = "Doctor: Look at the symptoms listed on the clipboard! What disease does this patient have?";
+                uiElements.title.innerText = "Patient Symptoms:";
+                uiElements.text.innerHTML = q.symptoms;
+            } else if(q.phase === 2) {
+                uiElements.badge.innerText = "Level 2: Identify Nutrient";
+                uiElements.badge.style.background = "#d97706";
+                uiElements.speech.innerText = `Doctor: They have been diagnosed with ${q.disease}. Which vital nutrient are they missing?`;
+                uiElements.title.innerText = "Diagnosed Disease:";
+                uiElements.text.innerHTML = q.disease;
+            } else if(q.phase === 3) {
+                uiElements.badge.innerText = "Level 3: Identify Food Source";
+                uiElements.badge.style.background = "#2563eb";
+                uiElements.speech.innerText = `Doctor: The patient needs more ${q.nutrient}! What food source should we prescribe?`;
+                uiElements.title.innerText = "Deficient Nutrient:";
+                uiElements.text.innerHTML = q.nutrient;
+            } else if(q.phase === 4) {
+                uiElements.badge.innerText = "Bonus Level: Full Diagnosis";
+                uiElements.badge.style.background = "#9333ea";
+                uiElements.title.innerText = "Critical Symptoms:";
+                uiElements.text.innerHTML = q.symptoms;
+
+                if (bonusPhaseStep === 1) {
+                    uiElements.speech.innerText = "Doctor: A critical case! First, identify the Disease from these symptoms.";
+                    uiElements.grid.innerHTML = "";
+                    let opts = shuffle([...q.diseaseOpts]);
+                    opts.forEach(opt => {
+                        let btn = document.createElement('button');
+                        btn.className = "btn-option";
+                        btn.innerHTML = opt;
+                        btn.onclick = () => handleBonusDisease(btn, opt, q);
+                        uiElements.grid.appendChild(btn);
+                    });
+                } else if (bonusPhaseStep === 2) {
+                    uiElements.speech.innerText = `Doctor: You suspect ${bonusDiseasePicked}. Now, which Food should we prescribe?`;
+                    uiElements.grid.innerHTML = "";
+                    let opts = shuffle([...q.foodOpts]);
+                    opts.forEach(opt => {
+                        let btn = document.createElement('button');
+                        btn.className = "btn-option";
+                        btn.innerHTML = opt;
+                        btn.onclick = () => handleBonusFood(btn, opt, q);
+                        uiElements.grid.appendChild(btn);
+                    });
+                }
+            }
+
+            if(q.image) {
+                uiElements.img.src = q.image;
+                uiElements.img.style.display = "block";
+            } else {
+                uiElements.img.style.display = "none";
+            }
+
+            if (q.phase !== 4) {
+                uiElements.grid.innerHTML = "";
+                let opts = shuffle([...q.options]);
+                opts.forEach(opt => {
+                    let btn = document.createElement('button');
+                    btn.className = "btn-option";
+                    btn.innerHTML = opt;
+                    btn.onclick = () => handleAnswer(btn, opt, q.answer);
+                    uiElements.grid.appendChild(btn);
+                });
+            }
+        }
+
+        function handleAnswer(btn, selection, correct) {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            const allBtns = uiElements.grid.querySelectorAll('.btn-option');
+            
+            // Highlight correct one, block interaction
+            allBtns.forEach(b => {
+                if(b.innerHTML === correct) {
+                    b.classList.add('btn-correct');
+                }
+                b.style.pointerEvents = 'none';
+            });
+
+            if (selection === correct) {
+                score += 100;
+                uiElements.score.innerText = score;
+                uiElements.speech.innerText = "Doctor: Spot on! Excellent diagnosis.";
+                uiElements.speech.style.borderColor = "#22c55e";
+                uiElements.speech.style.color = "#15803d";
+            } else {
+                btn.classList.add('btn-wrong');
+                uiElements.speech.innerText = "Doctor: Hmm... not quite right. We'll have to refer the case to a specialist.";
+                uiElements.speech.style.borderColor = "#ef4444";
+                uiElements.speech.style.color = "#b91c1c";
+            }
+
+            setTimeout(() => {
+                uiElements.speech.style.borderColor = "#16a34a";
+                uiElements.speech.style.color = "#166534";
+                currentRound++;
+
+                if (currentRound >= gameSequence.length) {
+                    finishGame();
+                } else {
+                    isProcessing = false;
+                    setDisplayData(gameSequence[currentRound]);
+                }
+            }, 1800);
+        }
+
+        function handleBonusDisease(btn, selection, q) {
+            if (isProcessing) return;
+            isProcessing = true;
+            bonusDiseasePicked = selection;
+            const allBtns = uiElements.grid.querySelectorAll('.btn-option');
+            allBtns.forEach(b => {
+                if(b.innerHTML === q.diseaseAns) b.classList.add('btn-correct');
+                b.style.pointerEvents = 'none';
+            });
+            if (selection !== q.diseaseAns) btn.classList.add('btn-wrong');
+            
+            setTimeout(() => {
+                bonusPhaseStep = 2;
+                isProcessing = false;
+                setDisplayData(q);
+            }, 1500);
+        }
+
+        function handleBonusFood(btn, selection, q) {
+             if (isProcessing) return;
+             isProcessing = true;
+             const allBtns = uiElements.grid.querySelectorAll('.btn-option');
+             allBtns.forEach(b => {
+                 if(b.innerHTML === q.foodAns) b.classList.add('btn-correct');
+                 b.style.pointerEvents = 'none';
+             });
+             if(selection !== q.foodAns) btn.classList.add('btn-wrong');
+
+             let points = 0;
+             let msg = "";
+             if (bonusDiseasePicked === q.diseaseAns && selection === q.foodAns) {
+                 points = 200;
+                 msg = "Doctor: Brilliant! Both disease and prescribed food are correct. +200 XP!";
+             } else if (bonusDiseasePicked === q.diseaseAns || selection === q.foodAns) {
+                 points = 100;
+                 msg = "Doctor: Good effort. You got one part right, but missed the other. +100 XP";
+             } else {
+                 msg = "Doctor: Both parts were unfortunately incorrect. Take notes on this one.";
+             }
+
+             score += points;
+             uiElements.score.innerText = score;
+             uiElements.speech.innerText = msg;
+             
+             if(points === 200) {
+                 uiElements.speech.style.borderColor = "#22c55e";
+                 uiElements.speech.style.color = "#15803d";
+             } else if (points === 100) {
+                 uiElements.speech.style.borderColor = "#eab308";
+                 uiElements.speech.style.color = "#a16207";
+             } else {
+                 uiElements.speech.style.borderColor = "#ef4444";
+                 uiElements.speech.style.color = "#b91c1c";
+             }
+
+             setTimeout(() => {
+                 uiElements.speech.style.borderColor = "#16a34a";
+                 uiElements.speech.style.color = "#166534";
+                 currentRound++;
+                 if (currentRound >= gameSequence.length) finishGame();
+                 else {
+                     isProcessing = false;
+                     setDisplayData(gameSequence[currentRound]);
+                 }
+             }, 3500);
+        }
+
+        function finishGame() {
+            document.getElementById('final-score').innerText = score;
+            
+            if(score > 500) {
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 10000 });
+            }
+
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(username)}&score=${score}&subject=Science&game_name=G6_Bio_Ch1_L2`
+            }).finally(() => {
+                document.getElementById('modal-end').style.display = "flex";
+            });
+        }
+
+        /* Start Game */
+        setDisplayData(gameSequence[currentRound]);
+
+    </script>
+</body>
+</html>

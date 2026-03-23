@@ -69,15 +69,15 @@ teacher_name TEXT
 
 # demo teachers
 teachers = [
-    ('T-01', 'T-01@123', 'teacher', 'Mr. Davis', 'Math'),
+    ('T-01', 'T-01@123', 'teacher', 'Mr. Davis', 'Maths'),
     ('T-02', 'T-02@123', 'teacher', 'Ms. Lee', 'Science'),
     ('T-03', 'T-03@123', 'teacher', 'Mrs. Smith', 'Technology'),
     ('T-04', 'T-04@123', 'teacher', 'Mr. Johnson', 'Engineering'),
-    ('T-05', 'T-05@123', 'teacher', 'Ms. Williams', 'Math'),
+    ('T-05', 'T-05@123', 'teacher', 'Ms. Williams', 'Maths'),
     ('T-06', 'T-06@123', 'teacher', 'Mr. Brown', 'Science'),
     ('T-07', 'T-07@123', 'teacher', 'Mrs. Jones', 'Technology'),
     ('T-08', 'T-08@123', 'teacher', 'Mr. Garcia', 'Engineering'),
-    ('T-09', 'T-09@123', 'teacher', 'Ms. Miller', 'Math'),
+    ('T-09', 'T-09@123', 'teacher', 'Ms. Miller', 'Maths'),
     ('T-10', 'T-10@123', 'teacher', 'Mr. Wilson', 'Science')
 ]
 cursor.executemany("INSERT INTO users(username,password,role,name,subject) VALUES (?,?,?,?,?)", teachers)
@@ -107,20 +107,7 @@ students = [
 ]
 cursor.executemany("INSERT INTO users(username,password,role,name,subject) VALUES (?,?,?,?,?)", students)
 
-# demo scores (4 per student: Math, Science, Technology, Engineering)
-import random
-random.seed(42)  # For reproducible demo data
-subjects = ['Math', 'Science', 'Technology', 'Engineering']
-scores = []
-for student in students:
-    username = student[0]
-    for subject in subjects:
-        # Generate a random score between 100 and 1500
-        score = random.randint(100, 1500)
-        game_name = f"{username}_{subject}_Quiz"
-        scores.append((username, score, subject, game_name))
-
-cursor.executemany("INSERT INTO scores(username,score,subject,game_name) VALUES (?,?,?,?)", scores)
+# Dummy scores removed as requested.
 
 # demo student-teacher assignments
 # Assign specific teachers to each grade cohort
@@ -132,12 +119,12 @@ for student in students:
     
     # Simple assignment logic based on grade to ensure realistic data
     if grade in ['G6', 'G7']:
-        assignments.append((student_name, 'Math', 'Mr. Davis'))
+        assignments.append((student_name, 'Maths', 'Mr. Davis'))
         assignments.append((student_name, 'Science', 'Ms. Lee'))
         assignments.append((student_name, 'Technology', 'Mrs. Smith'))
         assignments.append((student_name, 'Engineering', 'Mr. Johnson'))
     else:
-        assignments.append((student_name, 'Math', 'Ms. Williams'))
+        assignments.append((student_name, 'Maths', 'Ms. Williams'))
         assignments.append((student_name, 'Science', 'Mr. Brown'))
         assignments.append((student_name, 'Technology', 'Mrs. Jones'))
         assignments.append((student_name, 'Engineering', 'Mr. Garcia'))

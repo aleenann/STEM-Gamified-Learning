@@ -6,310 +6,602 @@
     <title>Elevator Escape - Level 3</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        body {
-            background: #0f172a;
-            color: #f8fafc;
-        }
-
-        .navbar {
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 1px solid #334155;
+        /* Start Screen Overlay */
+        .start-screen-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(39, 33, 29, 0.95);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             backdrop-filter: blur(10px);
         }
 
-        .elevator-cabin {
-            position: relative;
-            max-width: 1200px;
-            width: 95%;
-            height: 750px;
-            margin: 2rem auto;
-            background: url('/static/elevator_illustration.png') center/cover no-repeat;
-            border: 12px solid #0f172a;
-            border-radius: 8px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(0,0,0,0.9);
-            overflow: hidden;
+        .start-card {
+            background: #fef3c7;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 8px solid #d4b895;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            max-width: 550px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .start-title {
+            font-size: 3.5rem;
+            color: #b45309;
+            margin: 0;
+            text-shadow: 2px 2px 0px #fde68a;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .start-img {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 4px solid #785a40;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            max-height: 350px;
+            object-fit: cover;
+        }
+
+        .btn-start {
+            background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+            color: white;
+            font-size: 2rem;
+            font-weight: 900;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #064e3b, 0 15px 25px rgba(0,0,0,0.4);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        
+        .btn-start:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #064e3b, 0 5px 10px rgba(0,0,0,0.4);
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap');
+
+        body {
+            background: #27211d; /* Very dark rusty brown */
+            color: #4a3b32; 
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .shaft-glass {
+        .navbar {
+            background: #d4b895; /* Warm earthy tone to match the lift */
+            border-bottom: 3px solid #b45309;
+            width: 100%;
+            display: flex; justify-content: space-between;
+            padding: 1rem 2rem; align-items: center;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 100;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.05);
+            color: #b45309;
+            border: 2px solid #b45309;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-logout:hover {
+            background: rgba(180, 83, 9, 0.1);
+            color: #7f3d07;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 20px;
+        }
+
+        /* Top HUD Bar */
+        .hud-top {
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            background: #4a3b32;
+            border: 3px solid #785a40;
+            border-radius: 12px;
+            padding: 12px 25px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+            color: #fdf6e3;
+        }
+
+        .hud-item {
+            font-size: 1.4rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0,0,0,0.25);
+            padding: 8px 18px;
+            border-radius: 8px;
+        }
+        
+        .hud-item span {
+            color: #fed7aa; /* Soft gold */
+        }
+
+        /* Elevator Cabin */
+        .elevator-cabin {
+            position: relative;
+            width: 90%;
+            height: 600px;
+            /* Warm beige and wood-like interior */
+            background: linear-gradient(180deg, #e4cda7 0%, #c49a6c 100%);
+            border: 20px solid #3c2a21; /* Dark outer frame */
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(60, 42, 33, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        /* Moving lines to simulate up motion */
+        .shaft-lines {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 120px, rgba(255,255,255,0.03) 120px, rgba(255,255,255,0.03) 125px);
-            background-size: 100% 200%;
-            pointer-events: none;
+            top: 0; bottom: 0; left: 0; right: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 2px, transparent 2px);
+            background-size: 100px 100px;
             z-index: 1;
         }
 
-        .floor-floor {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 80px;
-            background: linear-gradient(to top, #020617, #1e293b);
-            border-top: 4px solid #334155;
-            z-index: 2;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-        }
-
-        .led-panel {
-            position: relative;
-            margin-top: 2rem;
-            background: #000;
-            padding: 1rem 3rem;
-            border-radius: 8px;
-            border: 4px solid #334155;
-            color: #ef4444;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 4.5rem;
-            text-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
-            letter-spacing: 4px;
-            z-index: 5;
-            box-shadow: inset 0 0 15px rgba(0,0,0,1), 0 10px 20px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .led-panel::before {
+        /* Doors vertical divider */
+        .elevator-cabin::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: repeating-linear-gradient(transparent, transparent 2px, rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 4px);
-            pointer-events: none;
+            top: 0; bottom: 0; left: 50%;
+            width: 4px;
+            background: rgba(60, 42, 33, 0.2);
+            transform: translateX(-50%);
+            z-index: 2;
         }
 
-
-
-        .hologram-controls {
-            position: absolute;
-            top: 260px;
+        /* Center Content Layer */
+        .cabin-content {
+            z-index: 10;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            z-index: 15;
-            gap: 1.5rem;
+            gap: 30px;
         }
 
-        .hologram-row {
+        /* Feedback Ribbon */
+        .feedback-ribbon {
+            position: absolute;
+            top: 60px;
+            font-size: 2.2rem;
+            font-weight: 900;
+            padding: 12px 40px;
+            border-radius: 50px;
+            opacity: 0;
+            transform: translateY(-20px) scale(0.9);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            z-index: 20;
+        }
+        
+        .fb-correct {
+            background: #16a34a;
+            color: white;
+            border: 4px solid #bbf7d0;
+        }
+        
+        .fb-wrong {
+            background: #dc2626;
+            color: white;
+            border: 4px solid #fecaca;
+        }
+
+        .show-feedback {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Question Banner */
+        .question-banner {
             display: flex;
-            gap: 3rem;
-            width: 100%;
-            justify-content: center;
-            padding: 0 2rem;
-        }
-
-        .btn-holo {
-            background: rgba(15, 23, 42, 0.7);
-            border: 2px solid #38bdf8;
-            color: #38bdf8;
-            padding: 2.5rem 2rem;
-            font-size: 2.5rem;
-            font-family: 'Share Tech Mono', monospace;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            background: #fffbeb;
+            padding: 15px 20px;
             border-radius: 12px;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3), inset 0 0 15px rgba(56, 189, 248, 0.2);
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
-            min-width: 400px;
-            font-weight: bold;
-            white-space: nowrap;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            border: 5px solid #d4b895;
+            position: relative;
+            box-sizing: border-box;
         }
 
-        .btn-holo:hover {
-            transform: scale(1.05) translateY(-5px);
-            background: rgba(56, 189, 248, 0.15);
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.6), inset 0 0 20px rgba(56, 189, 248, 0.4);
-            color: #fff;
+        .option-text {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #3c2a21;
+            flex: 1;
+            text-align: center;
+            font-family: 'Outfit', monospace;
+            padding: 0 10px;
         }
 
-        .btn-holo.correct {
-            border-color: #10b981;
-            color: #10b981;
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.6), inset 0 0 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-holo.wrong {
-            border-color: #ef4444;
-            color: #ef4444;
-            text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.6), inset 0 0 20px rgba(239, 68, 68, 0.4);
-        }
-
-        .status-indicators {
-            position: absolute;
-            top: 2rem;
-            left: 2rem;
+        .vs-circle {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            color: #fffbeb;
+            font-weight: 900;
+            font-size: 1.8rem;
+            width: 70px;
+            height: 70px;
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            z-index: 5;
-        }
-
-        .status-badge {
-            background: rgba(0,0,0,0.6);
-            border: 1px solid #475569;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.2rem;
-            color: #fbbf24;
-            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 0.5rem;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(180, 83, 9, 0.5);
+            border: 4px solid #fef3c7;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
         }
 
+        /* Controls */
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            width: 100%;
+        }
+
+        .btn-choice {
+            width: 250px;
+            height: 80px;
+            font-size: 3.5rem;
+            font-weight: 900;
+            border-radius: 12px;
+            color: #fdf6e3;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid rgba(255,255,255,0.3);
+            transition: all 0.1s;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .btn-choice:active {
+            transform: translateY(6px);
+        }
+
+        .btn-red {
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 8px 0 #7f1d1d, 0 15px 20px rgba(0,0,0,0.4);
+        }
+        
+        .btn-red:active {
+            box-shadow: 0 2px 0 #7f1d1d, 0 5px 10px rgba(0,0,0,0.4);
+        }
+
+        .btn-green {
+            background: linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+            box-shadow: 0 8px 0 #14532d, 0 15px 20px rgba(0,0,0,0.4);
+        }
+        
+        .btn-green:active {
+            box-shadow: 0 2px 0 #14532d, 0 5px 10px rgba(0,0,0,0.4);
+        }
+
+        /* Animations */
         @keyframes shake {
-            0% { transform: translateY(0); }
-            20% { transform: translateY(4px) translateX(-1px); }
-            40% { transform: translateY(-4px) translateX(1px); }
-            60% { transform: translateY(2px) translateX(-2px); }
-            80% { transform: translateY(-2px) translateX(2px); }
-            100% { transform: translateY(0); }
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-15px); }
+            40% { transform: translateX(15px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
         }
 
-        @keyframes motionBlur {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 1000px; }
+        .shaking {
+            animation: shake 0.4s ease-in-out;
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.5) !important;
         }
 
-        @keyframes bounceTarget {
-            0%, 100% { transform: translateY(0); text-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
-            50% { transform: translateY(-5px); text-shadow: 0 0 25px rgba(16, 185, 129, 0.8); }
+        @keyframes moveUpLoop {
+            from { background-position: center 0; }
+            to { background-position: center 1000px; }
         }
 
-        .moving-up {
-            animation: shake 0.3s infinite;
-        }
-        .moving-up .shaft-glass {
-            animation: motionBlur 0.4s linear infinite;
+        .moving-up .shaft-lines {
+            animation: moveUpLoop 0.4s linear infinite;
         }
 
-        /* Modal styling */
+        .moving-up .question-banner {
+            border-color: #22c55e;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Modal Overlay */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.85);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(39, 33, 29, 0.85);
             align-items: center;
             justify-content: center;
-            z-index: 100;
+            z-index: 1000;
+            backdrop-filter: blur(6px);
         }
-        .modal-content {
-            background: #1e293b;
-            padding: 3rem;
-            border-radius: var(--radius-lg);
+
+        .modal-card {
+            background: #fef3c7; /* Warm bright background */
+            padding: 40px;
+            border-radius: 20px;
             text-align: center;
-            max-width: 500px;
             width: 90%;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            border: 2px solid #334155;
-            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            border: 6px solid #d4b895;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #3c2a21;
+            position: relative;
         }
+
         @keyframes popIn {
-            0% { transform: scale(0.9); opacity: 0; }
+            0% { transform: scale(0.8); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        .modal-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #b45309;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+        }
+        
+        .modal-subtitle {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #785a40;
+            margin: 0 0 25px 0;
+        }
+
+        .stats-box {
+            background: rgba(212, 184, 149, 0.25);
+            border: 2px solid #d4b895;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #4a3b32;
+        }
+
+        .stat-line:last-child {
+            margin-bottom: 0;
+            padding-top: 15px;
+            border-top: 2px dashed #b45309;
+            font-size: 1.6rem;
+            color: #b45309;
+        }
+
+        .badge-perfect {
+            position: absolute;
+            top: -25px;
+            right: -25px;
+            background: #ef4444;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 900;
+            padding: 12px 25px;
+            transform: rotate(12deg);
+            border-radius: 12px;
+            border: 4px solid #fef3c7;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            display: none;
+            z-index: 10;
+        }
+
+        .modal-row-btn {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-action {
+            padding: 15px 30px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            border-radius: 10px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bg-blue {
+            background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+            box-shadow: 0 6px 0 #1e3a8a;
+        }
+        
+        .bg-red {
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 6px 0 #7f1d1d;
+        }
+        
+        .bg-blue:active { transform: translateY(4px); box-shadow: 0 2px 0 #1e3a8a; }
+        .bg-red:active { transform: translateY(4px); box-shadow: 0 2px 0 #7f1d1d; }
 
     </style>
 </head>
 <body>
-    <nav class="navbar text-white">
-        <h2 style="margin: 0; color: #fff;">Brainiac</h2>
-        <button class="btn-logout" style="background: rgba(255,255,255,0.1); color: white;" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Abort Mission</button>
+    <!-- Start Screen Overlay -->
+    <div id="start-overlay" class="start-screen-overlay">
+        <div class="start-card">
+            <h1 class="start-title">Elevator Escape</h1>
+            <img src="/static/games/grade6/maths/elevator_boy.png" alt="Boy standing at elevator" class="start-img">
+            <button class="btn-start" onclick="startGame()">START GAME</button>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <h2 style="margin: 0; color: #fbd38d; font-size: 2rem; font-weight: 900;"><i class="fa-solid fa-elevator mr-2"></i> Elevator Escape</h2>
+        <button class="btn-logout" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Back</button>
     </nav>
 
-    <div id="elevator" class="elevator-cabin">
-        <div class="shaft-glass"></div>
-        
-        <div class="status-indicators">
-            <div class="status-badge">
-                <i class="fa-solid fa-bolt text-danger"></i> Energy Left: <span id="chances-left" style="color: #fff; font-size: 1.4rem; font-weight: bold;">20</span>
+    <div class="game-container">
+        <!-- TOP HUD -->
+        <div class="hud-top">
+            <div class="hud-item">
+                Floor <span id="display-floor">0</span> / 1000
             </div>
-            <div class="status-badge">
-                <i class="fa-solid fa-stopwatch text-warning"></i> Time ELP: <span id="time-elapsed" style="color: #fff; font-size: 1.4rem; font-weight: bold;">0s</span>
+            <div class="hud-item" style="background: rgba(180, 83, 9, 0.4); border: 2px solid #b45309;">
+                Turn <span id="display-turn">1</span> / 15
             </div>
-            <div class="status-badge" style="border-color: #166534; color: #10b981;">
-                <i class="fa-solid fa-flag-checkered"></i> TARGET: <span style="color: #fff; font-size: 1.4rem; font-weight: bold;">1000</span>
-            </div>
-        </div>
-
-        <div class="led-panel">
-            <i class="fa-solid fa-caret-up" id="led-arrow" style="font-size: 3rem; opacity: 0.3;"></i>
-            <span id="floor-display">0000</span>
-        </div>
-
-        <div class="hologram-controls">
-            <h2 style="color: #e2e8f0; font-size: 1.8rem; font-weight: 600; text-shadow: 0 0 10px rgba(255,255,255,0.3); letter-spacing: 2px;">WHICH VALUE IS GREATER?</h2>
-            <div class="hologram-row">
-                <button id="btn-left" class="btn-holo" onclick="checkChoice('left')"></button>
-                <button id="btn-right" class="btn-holo" onclick="checkChoice('right')"></button>
+            <div class="hud-item">
+                Time <span id="display-time">00:00</span>
             </div>
         </div>
 
-        <div class="floor-floor"></div>
-    </div>
+        <!-- ELEVATOR -->
+        <div id="elevator" class="elevator-cabin">
+            <div class="shaft-lines"></div>
 
-    <!-- Win Modal -->
-    <div id="win-modal" class="modal-overlay">
-        <div class="modal-content">
-            <i class="fa-solid fa-medal" style="font-size: 6rem; color: #fbbf24; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));"></i>
-            <h2 style="margin-bottom: 0.5rem; font-size: 2.5rem; color: #fff;">Floor 1000 Reached!</h2>
-            <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 1.2rem;">You successfully hacked the elevator drive system!</p>
-            
-            <div style="background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid #059669;">
-                <h3 style="color: #34d399; font-size: 3.5rem; font-weight: 900; margin-bottom: 0.5rem; font-family: 'Share Tech Mono', monospace;" id="final-score">100</h3>
-                <span style="color: #10b981; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;">Total XP Awarded</span>
+            <div id="feedback" class="feedback-ribbon">
+                <i class="fa-solid fa-check"></i> Correct!
             </div>
-            
-            <button onclick="window.location.href='/student/play'" class="menu-btn" style="width: 100%; padding: 1.25rem; font-size: 1.25rem; background: #3b82f6;">Return to Games <i class="fa-solid fa-arrow-right ml-1"></i></button>
+
+            <div class="cabin-content">
+                <div id="q-banner" class="question-banner">
+                    <div id="opt-left" class="option-text">...</div>
+                    <div class="vs-circle">VS</div>
+                    <div id="opt-right" class="option-text">...</div>
+                </div>
+
+                <div class="controls-row">
+                    <button class="btn-choice btn-red" onclick="checkAnswer('A')">A</button>
+                    <button class="btn-choice btn-green" onclick="checkAnswer('B')">B</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Fail Modal -->
-    <div id="fail-modal" class="modal-overlay">
-        <div class="modal-content">
-            <i class="fa-solid fa-triangle-exclamation" style="font-size: 5rem; color: #ef4444; margin-bottom: 1.5rem;"></i>
-            <h2 style="margin-bottom: 0.5rem; font-size: 2.5rem; color: #fff;">Out of Energy!</h2>
-            <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 1.2rem;">The elevator stalled out at <strong id="fail-floor" style="color: #fff;">Floor ?</strong>.</p>
-            <p style="color: #fca5a5; background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #7f1d1d;">You must always select the theoretically greater algebraic or numeral value to maintain ascension!</p>
-            
-            <button onclick="window.location.reload()" style="background: #3b82f6; width: 100%; padding: 1.25rem; font-size: 1.25rem; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-rotate-right mr-1"></i> Initiate Reboot</button>
+    <!-- Modal End -->
+    <div id="modal-end" class="modal-overlay">
+        <div class="modal-card">
+            <div id="perfect-badge" class="badge-perfect">PERFECT!</div>
+            <h2 class="modal-title">Elevator Escape</h2>
+            <p class="modal-subtitle" id="modal-msg">You Reached Floor <span id="final-floor">100</span>!</p>
+
+            <div class="stats-box">
+                <div class="stat-line">
+                    <span>Correct Answers:</span>
+                    <span id="stat-correct" style="color:#16a34a;">10</span>
+                </div>
+                <div class="stat-line">
+                    <span>Wrong Choices:</span>
+                    <span id="stat-wrong" style="color:#dc2626;">5</span>
+                </div>
+                <div class="stat-line">
+                    <span>Time Taken:</span>
+                    <span id="stat-time">01:45</span>
+                </div>
+                <div class="stat-line" id="bonus-row" style="display:none; color:#d97706;">
+                    <span>Floor 1000 Bonus:</span>
+                    <span>+100</span>
+                </div>
+                <div class="stat-line">
+                    <span>Final Score:</span>
+                    <span id="stat-score">500</span>
+                </div>
+            </div>
+
+            <div class="modal-row-btn">
+                <button class="btn-action bg-blue" onclick="window.location.reload()">Play Again</button>
+                <button class="btn-action bg-red" onclick="window.location.href='/student/play?subject=Maths&chapter=1'">Exit</button>
+            </div>
         </div>
     </div>
 
     <script>
         const username = "{{ session.get('username') }}";
-        const TOTAL_FLOORS = 1000;
-        const TARGET_CHANCES = 20;
+        const MAX_TURNS = 15;
+        const MAX_FLOOR = 1000;
         
+        let currentTurn = 1;
         let currentFloor = 0;
-        let chancesLeft = TARGET_CHANCES;
-        let attemptsUsed = 0;
-        let correctChoices = 0;
-        let wrongChoices = 0;
-        let startTime = Date.now();
+        let startTime = null;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
         let timerInterval;
+        let isProcessing = false;
 
-        let currentRoundTarget = 0;
-        let currentRoundLesser = 0;
-        let greaterSide = 'left';
-        let processing = false;
+        let greaterSide = 'A'; // Which button is geographically the correct pick
 
-        // Start dynamic timer
-        timerInterval = setInterval(() => {
-            let secs = Math.floor((Date.now() - startTime) / 1000);
-            document.getElementById('time-elapsed').innerText = secs + "s";
-        }, 1000);
+        function formatTime(secs) {
+            let m = Math.floor(secs / 60).toString().padStart(2, '0');
+            let s = (secs % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
 
-        function formatDisplay(num) {
-            return num.toString().padStart(4, '0');
+        function startGame() {
+            document.getElementById('start-overlay').style.display = 'none';
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                let s = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('display-time').innerText = formatTime(s);
+            }, 1000);
+            loadQuestion();
         }
 
         function toRoman(num) {
@@ -324,22 +616,23 @@
             return roman;
         }
 
+        // Generate Bodmas formatted string resulting in `target`
         function generateBODMAS(target) {
             let type = Math.floor(Math.random() * 4);
-            if (type === 0) {
-                let b = Math.floor(Math.random() * 7) + 2;
-                let c = Math.floor(Math.random() * 7) + 2;
+            if (type === 0) { // a + b * c
+                let b = Math.floor(Math.random() * 5) + 2;
+                let c = Math.floor(Math.random() * 5) + 2;
                 if(b*c >= target) { c = Math.max(2, Math.floor((target-2)/b)); }
                 let a = target - (b * c);
                 if(a < 1) { a = 1; b = 1; c = target - 1; }
                 return `${a} + ${b} \u00d7 ${c}`;
             } 
-            else if (type === 1) {
+            else if (type === 1) { // (a + b) * c
                 let factors = [];
                 for(let i=2; i<=10; i++) {
                     if(target % i === 0) factors.push(i);
                 }
-                if(factors.length === 0) type = 2; 
+                if(factors.length === 0) type = 2; // fallback
                 else {
                     let c = factors[Math.floor(Math.random() * factors.length)];
                     let sumAb = target / c;
@@ -349,188 +642,200 @@
                     return `(${a} + ${b}) \u00d7 ${c}`;
                 }
             }
-            if (type === 2) {
+            if (type === 2) { // a * b - c
                 let a = Math.floor(Math.random() * 5) + 6;
                 let b = Math.floor(Math.random() * 5) + Math.ceil(target/a) + 1;
                 let c = (a * b) - target;
                 if(c < 1) { c = 1; b = Math.ceil((target+1)/a); }
                 return `${a} \u00d7 ${b} - ${c}`;
             } 
-            else {
+            else { // a x (b - c)
                 let factors = [];
                 for(let i=2; i<=10; i++) {
                     if(target % i === 0) factors.push(i);
                 }
-                if(factors.length === 0) {
-                    let a = target + Math.floor(Math.random() * 10) + 5;
-                    let c = Math.floor(Math.random() * 8) + 2;
+                if(factors.length === 0) { // fallback a - (b-c)
+                    let a = target + Math.floor(Math.random() * 5) + 5;
+                    let c = Math.floor(Math.random() * 5) + 2;
                     let b = a - target + c;
                     return `${a} - (${b} - ${c})`;
                 } else {
                     let a = factors[Math.floor(Math.random() * factors.length)];
                     let diff = target / a;
-                    let c = Math.floor(Math.random() * 10) + 2;
+                    let c = Math.floor(Math.random() * 8) + 2;
                     let b = diff + c;
                     return `${a} \u00d7 (${b} - ${c})`;
                 }
             }
         }
 
-        function loadRound() {
-            if (chancesLeft <= 0 || currentFloor >= TOTAL_FLOORS) {
+        function loadQuestion() {
+            if (currentTurn > MAX_TURNS || currentFloor >= MAX_FLOOR) {
                 endGame();
                 return;
             }
+            document.getElementById('display-turn').innerText = currentTurn;
 
-            document.getElementById('btn-left').classList.remove('correct', 'wrong');
-            document.getElementById('btn-right').classList.remove('correct', 'wrong');
+            // Generate two distinct values between 20 and 150
+            let v1 = Math.floor(Math.random() * 80) + 20;
+            let v2 = v1 + (Math.floor(Math.random() * 10) + 2) * (Math.random() > 0.5 ? 1 : -1);
+            if(v2 < 10) v2 = 15;
 
-            let remaining = TOTAL_FLOORS - currentFloor;
-            if (remaining <= 80) {
-                currentRoundTarget = remaining;
-            } else {
-                currentRoundTarget = Math.floor(Math.random() * 30) + 55;
-            }
-            
-            let offset = Math.floor(Math.random() * (currentRoundTarget * 0.4)) + 3;
-            currentRoundLesser = currentRoundTarget - offset;
-            if (currentRoundLesser < 1) currentRoundLesser = 1;
-
+            // Pick strictly BODMAS or Roman for both
             let isRoman = Math.random() > 0.5;
-            let strGreater, strLesser;
-            if (isRoman) {
-                strGreater = toRoman(currentRoundTarget);
-                strLesser = toRoman(currentRoundLesser);
+
+            let str1, str2;
+            if(isRoman) {
+                str1 = toRoman(v1);
+                str2 = toRoman(v2);
             } else {
-                strGreater = generateBODMAS(currentRoundTarget);
-                strLesser = generateBODMAS(currentRoundLesser);
+                str1 = generateBODMAS(v1);
+                str2 = generateBODMAS(v2);
             }
 
-            if(Math.random() > 0.5) {
-                greaterSide = 'left';
-                document.getElementById('btn-left').innerText = strGreater;
-                document.getElementById('btn-right').innerText = strLesser;
+            // Assign randomly to A(Left) or B(Right)
+            if(v1 > v2) {
+                // v1 is greater
+                if(Math.random() > 0.5) {
+                    greaterSide = 'A';
+                    document.getElementById('opt-left').innerText = str1;
+                    document.getElementById('opt-right').innerText = str2;
+                } else {
+                    greaterSide = 'B';
+                    document.getElementById('opt-left').innerText = str2;
+                    document.getElementById('opt-right').innerText = str1;
+                }
             } else {
-                greaterSide = 'right';
-                document.getElementById('btn-left').innerText = strLesser;
-                document.getElementById('btn-right').innerText = strGreater;
+                // v2 is greater
+                if(Math.random() > 0.5) {
+                    greaterSide = 'A';
+                    document.getElementById('opt-left').innerText = str2;
+                    document.getElementById('opt-right').innerText = str1;
+                } else {
+                    greaterSide = 'B';
+                    document.getElementById('opt-left').innerText = str1;
+                    document.getElementById('opt-right').innerText = str2;
+                }
             }
-            
-            processing = false;
+
+            isProcessing = false;
         }
 
-        function animateFloorCounter(start, end, duration) {
-            let startTimestamp = null;
+        function animateFloor(oldFloor, newFloor) {
+            let start = null;
+            let duration = 800;
             const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                // ease out cubic
-                const ease = 1 - Math.pow(1 - progress, 3);
-                
-                const current = Math.floor(start + (end - start) * ease);
-                document.getElementById('floor-display').innerText = formatDisplay(current);
-                
-                if (progress < 1) {
+                if(!start) start = timestamp;
+                let progress = Math.min((timestamp - start) / duration, 1);
+                let current = Math.floor(oldFloor + (newFloor - oldFloor) * (1 - Math.pow(1 - progress, 3)));
+                document.getElementById('display-floor').innerText = current;
+                if(progress < 1) {
                     window.requestAnimationFrame(step);
-                } else {
-                    document.getElementById('floor-display').innerText = formatDisplay(end);
                 }
             };
             window.requestAnimationFrame(step);
         }
 
-        function triggerElevatorAscent(amountGained) {
-            let newFloor = currentFloor + amountGained;
-            if (newFloor > TOTAL_FLOORS) newFloor = TOTAL_FLOORS;
+        function checkAnswer(choice) {
+            if (isProcessing) return;
+            isProcessing = true;
             
-            // Visual feedback
-            const elevator = document.getElementById('elevator');
-            const arrow = document.getElementById('led-arrow');
-            
-            elevator.classList.add('moving-up');
-            arrow.style.opacity = '1';
-            arrow.style.color = '#fff';
-            
-            // Counter ticking
-            animateFloorCounter(currentFloor, newFloor, 1200);
-            
-            currentFloor = newFloor;
-            
-            setTimeout(() => {
-                elevator.classList.remove('moving-up');
-                arrow.style.opacity = '0.3';
-                arrow.style.color = '#ef4444';
+            let feedback = document.getElementById('feedback');
+            let elevator = document.getElementById('elevator');
+
+            if (choice === greaterSide) {
+                correctAnswers++;
                 
-                if (currentFloor >= TOTAL_FLOORS || chancesLeft <= 0) {
-                    endGame();
-                } else {
-                    loadRound();
+                feedback.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Correct!';
+                feedback.className = 'feedback-ribbon fb-correct show-feedback';
+                elevator.classList.add('moving-up');
+
+                // Add random floors between 65 and 75
+                let jump = Math.floor(Math.random() * 10) + 65;
+                // Ensures they win if they answer most correctly
+                // To get to 1000 in 15 turns, they need about 14 correct (14 * 70 = 980 + remaining).
+                if(currentTurn === MAX_TURNS && correctAnswers >= 14) {
+                    jump = 1000 - currentFloor; 
+                    if(jump < 0) jump = 15;
                 }
-            }, 1200);
-        }
+                
+                let newFloor = currentFloor + jump;
+                if(newFloor > MAX_FLOOR) newFloor = MAX_FLOOR;
 
-        function checkChoice(side) {
-            if (processing) return;
-            processing = true;
-            
-            chancesLeft--;
-            attemptsUsed++;
-            document.getElementById('chances-left').innerText = chancesLeft;
+                animateFloor(currentFloor, newFloor);
+                currentFloor = newFloor;
 
-            const btnLeft = document.getElementById('btn-left');
-            const btnRight = document.getElementById('btn-right');
-            let pointsGained = 0;
-            
-            if (side === greaterSide) {
-                pointsGained = currentRoundTarget;
-                correctChoices++;
-                if (side === 'left') btnLeft.classList.add('correct');
-                else btnRight.classList.add('correct');
+                setTimeout(() => {
+                    feedback.classList.remove('show-feedback');
+                    elevator.classList.remove('moving-up');
+                    currentTurn++;
+                    loadQuestion();
+                }, 1200);
+
             } else {
-                pointsGained = currentRoundLesser;
-                wrongChoices++;
-                if (side === 'left') btnLeft.classList.add('wrong');
-                else btnRight.classList.add('wrong');
+                wrongAnswers++;
+                
+                feedback.innerHTML = '<i class="fa-solid fa-xmark mr-2"></i> Wrong Choice!';
+                feedback.className = 'feedback-ribbon fb-wrong show-feedback';
+                elevator.classList.add('shaking');
+
+                setTimeout(() => {
+                    feedback.classList.remove('show-feedback');
+                    elevator.classList.remove('shaking');
+                    currentTurn++;
+                    loadQuestion();
+                }, 1200);
             }
-            
-            // Pause 400ms to show correct/wrong colour, then ascend
-            setTimeout(() => {
-                triggerElevatorAscent(pointsGained);
-            }, 400);
         }
 
         function endGame() {
             clearInterval(timerInterval);
+            let totalSecs = Math.floor((Date.now() - startTime) / 1000);
             
-            if (currentFloor >= TOTAL_FLOORS) {
-                let timeTaken = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('final-floor').innerText = currentFloor;
+            document.getElementById('stat-correct').innerText = correctAnswers;
+            document.getElementById('stat-wrong').innerText = wrongAnswers;
+            document.getElementById('stat-time').innerText = formatTime(totalSecs);
+
+            let score = correctAnswers * 50 - wrongAnswers * 15;
+            
+            if (currentFloor >= MAX_FLOOR) {
+                document.getElementById('modal-msg').innerHTML = 'You Escaped the Building!';
+                document.getElementById('perfect-badge').style.display = 'block';
+                document.getElementById('bonus-row').style.display = 'flex';
+                score += 100;
                 
-                // Final Score = (Correct × 50) − (Wrong × 20) − (Time Taken × 0.5)
-                let finalScore = Math.floor((correctChoices * 50) - (wrongChoices * 20) - (timeTaken * 0.5));
-                if (finalScore < 0) finalScore = 0;
-                
-                document.getElementById('final-score').innerText = finalScore;
-                
-                fetch('/save_score', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `username=${encodeURIComponent(username)}&score=${finalScore}&subject=Maths&game_name=G6_Maths_Ch1_L3`
-                }).then(() => {
-                    document.getElementById('win-modal').style.display = 'flex';
-                }).catch(err => {
-                    console.error("Error saving score", err);
-                    document.getElementById('win-modal').style.display = 'flex';
-                });
+                // Fire Confetti!
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * (0.3 - 0.1) + 0.1, y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random() * (0.9 - 0.7) + 0.7, y: Math.random() - 0.2 } }));
+                }, 250);
             } else {
-                document.getElementById('fail-floor').innerText = `Floor ${formatDisplay(currentFloor)}`;
-                document.getElementById('fail-modal').style.display = 'flex';
+                document.getElementById('modal-msg').innerHTML = `You stalled out at Floor <span style="color:#d97706">${currentFloor}</span>!`;
             }
+
+            if(score < 0) score = 0;
+            document.getElementById('stat-score').innerText = score;
+
+            // Show API Call
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(username)}&score=${score}&subject=Maths&game_name=G6_Maths_Ch1_L3`
+            }).finally(() => {
+                document.getElementById('modal-end').style.display = 'flex';
+            });
         }
 
-        // INIT
-        document.getElementById('floor-display').innerText = formatDisplay(0);
-        loadRound();
-
+        /* Initial Setup */
+        // Game is now started via the Start Screen button.
     </script>
 </body>
 </html>
