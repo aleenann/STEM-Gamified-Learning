@@ -1,6 +1,6 @@
 import re
 
-FILE_PATH = "c:/Users/DELL/STEM-Gamified-LEarning/STEM-Gamified-Learning/templates/student_dashboard.html"
+FILE_PATH = "templates/student_dashboard.html"
 
 with open(FILE_PATH, "r", encoding="utf-8") as f:
     content = f.read()

@@ -17,8 +17,9 @@
             <p style="font-weight: 600; color: #1F2937; font-size: 0.85rem; margin-top: 0.15rem; letter-spacing: 0.5px;">Learn • Play • Grow</p>
         </div>
         <ul>
-            <li><a href="/teacher" {% if active_tab != 'messages' %}class="active"{% endif %}>Analytics</a></li>
-            <li><a href="/teacher/messages" {% if active_tab == 'messages' %}class="active"{% endif %}>Messages {% if unread_doubts > 0 %}<span style="background: #22C55E; color: #1F2937; padding: 0.1rem 0.4rem; border-radius: 9999px; font-size: 0.75rem; margin-left: 0.25rem;">{{ unread_doubts }}</span>{% endif %}</a></li>
+            <li><a href="/teacher?active_tab=analytics&grade={{ selected_grade or '' }}" {% if active_tab == 'analytics' or not active_tab %}class="active"{% endif %}>Analytics</a></li>
+            <li><a href="/teacher?active_tab=leaderboard" {% if active_tab == 'leaderboard' %}class="active"{% endif %}>Leaderboard</a></li>
+            <li><a href="/teacher/messages" {% if active_tab == 'messages' %}class="active"{% endif %}>Messages {% if unread_doubts and unread_doubts > 0 %}<span style="background: #22C55E; color: #1F2937; padding: 0.1rem 0.4rem; border-radius: 9999px; font-size: 0.75rem; margin-left: 0.25rem;">{{ unread_doubts }}</span>{% endif %}</a></li>
             <li><button class="btn-logout" onclick="window.location.href='/logout'">Logout</button></li>
         </ul>
     </nav>
@@ -130,8 +131,62 @@
             </div>
         </div>
 
+        {% elif active_tab == 'leaderboard' %}
+        
+        {% if not selected_grade %}
+        <div class="card">
+            <h2 class="mb-2">Select a Grade for Leaderboard</h2>
+            <p class="text-muted mb-2">Choose a grade to view its XP leaderboard across all subjects.</p>
+            <div class="dashboard-grid" style="margin-top: 1.5rem;">
+                {% for g in grades %}
+                <a href="/teacher?active_tab=leaderboard&grade={{ g }}" class="card stat-card grade-select-card" style="text-decoration: none; transition: transform 0.2s;">
+                    <div class="stat-icon" style="background: rgba(14, 165, 233, 0.1); color: var(--primary);">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h4 style="color: var(--text-main);">Grade {{ g[1:] if g.startswith('G') else g }}</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">View Rankings</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
         {% else %}
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 class="mb-2" style="margin: 0;"><i class="fa-solid fa-trophy text-warning"></i> {{ selected_grade }} Leaderboard</h2>
+                <a href="/teacher?active_tab=leaderboard" class="btn-logout" style="padding: 0.4rem 1rem; text-decoration: none; font-size: 0.85rem; background: var(--text-muted); color: #1F2937;">
+                    <i class="fa-solid fa-arrow-left"></i> All Grades
+                </a>
+            </div>
+            <p class="text-muted mb-2">The top performers based on total XP in <b>{{ selected_subject }}</b>.</p>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
+                            <th style="padding: 1rem; width: 80px;">Rank</th>
+                            <th style="padding: 1rem;">Student Name</th>
+                            <th style="padding: 1rem;">Total XP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in leaderboard %}
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;">
+                                {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+                            </td>
+                            <td style="padding: 1rem; font-weight: 600;">{{ entry[0] }}</td>
+                            <td style="padding: 1rem; font-weight: 700; color: var(--primary);">{{ entry[1] }} XP</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
 
+        {% else %}
+        
         {% if not selected_grade %}
         <div class="card">
             <h2 class="mb-2">Select a Grade Class</h2>
@@ -148,7 +203,7 @@
         {% else %}
 
         <div style="margin-bottom: 1.5rem;">
-            <a href="/teacher" style="color: var(--primary); text-decoration: none; font-weight: 500;">
+            <a href="/teacher?active_tab=analytics" style="color: var(--primary); text-decoration: none; font-weight: 500;">
                 <i class="fa-solid fa-arrow-left"></i> Back to Classes
             </a>
         </div>
@@ -180,19 +235,53 @@
                     <i class="fa-solid fa-check-circle"></i>
                 </div>
                 <div class="stat-details">
-                    <h4>Modules Completed</h4>
-                    <p>--</p>
+                    <h4>Chapters Completed</h4>
+                    <p>{{ total_modules }}</p>
                 </div>
             </div>
         </div>
 
         <!-- Student Performance Table -->
         <div class="card">
-            <h2 class="mb-2">{{ selected_grade }} Performance</h2>
-            <div style="text-align: center; padding: 3rem 1rem;">
-                <i class="fa-solid fa-chart-bar text-muted" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
-                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Scores Coming Soon!</h3>
-                <p class="text-muted">Since the current games are demos, detailed student scores will be tracked and displayed here once the official games launch.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 class="mb-2" style="margin: 0;">{{ selected_grade }} Performance ({{ selected_subject }})</h2>
+                <a href="/teacher?active_tab=analytics" class="btn-logout" style="padding: 0.4rem 1rem; text-decoration: none; font-size: 0.85rem; background: var(--text-muted); color: #1F2937;">
+                    <i class="fa-solid fa-arrow-left"></i> Change Grade
+                </a>
+            </div>
+            <div style="overflow-x: auto; margin-top: 1rem;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); color: var(--text-muted);">
+                            <th style="padding: 1rem;">Student Name</th>
+                            <th style="padding: 1rem;">Chapters Finished</th>
+                            <th style="padding: 1rem;">Total XP</th>
+                            <th style="padding: 1rem; text-align: right;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem; font-weight: 600; color: #1F2937;">{{ student[0] }}</td>
+                            <td style="padding: 1rem;">
+                                <span style="background: rgba(34, 197, 94, 0.1); color: #16a34a; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; font-size: 0.9rem; border: 1px solid rgba(34, 197, 94, 0.2);">
+                                    {{ student[2] }} Chapters
+                                </span>
+                            </td>
+                            <td style="padding: 1rem; font-weight: 700; color: var(--primary);">{{ student[1] }} XP</td>
+                            <td style="padding: 1rem; text-align: right;">
+                                <div style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                                    {% if student[2] > 0 %}
+                                    <i class="fa-solid fa-circle-check text-success"></i> Active
+                                    {% else %}
+                                    <i class="fa-solid fa-circle text-muted" style="font-size: 0.5rem;"></i> Not Started
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
         {% endif %}

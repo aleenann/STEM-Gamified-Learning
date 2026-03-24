@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuit Fixer - Engineering Grade 6</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --primary-glow: #38bdf8;
+            --success-glow: #4ade80;
+            --error-glow: #f87171;
+            --wire-color: #94a3b8;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .game-header {
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .workspace {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        #circuit-board {
+            width: 800px;
+            height: 500px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            border: 2px solid rgba(56, 189, 248, 0.3);
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .toolbox {
+            height: 120px;
+            background: rgba(15, 23, 42, 0.9);
+            border-top: 1px solid rgba(56, 189, 248, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .component {
+            width: 80px;
+            height: 80px;
+            background: #1e293b;
+            border: 2px solid var(--wire-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .component:hover {
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .component i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .component span {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .slot {
+            width: 90px;
+            height: 90px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .slot.active {
+            border-color: var(--primary-glow);
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .slot.filled {
+            border: 2px solid var(--primary-glow);
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .slot.wire-slot.filled {
+            border: none;
+            background: none;
+        }
+
+        .wire-line {
+            background: var(--wire-color);
+            transition: all 0.5s;
+        }
+
+        .wire-line.active {
+            background: var(--success-glow);
+            box-shadow: 0 0 10px var(--success-glow);
+        }
+
+        .wire-path {
+            position: absolute;
+            background: var(--wire-color);
+            transition: all 0.5s;
+        }
+
+        .wire-path.glowing {
+            background: var(--success-glow);
+            box-shadow: 0 0 10px var(--success-glow);
+        }
+
+        .bulb-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #eab308;
+            filter: blur(20px);
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .bulb-glow.active {
+            opacity: 1;
+        }
+
+        .message-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.95);
+            padding: 3rem;
+            border-radius: 24px;
+            border: 2px solid var(--primary-glow);
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 100px rgba(56, 189, 248, 0.2);
+        }
+
+        .stat-badge {
+            background: rgba(56, 189, 248, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-weight: 600;
+        }
+
+        .btn {
+            background: var(--primary-glow);
+            color: var(--bg-dark);
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+            transform: scale(1.05);
+        }
+
+        .tutorial-tip {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(56, 189, 248, 0.1);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-glow);
+            font-size: 0.9rem;
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            background: var(--success-glow);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="/student/play?grade=G6" style="color: white; text-decoration: none;"><i class="fa-solid fa-arrow-left"></i></a>
+            <h2 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-bolt text-warning"></i> Circuit Fixer
+            </h2>
+        </div>
+        <div style="display: flex; gap: 1.5rem;">
+            <div class="stat-badge">LEVEL: <span id="level-num">1</span>/3</div>
+            <div class="stat-badge">XP: <span id="xp-val">0</span></div>
+            <div class="stat-badge">TIME: <span id="timer">00:00</span></div>
+        </div>
+    </div>
+
+    <div class="workspace">
+        <div id="circuit-board">
+            <!-- Dynamic Slots and Wires will be rendered here -->
+        </div>
+        <div class="tutorial-tip" id="hint">Drag a component to the correct slot to complete the circuit!</div>
+    </div>
+
+    <div class="toolbox" id="toolbox">
+        <div class="component" draggable="true" data-type="battery">
+            <i class="fa-solid fa-battery-full text-success"></i>
+            <span>Battery</span>
+        </div>
+        <div class="component" draggable="true" data-type="bulb">
+            <i class="fa-solid fa-lightbulb text-warning"></i>
+            <span>Bulb</span>
+        </div>
+        <div class="component" draggable="true" data-type="wire">
+            <i class="fa-solid fa-lines-leaning text-secondary"></i>
+            <span>Wire</span>
+        </div>
+    </div>
+
+    <div class="message-overlay" id="level-complete">
+        <h1 style="color: var(--primary-glow); font-size: 3rem; margin-bottom: 0.5rem;">SUCCESS!</h1>
+        <p id="level-msg" style="font-size: 1.2rem; margin-bottom: 2rem;">Circuit is complete and energy is flowing.</p>
+        <button class="btn" id="next-btn" onclick="nextLevel()">NEXT LEVEL</button>
+    </div>
+
+    <div class="message-overlay" id="game-over">
+        <h1 style="color: var(--success-glow); font-size: 3rem; margin-bottom: 0.5rem;">MISSION COMPLETE!</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 1rem;">You fixed all the circuits and restored power!</p>
+        <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span>Total XP Earned:</span>
+                <span id="final-xp" style="font-weight: 700; color: var(--primary-glow);">0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>Time Taken:</span>
+                <span id="final-time" style="font-weight: 700; color: var(--primary-glow);">0s</span>
+            </div>
+        </div>
+        <button class="btn" onclick="window.location.href='/student/play?grade=G6'">RETURN TO DASHBOARD</button>
+    </div>
+
+    <script>
+        let currentLevel = 1;
+        let xp = 0;
+        let seconds = 0;
+        let timerId;
+        let circuitData = [];
+        let filledSlots = 0;
+
+        const levels = {
+            1: {
+                name: "Simple Circuit",
+                slots: [
+                    { id: 's1', type: 'battery', x: 350, y: 350 },
+                    { id: 's2', type: 'bulb', x: 350, y: 50 },
+                    { id: 's3', type: 'wire', x: 100, y: 155, orient: 'v', len: 90 } // Aligned
+                ],
+                prefilled: [
+                     { x: 600, y: 200, type: 'wire' } 
+                ],
+                wires: [
+                    { x1: 350, y1: 395, x2: 100, y2: 395 },
+                    { x1: 100, y1: 395, x2: 100, y2: 245 }, 
+                    { x1: 100, y1: 155, x2: 100, y2: 95 }, 
+                    { x1: 100, y1: 95, x2: 350, y2: 95 },
+                    { x1: 440, y1: 95, x2: 700, y2: 95 },
+                    { x1: 700, y1: 95, x2: 700, y2: 395 },
+                    { x1: 700, y1: 395, x2: 440, y2: 395 }
+                ],
+                hint: "Add a battery, bulb, and wire to bridge the gap!"
+            },
+            2: {
+                name: "Series Circuit",
+                slots: [
+                    { id: 's1', type: 'bulb', x: 200, y: 50 },
+                    { id: 's2', type: 'bulb', x: 500, y: 50 },
+                    { id: 's3', type: 'wire', x: 290, y: 50, orient: 'h', len: 60 }
+                ],
+                prefilled: [
+                    { x: 350, y: 350, type: 'battery' },
+                    { x: 100, y: 200, type: 'wire' },
+                    { x: 600, y: 200, type: 'wire' }
+                ],
+                wires: [
+                    { x1: 350, y1: 395, x2: 100, y2: 395 },
+                    { x1: 100, y1: 395, x2: 100, y2: 95 },
+                    { x1: 100, y1: 95, x2: 200, y2: 95 },
+                    { x1: 350, y1: 95, x2: 350, y2: 95 }, // Static gap
+                    { x1: 440, y1: 95, x2: 500, y2: 95 },
+                    { x1: 590, y1: 95, x2: 700, y2: 95 },
+                    { x1: 700, y1: 95, x2: 700, y2: 395 },
+                    { x1: 700, y1: 395, x2: 440, y2: 395 }
+                ],
+                hint: "Connect two bulbs in a SINGLE path. If one breaks, both go out!"
+            },
+            3: {
+                name: "Parallel Circuit",
+                slots: [
+                    { id: 's1', type: 'wire', x: 50, y: 50, orient: 'v', len: 195 },
+                    { id: 's2', type: 'wire', x: 750, y: 50, orient: 'v', len: 195 },
+                    { id: 's3', type: 'wire', x: 350, y: 50, orient: 'h', len: 90 },
+                    { id: 's4', type: 'wire', x: 350, y: 245, orient: 'h', len: 90 }
+                ],
+                prefilled: [
+                    { x: 350, y: 350, type: 'battery' },
+                    { x: 350, y: 200, type: 'bulb' },
+                    { x: 350, y: 5, type: 'bulb' }
+                ],
+                wires: [
+                    { x1: 350, y1: 395, x2: 50, y2: 395 },
+                    { x1: 50, y1: 395, x2: 50, y2: 245 },
+                    { x1: 50, y1: 50, x2: 50, y2: 50 },
+                    
+                    { x1: 440, y1: 50, x2: 750, y2: 50 },
+                    { x1: 750, y1: 50, x2: 750, y2: 395 },
+                    { x1: 750, y1: 395, x2: 440, y2: 395 },
+
+                    { x1: 50, y1: 245, x2: 350, y2: 245 },
+                    { x1: 440, y1: 245, x2: 750, y2: 245 }
+                ],
+                hint: "Connect components in multiple paths. Each path works independently!"
+            }
+        };
+
+        function startTimer() {
+            timerId = setInterval(() => {
+                seconds++;
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function initLevel() {
+            const board = document.getElementById('circuit-board');
+            board.innerHTML = '';
+            const level = levels[currentLevel];
+            document.getElementById('level-num').innerText = currentLevel;
+            document.getElementById('hint').innerText = level.hint;
+            filledSlots = 0;
+
+            // Render prefilled
+            level.prefilled?.forEach(p => {
+                const comp = document.createElement('div');
+                comp.className = 'component';
+                comp.style.position = 'absolute';
+                comp.style.left = p.x + 'px';
+                comp.style.top = p.y + 'px';
+                comp.style.cursor = 'default';
+                if(p.type === 'wire') {
+                    comp.style.background = 'none';
+                    comp.style.border = 'none';
+                    comp.innerHTML = '<div class="wire-path glowing" style="width: 4px; height: 100%; left: 38px; top: 0;"></div>';
+                } else {
+                    comp.innerHTML = getComponentIcon(p.type);
+                }
+                board.appendChild(comp);
+            });
+
+            // Render slots
+            level.slots.forEach(s => {
+                const slot = document.createElement('div');
+                slot.className = 'slot' + (s.type === 'wire' ? ' wire-slot' : '');
+                slot.id = s.id;
+                slot.dataset.expected = s.type;
+                slot.dataset.orient = s.orient || 'v';
+                slot.dataset.len = s.len || 90;
+                
+                if(s.type === 'wire') {
+                    if(s.orient === 'h') {
+                        slot.style.width = s.len + 'px';
+                        slot.style.height = '40px';
+                        slot.style.top = (s.y + 25) + 'px';
+                    } else {
+                        slot.style.width = '40px';
+                        slot.style.height = s.len + 'px';
+                        slot.style.left = (s.x - 20) + 'px';
+                    }
+                }
+                
+                slot.style.left = (s.type === 'wire' ? (s.orient === 'h' ? s.x : s.x - 18) : s.x) + 'px';
+                slot.style.top = (s.type === 'wire' ? (s.orient === 'v' ? s.y : s.y + 75) : s.y) + 'px';
+                
+                slot.ondragover = (e) => {
+                    e.preventDefault();
+                    slot.classList.add('active');
+                };
+                slot.ondragleave = () => slot.classList.remove('active');
+                slot.ondrop = handleDrop;
+                
+                board.appendChild(slot);
+            });
+
+            // Render wires
+            level.wires.forEach(w => {
+                 const wire = document.createElement('div');
+                 wire.className = 'wire-path';
+                 const isHoriz = w.y1 === w.y2;
+                 if(isHoriz) {
+                     wire.style.height = '4px';
+                     wire.style.width = Math.abs(w.x2 - w.x1) + 'px';
+                     wire.style.left = Math.min(w.x1, w.x2) + 'px';
+                     wire.style.top = w.y1 + 'px';
+                 } else {
+                     wire.style.width = '4px';
+                     wire.style.height = Math.abs(w.y2 - w.y1) + 'px';
+                     wire.style.left = w.x1 + 'px';
+                     wire.style.top = Math.min(w.y1, w.y2) + 'px';
+                 }
+                 board.appendChild(wire);
+            });
+        }
+
+        function getComponentIcon(type, slot = null) {
+            if(type === 'battery') return '<i class="fa-solid fa-battery-full text-success"></i>';
+            if(type === 'bulb') return '<i class="fa-solid fa-lightbulb text-warning"></i><div class="bulb-glow"></div>';
+            
+            if(slot) {
+                const orient = slot.dataset.orient;
+                const len = slot.dataset.len;
+                if(orient === 'h') {
+                    return `<div class="wire-line" style="width: ${len}px; height: 4px; margin-top: 18px;"></div>`;
+                } else {
+                    return `<div class="wire-line" style="width: 4px; height: ${len}px; margin-left: 18px;"></div>`;
+                }
+            }
+            return '<i class="fa-solid fa-lines-leaning text-secondary"></i>';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('active');
+            const type = e.dataTransfer.getData('type');
+            
+            if(this.dataset.expected === type) {
+                this.classList.add('filled');
+                this.innerHTML = getComponentIcon(type, this);
+                this.ondragover = null;
+                this.ondrop = null;
+                filledSlots++;
+                checkCircuit();
+            } else {
+                showError("Wrong component for this slot!");
+            }
+        }
+
+        function checkCircuit() {
+            if(filledSlots === levels[currentLevel].slots.length) {
+                // Success
+                const wires = document.querySelectorAll('.wire-path');
+                wires.forEach(w => w.classList.add('glowing'));
+                
+                const lines = document.querySelectorAll('.wire-line');
+                lines.forEach(l => l.classList.add('active'));
+                
+                const glows = document.querySelectorAll('.bulb-glow');
+                glows.forEach(g => g.classList.add('active'));
+                
+                // Audio would be good here
+                setTimeout(() => {
+                    if(currentLevel < 3) {
+                        document.getElementById('level-complete').style.display = 'block';
+                    } else {
+                        endGame();
+                    }
+                }, 1000);
+            }
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            xp += 15;
+            document.getElementById('xp-val').innerText = xp;
+            document.getElementById('level-complete').style.display = 'none';
+            initLevel();
+        }
+
+        function endGame() {
+            clearInterval(timerId);
+            xp += 20; // Bonus for completion
+            document.getElementById('final-xp').innerText = xp;
+            document.getElementById('final-time').innerText = seconds + 's';
+            document.getElementById('game-over').style.display = 'block';
+            
+            // Save Score
+            saveScore(xp);
+        }
+
+        const username = "{{ session.get('username') }}";
+
+        function saveScore(score) {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(username)}&game_name=G6_Eng_Ch1&score=${score}&subject=Engineering`
+            });
+        }
+
+        function showError(msg) {
+            const hint = document.getElementById('hint');
+            const old = hint.innerText;
+            hint.innerText = "❌ " + msg;
+            hint.style.color = "var(--error-glow)";
+            setTimeout(() => {
+                hint.innerText = old;
+                hint.style.color = "white";
+            }, 2000);
+        }
+
+        // Setup Drag & Drop
+        document.querySelectorAll('.component').forEach(c => {
+            c.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('type', c.dataset.type);
+            });
+        });
+
+        window.onload = () => {
+            initLevel();
+            startTimer();
+        };
+    </script>
+</body>
+</html>

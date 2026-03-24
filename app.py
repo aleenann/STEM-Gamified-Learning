@@ -64,12 +64,18 @@ def inject_unread_counts():
         role = session.get("role")
         conn = sqlite3.connect("database.db")
         cursor = conn.cursor()
-        unread_msgs = 0
+        unread_announcements = 0
+        unread_private_msgs = 0
         unread_doubts = 0
         if role == "student":
             student_name = session.get("name")
-            cursor.execute("SELECT COUNT(*) FROM messages WHERE is_read = 0 AND (target_student = 'ALL' OR target_student = ?)", (student_name,))
-            unread_msgs = cursor.fetchone()[0]
+            # Broadcast messages (Announcements)
+            cursor.execute("SELECT COUNT(*) FROM messages WHERE is_read = 0 AND target_student = 'ALL'")
+            unread_announcements = cursor.fetchone()[0]
+            # Private messages
+            cursor.execute("SELECT COUNT(*) FROM messages WHERE is_read = 0 AND target_student = ?", (student_name,))
+            unread_private_msgs = cursor.fetchone()[0]
+            # Doubts (Replies)
             cursor.execute("SELECT COUNT(*) FROM doubts WHERE is_read_by_student = 0 AND student_name = ? AND reply IS NOT NULL", (student_name,))
             unread_doubts = cursor.fetchone()[0]
         elif role == "teacher":
@@ -77,8 +83,13 @@ def inject_unread_counts():
             cursor.execute("SELECT COUNT(*) FROM doubts WHERE is_read_by_teacher = 0 AND teacher_name = ?", (teacher_name,))
             unread_doubts = cursor.fetchone()[0]
         conn.close()
-        return dict(unread_msgs=unread_msgs, unread_doubts=unread_doubts, total_unread=(unread_msgs + unread_doubts))
-    return dict(unread_msgs=0, unread_doubts=0, total_unread=0)
+        return dict(
+            unread_announcements=unread_announcements, 
+            unread_private_msgs=unread_private_msgs, 
+            unread_doubts=unread_doubts, 
+            total_unread=(unread_announcements + unread_private_msgs + unread_doubts)
+        )
+    return dict(unread_announcements=0, unread_private_msgs=0, unread_doubts=0, total_unread=0)
 
 @app.route("/mark_read/message/<int:msg_id>", methods=["POST"])
 def mark_message_read(msg_id):
@@ -190,8 +201,8 @@ def student_messages():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     
-    # Fetch messages addressed to ALL or this specific student
-    cursor.execute("SELECT id, teacher_name, message, date, is_read FROM messages WHERE target_student = 'ALL' OR target_student = ? ORDER BY id DESC", (session.get("name"),))
+    # Fetch only broadcast messages for announcements
+    cursor.execute("SELECT id, teacher_name, message, date, is_read FROM messages WHERE target_student = 'ALL' ORDER BY id DESC")
     messages = cursor.fetchall()
     conn.close()
     
@@ -219,11 +230,15 @@ def student_doubts():
             conn.commit()
             return redirect("/student/doubts")
             
+    # Fetch private messages (Specific to this student)
+    cursor.execute("SELECT id, teacher_name, message, date, is_read FROM messages WHERE target_student = ? ORDER BY id DESC", (student_name,))
+    private_messages = cursor.fetchall()
+
     cursor.execute("SELECT id, question, reply, teacher_name, date, reply_date, is_read_by_student FROM doubts WHERE student_name = ? ORDER BY id DESC", (student_name,))
     doubts = cursor.fetchall()
     conn.close()
     
-    return render_template("student_dashboard.html", active_tab="doubts", doubts=doubts, teachers=teachers)
+    return render_template("student_dashboard.html", active_tab="doubts", doubts=doubts, private_messages=private_messages, teachers=teachers)
 
 @app.route("/student/progress")
 def student_progress():
@@ -271,6 +286,47 @@ def student_progress():
                 "total": 4, # 4 topics across 3 levels
                 "xp": total_xp
             })
+            
+        elif subject == "Science":
+            # Fetch ALL Science scores to handle Bio, Chem, Physics
+            cursor.execute("""
+                SELECT game_name, score 
+                FROM scores 
+                WHERE username = ? AND subject = ?
+            """, (username, subject))
+            all_sci_scores = cursor.fetchall()
+            
+            # Categorize scores
+            bio_scores = []
+            chem_scores = []
+            
+            for row in all_sci_scores:
+                game_name = row[0]
+                xp = row[1]
+                if game_name.startswith("G6_Bio_Ch1"):
+                    bio_scores.append(xp)
+                elif game_name.startswith("G6_Chem_Ch1"):
+                    chem_scores.append(xp)
+            
+            # Prepare chapters for display
+            sci_chapters = [
+                {"name": "Mindful Eating", "scores": bio_scores, "total": 2, "num": 1},
+                {"name": "Matter and Its States", "scores": chem_scores, "total": 1, "num": 1}
+            ]
+            
+            for chap in sci_chapters:
+                scores_list = chap["scores"]
+                # Explicit check to satisfy linter type inference
+                if isinstance(scores_list, list):
+                    completed = len(scores_list)
+                    total_xp = sum(scores_list)
+                    chapter_progress.append({
+                        "chapter_num": chap["num"],
+                        "chapter_name": chap["name"],
+                        "completed": completed,
+                        "total": chap["total"],
+                        "xp": total_xp
+                    })
             
     conn.close()
     
@@ -339,43 +395,93 @@ def teacher():
         
     subject = session.get("subject", "Stem")
     grade = request.args.get("grade")
+    active_tab = request.args.get("active_tab", "analytics")
     
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     
+    # Always get distinct grades for navigation/selection
+    cursor.execute("SELECT DISTINCT SUBSTR(username, 1, INSTR(username, '-') - 1) FROM users WHERE role = 'student'")
+    grades = [row[0] for row in cursor.fetchall() if row[0]]
+    # Sort grades numerically
+    grades.sort(key=lambda g: int(g[1:]) if len(g) > 1 and g[1:].isdigit() else 0)
+    
+    # Get unread doubts count for navbar badge
+    cursor.execute("SELECT COUNT(*) FROM doubts WHERE teacher_name = ? AND is_read_by_teacher = 0", (session.get("name"),))
+    unread_doubts = cursor.fetchone()[0]
+    
     if not grade:
-        # Get distinct grades from usernames (e.g. G6, G7)
-        cursor.execute("SELECT DISTINCT SUBSTR(username, 1, INSTR(username, '-') - 1) FROM users WHERE role = 'student'")
-        grades = [row[0] for row in cursor.fetchall() if row[0]]
-        # Sort grades numerically
-        grades.sort(key=lambda g: int(g[1:]) if len(g) > 1 and g[1:].isdigit() else 0)
-        
         conn.close()
-        return render_template("teacher_dashboard.html", grades=grades, selected_grade=None)
+        return render_template("teacher_dashboard.html", grades=grades, selected_grade=None, active_tab=active_tab, unread_doubts=unread_doubts)
     
     # If grade is selected
     grade_prefix = f"{grade}-%"
     
     # Get students and their scores for the teacher's subject in this grade
+    # Order by name ASC as requested
     cursor.execute("""
-        SELECT u.name, COALESCE(SUM(s.score), 0) as score
+        SELECT u.id, u.name, u.username
+        FROM users u
+        WHERE u.role = 'student' AND u.username LIKE ?
+        ORDER BY u.name ASC
+    """, (grade_prefix,))
+    
+    students_list = cursor.fetchall()
+    students_data = []
+    total_chapters_set = set()
+    
+    for row in students_list:
+        uid, name, uname = row
+        cursor.execute("SELECT game_name, score FROM scores WHERE username = ? AND subject = ?", (uname, subject))
+        scores = cursor.fetchall()
+        
+        total_xp = sum(s[1] for s in scores)
+        # Extract chapters from game names (e.g. G6_Maths_Ch1 -> Ch1)
+        student_chapters = set()
+        for s in scores:
+            gn = s[0]
+            if "_Ch" in gn:
+                parts = gn.split("_")
+                for p in parts:
+                    if p.startswith("Ch"):
+                        student_chapters.add(p)
+                        total_chapters_set.add(f"{grade}_{subject}_{p}")
+        
+        students_data.append((name, total_xp, len(student_chapters)))
+
+    # Calculate stats
+    active_students = len(students_data)
+    avg_score = 0
+    total_modules = len(total_chapters_set)
+    if active_students > 0:
+        avg_score = sum(student[1] for student in students_data) // active_students
+
+    # Teacher Leaderboard (using same logic as student leaderboard)
+    # Teacher Leaderboard - Filtered by teacher's specific subject
+    grade_prefix = grade + "-%"
+    cursor.execute("""
+        SELECT u.name, COALESCE(SUM(s.score), 0) as subject_score
         FROM users u
         LEFT JOIN scores s ON u.username = s.username AND s.subject = ?
         WHERE u.role = 'student' AND u.username LIKE ?
         GROUP BY u.id, u.name
-        ORDER BY score DESC
+        ORDER BY subject_score DESC
     """, (subject, grade_prefix))
+    leaderboard_data = cursor.fetchall()
     
-    students_data = cursor.fetchall()
-    
-    # Calculate stats
-    active_students = len(students_data)
-    avg_score = 0
-    if active_students > 0:
-        avg_score = sum(student[1] for student in students_data) // active_students
     conn.close()
         
-    return render_template("teacher_dashboard.html", active_tab="analytics", students=students_data, active_students=active_students, avg_score=avg_score, selected_grade=grade, selected_subject=subject)
+    return render_template("teacher_dashboard.html", 
+                         active_tab=active_tab, 
+                         students=students_data, 
+                         active_students=active_students, 
+                         avg_score=avg_score, 
+                         total_modules=total_modules, 
+                         selected_grade=grade, 
+                         selected_subject=subject,
+                         leaderboard=leaderboard_data,
+                         grades=grades,
+                         unread_doubts=unread_doubts)
 
 @app.route("/teacher/messages")
 def teacher_messages():
@@ -399,9 +505,18 @@ def teacher_messages():
     cursor.execute("SELECT id, student_name, question, reply, is_read_by_teacher, date, reply_date FROM doubts WHERE teacher_name = ? ORDER BY id DESC", (teacher_name,))
     doubts = cursor.fetchall()
     
+    # Get unread doubts count for navbar badge
+    cursor.execute("SELECT COUNT(*) FROM doubts WHERE teacher_name = ? AND is_read_by_teacher = 0", (teacher_name,))
+    unread_doubts = cursor.fetchone()[0]
+
+    # Get grades for navigation
+    cursor.execute("SELECT DISTINCT SUBSTR(username, 1, INSTR(username, '-') - 1) FROM users WHERE role = 'student'")
+    grades = [row[0] for row in cursor.fetchall() if row[0]]
+    grades.sort(key=lambda g: int(g[1:]) if len(g) > 1 and g[1:].isdigit() else 0)
+    
     conn.close()
     
-    return render_template("teacher_dashboard.html", active_tab="messages", announcements=announcements, doubts=doubts, assigned_students=assigned_students)
+    return render_template("teacher_dashboard.html", active_tab="messages", announcements=announcements, doubts=doubts, assigned_students=assigned_students, unread_doubts=unread_doubts, grades=grades)
 
 @app.route("/teacher/send_message", methods=["POST"])
 def teacher_send_message():
@@ -484,6 +599,20 @@ def play_g6_maths_ch1_l3():
     
     return render_template("g6_maths_ch1_l3.html")
 
+# Grade 6 Biology Game 1 Route (Nutrient Sort)
+@app.route("/student/play/bio/g6/ch1_l1")
+def play_g6_bio_ch1_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g6_bio_ch1_l1.html")
+
+# Grade 6 Chemistry Game 1 Route (Elements Explorer)
+@app.route("/student/play/chem/g6/ch1_l1")
+def play_g6_chem_ch1_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g6_chem_ch1_l1.html")
+
 # Grade 6 Biology Game 2 Route (Vitamin Diagnosis)
 @app.route("/student/play/bio/g6/ch1_l2")
 def play_g6_bio_ch1_l2():
@@ -491,6 +620,13 @@ def play_g6_bio_ch1_l2():
         return redirect("/")
     
     return render_template("g6_bio_ch1_l2.html")
+    
+# Grade 6 Engineering Game 1 Route (Circuit Fixer)
+@app.route("/student/play/eng/g6/ch1_l1")
+def play_g6_eng_ch1_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g6_eng_ch1_l1.html")
 
 
 # Save game score

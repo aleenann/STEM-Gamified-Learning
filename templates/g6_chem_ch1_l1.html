@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescue the Scientist - STEMQuest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --secondary: #0284c7;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --bg: #0f172a;
+            --surface: rgba(30, 41, 59, 0.95);
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Game Stage */
+        #game-stage {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            overflow: hidden;
+        }
+
+        /* Lab Background Details */
+        .lab-grid {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .lab-wall {
+            position: absolute;
+            bottom: 100px; width: 100%; height: 300px;
+            background: linear-gradient(0deg, #1e293b 0%, transparent 100%);
+            border-bottom: 4px solid #334155;
+        }
+
+        /* Scientist Illustration */
+        #scientist {
+            position: absolute;
+            bottom: 80px;
+            left: 10%;
+            z-index: 100;
+            transition: left 2s linear, transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .scientist-body {
+            width: 60px;
+            height: 100px;
+            background: white;
+            border-radius: 30px 30px 10px 10px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .scientist-head {
+            width: 50px;
+            height: 50px;
+            background: #ffdbac;
+            border-radius: 50%;
+            position: absolute;
+            top: -40px;
+            left: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .scientist-goggles {
+            width: 40px;
+            height: 15px;
+            background: rgba(14, 165, 233, 0.4);
+            border: 2px solid #334155;
+            border-radius: 10px;
+            position: absolute;
+            top: 15px;
+            left: 5px;
+        }
+
+        .scientist-coat-line {
+            width: 2px;
+            height: 60px;
+            background: #e2e8f0;
+            position: absolute;
+            left: 29px;
+            top: 20px;
+        }
+
+        .walking {
+            animation: walkBob 0.5s infinite ease-in-out;
+        }
+
+        @keyframes walkBob {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        /* Interactive Elements */
+        #exit-door {
+            position: absolute;
+            bottom: 100px;
+            right: 5%;
+            width: 140px;
+            height: 220px;
+            background: #334155;
+            border: 6px solid #475569;
+            border-radius: 12px 12px 0 0;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #door-ice {
+            position: absolute;
+            top: -10px; left: -10px;
+            width: 160px; height: 240px;
+            background: rgba(186, 230, 253, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 15px;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 1s ease;
+            z-index: 10;
+        }
+
+        #bridge-area {
+            position: absolute;
+            bottom: 100px;
+            left: 40%;
+            width: 300px;
+            height: 20px;
+            z-index: 5;
+        }
+
+        #bridge-water {
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 10px;
+            opacity: 0;
+            transition: all 0.5s;
+            filter: blur(2px);
+        }
+
+        #bridge-ice {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 20px;
+            background: #e0f2fe;
+            border: 2px solid white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(125, 211, 252, 0.8);
+            opacity: 0;
+            transform: scaleY(0.2);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #sensor-container {
+            position: absolute;
+            top: 150px;
+            right: 20%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #sensor-bulb {
+            width: 40px;
+            height: 40px;
+            background: #475569;
+            border-radius: 50%;
+            border: 3px solid #1e293b;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: background 0.5s;
+        }
+
+        .sensor-active { background: #10b981 !important; box-shadow: 0 0 20px #10b981 !important; }
+
+        #steam-cloud {
+            position: absolute;
+            top: -30px; left: -50px;
+            width: 140px; height: 100px;
+            background: rgba(255,255,255,0.6);
+            filter: blur(20px);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 1s;
+            pointer-events: none;
+        }
+
+        /* UI Panel */
+        #ui-panel {
+            background: var(--surface);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem 2rem;
+            border-top: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .temp-slider-wrap {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        #temp-label {
+            min-width: 100px;
+            font-weight: 800;
+            font-size: 2rem;
+            text-align: center;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
+
+        input[type=range] {
+            flex: 1;
+            height: 12px;
+            -webkit-appearance: none;
+            background: #334155;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 32px;
+            height: 32px;
+            background: white;
+            border: 4px solid var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        .status-header {
+            width: 100%;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .task-card {
+            background: rgba(255,255,255,0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Particles */
+        .particle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Results Overlay */
+        #results-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .victory-card {
+            background: white;
+            color: var(--bg);
+            padding: 3rem;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .finish-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-retry { background: #e2e8f0; color: #475569; }
+        .btn-catalog { background: var(--primary); color: white; }
+
+        #dialogue {
+            position: absolute;
+            background: white;
+            color: var(--bg);
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            bottom: 220px;
+            left: 10%;
+            width: 200px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 110;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+
+        #dialogue::after {
+            content: '';
+            position: absolute;
+            bottom: -10px; left: 30px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="status-header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="task-card">
+                <i class="fa-solid fa-flask-vial text-primary"></i>
+                <span id="step-name">Step 1: Frozen Obstacle</span>
+            </div>
+            <div id="objective" style="font-weight: 600; font-size: 1.1rem;">Melt the frozen door!</div>
+        </div>
+        <div class="task-card">
+            <i class="fa-solid fa-star text-accent"></i>
+            <span id="xp-display">0 XP</span>
+        </div>
+    </div>
+
+    <div id="game-stage">
+        <div class="lab-grid"></div>
+        <div class="lab-wall"></div>
+
+        <div id="dialogue">Dr. Atom: I'm locked in! Help me out!</div>
+
+        <div id="scientist">
+            <div class="scientist-body">
+                <div class="scientist-head"></div>
+                <div class="scientist-goggles"></div>
+                <div class="scientist-coat-line"></div>
+            </div>
+            <div style="background: white; color: black; padding: 2px 8px; border-radius: 5px; margin-top: 10px; font-weight: 700; font-size: 0.8rem;">DR. ATOM</div>
+        </div>
+
+        <div id="exit-door">
+            <i class="fa-solid fa-door-open" style="font-size: 5rem; color: #1e293b;"></i>
+            <div id="door-ice">
+                <i class="fa-solid fa-snowflake" style="font-size: 3rem; color: white;"></i>
+            </div>
+        </div>
+
+        <div id="bridge-area">
+            <div id="bridge-water"></div>
+            <div id="bridge-ice"></div>
+        </div>
+
+        <div id="sensor-container">
+            <div id="steam-cloud"></div>
+            <div id="sensor-bulb"></div>
+            <div style="font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Biometric Sensor</div>
+        </div>
+    </div>
+
+    <div id="ui-panel">
+        <div style="color: #94a3b8; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-gears"></i> CONTROL LABORATORY TEMPERATURE
+        </div>
+        <div class="temp-slider-wrap">
+            <i class="fa-solid fa-snowflake" style="color: #7dd3fc; font-size: 1.5rem;"></i>
+            <input type="range" id="temp-slider" min="-50" max="150" value="0">
+            <i class="fa-solid fa-fire" style="color: #fb923c; font-size: 1.5rem;"></i>
+            <div id="temp-label">0°C</div>
+        </div>
+    </div>
+
+    <div id="results-overlay">
+        <div class="victory-card">
+            <div style="font-size: 5rem; margin-bottom: 1rem;">✨</div>
+            <h1 style="color: var(--primary);">Mission Accomplished!</h1>
+            <p style="font-size: 1.2rem; margin: 1rem 0;">You've successfully used the particles of matter to rescue the scientist!</p>
+            <div style="background: #f1f5f9; padding: 1.5rem; border-radius: 12px; margin: 2rem 0;">
+                <div style="font-size: 0.9rem; color: #64748b; text-transform: uppercase;">Total XP Earned</div>
+                <div style="font-size: 3.5rem; font-weight: 800; color: var(--bg);">+100</div>
+            </div>
+            <div class="btn-group">
+                <button class="finish-btn btn-retry" onclick="location.reload()">
+                    <i class="fa-solid fa-rotate-right"></i> Restart
+                </button>
+                <button class="finish-btn btn-catalog" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Chemistry&chapter=1'">
+                    <i class="fa-solid fa-house"></i> View Notes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const slider = document.getElementById('temp-slider');
+        const tempLabel = document.getElementById('temp-label');
+        const doorIce = document.getElementById('door-ice');
+        const water = document.getElementById('bridge-water');
+        const bridgeIce = document.getElementById('bridge-ice');
+        const sensor = document.getElementById('sensor-bulb');
+        const steam = document.getElementById('steam-cloud');
+        const scientist = document.getElementById('scientist');
+        const dialogue = document.getElementById('dialogue');
+        const stepName = document.getElementById('step-name');
+        const objective = document.getElementById('objective');
+        const xpDisplay = document.getElementById('xp-display');
+
+        let currentStep = 1;
+        let xp = 0;
+        let isDone = false;
+
+        function say(text) {
+            dialogue.innerText = `Dr. Atom: ${text}`;
+            dialogue.style.opacity = 1;
+            dialogue.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                dialogue.style.opacity = 0;
+                dialogue.style.transform = 'translateY(20px)';
+            }, 4000);
+        }
+
+        // Initial dialogue
+        setTimeout(() => say("Help! This door is frozen solid! I need HEAT!"), 1000);
+
+        slider.oninput = function() {
+            if (isDone) return;
+            const temp = parseInt(this.value);
+            tempLabel.innerText = temp + "°C";
+            
+            // Visual feedback based on temp
+            if (temp > 50) tempLabel.style.color = "#ef4444";
+            else if (temp < 0) tempLabel.style.color = "#3b82f6";
+            else tempLabel.style.color = "#f59e0b";
+
+            processLogic(temp);
+        };
+
+        function processLogic(temp) {
+            // STEP 1: Melt Door
+            if (currentStep === 1) {
+                if (temp > 0) {
+                    const melt = Math.min(temp / 50, 1);
+                    doorIce.style.opacity = 1 - melt;
+                    doorIce.style.transform = `scale(${1-melt*0.2}) translateY(${melt * 20}px)`;
+                    
+                    if (temp >= 50) {
+                        currentStep = 2;
+                        xp += 25;
+                        updateXP();
+                        doorIce.style.display = 'none';
+                        water.style.opacity = 1;
+                        stepName.innerText = "Step 2: The Flood";
+                        objective.innerText = "The melted ice flooded the floor! Freeze it into a bridge!";
+                        say("Great! But now it's flooded. COOL it down to make a solid path!");
+                    }
+                }
+            }
+            // STEP 2: Freeze Water
+            else if (currentStep === 2) {
+                if (temp <= 0) {
+                    const freeze = Math.min(Math.abs(temp) / 30, 1);
+                    bridgeIce.style.opacity = freeze;
+                    bridgeIce.style.transform = `scaleY(${0.2 + freeze * 0.8})`;
+                    water.style.opacity = 1 - freeze;
+                    
+                    if (temp <= -30) {
+                        currentStep = 3;
+                        xp += 25;
+                        updateXP();
+                        steam.style.opacity = 1;
+                        stepName.innerText = "Step 3: Steam Blockage";
+                        objective.innerText = "Steam is blocking the sensor! Cool the air to condense it!";
+                        say("Whoa! Steam from the cooling pipes is blocking the sensor! Freeze the air!");
+                        spawnSteamParticles();
+                    }
+                }
+            }
+            // STEP 3: Clear Steam
+            else if (currentStep === 3) {
+                if (temp <= 0) {
+                    const clear = Math.min(Math.abs(temp) / 40, 1);
+                    steam.style.opacity = 1 - clear;
+                    
+                    if (temp <= -40) {
+                        currentStep = 4;
+                        xp += 25;
+                        updateXP();
+                        sensor.classList.add('sensor-active');
+                        stepName.innerText = "Step 4: Exit Strategy";
+                        objective.innerText = "Sensor cleared! The scientist is exiting!";
+                        say("The sensor is clear! I'm coming through!");
+                        finishGame();
+                    }
+                }
+            }
+        }
+
+        function updateXP() {
+            xpDisplay.innerText = `${xp} XP`;
+            confetti({
+                particleCount: 40,
+                spread: 50,
+                origin: { x: 0.9, y: 0.1 }
+            });
+        }
+
+        function spawnSteamParticles() {
+            if (currentStep !== 3) return;
+            const stage = document.getElementById('game-stage');
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = (70 + Math.random() * 15) + '%';
+            p.style.top = (150 + Math.random() * 50) + 'px';
+            p.style.width = p.style.height = (5 + Math.random() * 15) + 'px';
+            p.style.background = 'rgba(255,255,255,0.4)';
+            p.style.filter = 'blur(2px)';
+            
+            stage.appendChild(p);
+
+            const anim = p.animate([
+                { opacity: 0, transform: 'translate(0, 0)' },
+                { opacity: 1, transform: `translate(${(Math.random()-0.5)*50}px, -100px)` },
+                { opacity: 0, transform: `translate(${(Math.random()-0.5)*100}px, -200px)` }
+            ], { duration: 2000 });
+
+            anim.onfinish = () => {
+                p.remove();
+                if (currentStep === 3) spawnSteamParticles();
+            };
+        }
+
+        function finishGame() {
+            isDone = true;
+            xp += 25; // Final completion XP
+            updateXP();
+            
+            scientist.classList.add('walking');
+            scientist.style.transition = "left 3s linear";
+            scientist.style.left = "85%";
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 200,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                document.getElementById('results-overlay').style.display = 'flex';
+                saveScore();
+            }, 3500);
+        }
+
+        function saveScore() {
+             fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    username: "{{ session.get('name') }}", // Using session name as placeholder
+                    score: xp,
+                    subject: 'Science',
+                    game_name: 'G6_Chem_Ch1_L1'
+                })
+            });
+        }
+    </script>
+</body>
+</html>

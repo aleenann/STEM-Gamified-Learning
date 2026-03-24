@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrient Sort - Level 1</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap');
+
+        body {
+            background: #fdfcf0; /* Light creamy background */
+            font-family: 'Outfit', sans-serif;
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 3px solid #fde047;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .stat-bar {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            display: inline-flex;
+            gap: 3rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            border: 2px solid #fef08a;
+        }
+
+        .stat-item {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .stat-value {
+            color: #eab308;
+            margin-left: 0.5rem;
+        }
+
+        /* Food Items Area */
+        .food-source-area {
+            height: 480px; /* INCREASED HEIGHT to ensure 15 items fit perfectly */
+            background: rgba(255,255,255,0.3);
+            border: 3px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            gap: 1.5rem;
+            position: relative;
+            overflow: visible;
+        }
+
+        .food-item {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+            z-index: 100;
+            border: 2px solid transparent;
+        }
+
+        .food-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .food-item i {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .food-item span {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        /* Baskets Area */
+        .baskets-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* FIXED GRID for stability */
+            gap: 1.5rem;
+            margin-top: 1rem;
+            align-items: stretch;
+        }
+
+        .basket {
+            background: white;
+            border: 4px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 1.2rem;
+            min-height: 240px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: border-color 0.2s, background-color 0.2s;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+
+        .basket.drag-over {
+            border-color: #3b82f6 !important;
+            background: #eff6ff !important;
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .basket-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .basket i.basket-icon {
+            font-size: 4rem;
+            margin: 1rem 0;
+            opacity: 0.3;
+        }
+
+        .carbs-basket { border-color: #f59e0b; color: #b45309; }
+        .proteins-basket { border-color: #ef4444; color: #b91c1c; }
+        .fats-basket { border-color: #eab308; color: #a16207; }
+        .vitamins-basket { border-color: #10b981; color: #047857; }
+
+        .basket-count {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: #1f2937;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(17, 24, 39, 0.85);
+            align-items: center; justify-content: center;
+            z-index: 1000; backdrop-filter: blur(6px);
+        }
+        .modal-card {
+            background: white; padding: 40px; border-radius: 20px;
+            text-align: center; width: 90%; max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .btn-action {
+            padding: 12px 25px; font-size: 1.2rem; font-weight: 800;
+            border-radius: 10px; color: white; border: none; cursor: pointer;
+            margin: 10px; transition: all 0.2s;
+            text-decoration: none; display: inline-block;
+        }
+        .bg-blue { background: #3b82f6; box-shadow: 0 5px 0 #1d4ed8; }
+        .bg-blue:active { transform: translateY(5px); box-shadow: 0 0 0 #1d4ed8; }
+        
+        .floating-xp {
+            position: fixed;
+            font-weight: 900;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 1000;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2 style="margin: 0; color: #eab308; font-size: 2rem; font-weight: 900;">
+            <i class="fa-solid fa-basket-shopping mr-2"></i> Nutrient Sort
+        </h2>
+        <button class="btn-logout" onclick="window.location.href='/student/play?subject=Science&sub_subject=Biology&chapter=1'"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    </nav>
+
+    <div class="game-container">
+        <div class="stat-bar">
+            <div class="stat-item">XP: <span id="xp-display" class="stat-value">0</span></div>
+            <div class="stat-item">Remaining: <span id="rem-display" class="stat-value">15</span></div>
+        </div>
+
+        <div id="food-source" class="food-source-area">
+            <!-- Food items will appear here -->
+        </div>
+
+        <div class="baskets-grid">
+            <div class="basket carbs-basket" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'Carbohydrates')">
+                <div class="basket-title">Carbohydrates</div>
+                <i class="fa-solid fa-bowl-rice basket-icon"></i>
+                <p class="text-sm">Energy-giving foods</p>
+                <div class="basket-count" id="count-Carbohydrates">0</div>
+            </div>
+
+            <div class="basket proteins-basket" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'Proteins')">
+                <div class="basket-title">Proteins</div>
+                <i class="fa-solid fa-dumbbell basket-icon"></i>
+                <p class="text-sm">Body-building foods</p>
+                <div class="basket-count" id="count-Proteins">0</div>
+            </div>
+
+            <div class="basket fats-basket" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'Fats')">
+                <div class="basket-title">Fats</div>
+                <i class="fa-solid fa-battery-full basket-icon"></i>
+                <p class="text-sm">Stored energy</p>
+                <div class="basket-count" id="count-Fats">0</div>
+            </div>
+
+            <div class="basket vitamins-basket" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 'Vitamins & Minerals')">
+                <div class="basket-title">Vitamins & Minerals</div>
+                <i class="fa-solid fa-shield-halved basket-icon"></i>
+                <p class="text-sm">Protective foods</p>
+                <div class="basket-count" id="count-Vitamins & Minerals">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- End Modal -->
+    <div id="end-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 id="end-title" style="font-size: 2.5rem; color: #eab308;">Great Job!</h2>
+            <p id="end-text" style="font-size: 1.2rem; color: #4b5563; margin-bottom: 20px;">You've sorted all the food items.</p>
+            <div style="background: #fefce8; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 2px solid #fef08a;">
+                <h3 style="font-size: 2rem; margin: 0;">Total Score: <span id="final-xp" style="color: #ca8a04;">0</span> XP</h3>
+            </div>
+            <div>
+                <button class="btn-action bg-blue" onclick="window.location.reload()">Try Again</button>
+                <a href="/student/play?subject=Science&sub_subject=Biology&chapter=1" class="btn-action bg-blue" style="background: #10b981; box-shadow: 0 5px 0 #059669;">Unlock Level 2</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const username = "{{ session.get('username') }}";
+        const foodPool = [
+            { name: "Rice", type: "Carbohydrates", icon: "fa-bowl-rice", color: "#f59e0b" },
+            { name: "Potato", type: "Carbohydrates", icon: "fa-seedling", color: "#f59e0b" },
+            { name: "Bread", type: "Carbohydrates", icon: "fa-bread-slice", color: "#f59e0b" },
+            { name: "Wheat", type: "Carbohydrates", icon: "fa-wheat-awn", color: "#f59e0b" },
+            { name: "Sugar", type: "Carbohydrates", icon: "fa-cubes-stacked", color: "#f59e0b" },
+            
+            { name: "Milk", type: "Proteins", icon: "fa-glass-water", color: "#ef4444" },
+            { name: "Eggs", type: "Proteins", icon: "fa-egg", color: "#ef4444" },
+            { name: "Pulses", type: "Proteins", icon: "fa-leaf", color: "#ef4444" },
+            { name: "Beans", type: "Proteins", icon: "fa-seedling", color: "#ef4444" },
+            { name: "Fish", type: "Proteins", icon: "fa-fish", color: "#ef4444" },
+            
+            { name: "Butter", type: "Fats", icon: "fa-cheese", color: "#eab308" },
+            { name: "Ghee", type: "Fats", icon: "fa-bottle-droplet", color: "#eab308" },
+            { name: "Oil", type: "Fats", icon: "fa-droplet", color: "#eab308" },
+            { name: "Nuts", type: "Fats", icon: "fa-pepper-hot", color: "#eab308" },
+            
+            { name: "Carrot", type: "Vitamins & Minerals", icon: "fa-carrot", color: "#10b981" },
+            { name: "Orange", type: "Vitamins & Minerals", icon: "fa-lemon", color: "#10b981" },
+            { name: "Spinach", type: "Vitamins & Minerals", icon: "fa-leaf", color: "#10b981" },
+            { name: "Amla", type: "Vitamins & Minerals", icon: "fa-circle", color: "#10b981" },
+            { name: "Apple", type: "Vitamins & Minerals", icon: "fa-apple-whole", color: "#10b981" }
+        ];
+
+        let xp = 0;
+        let itemsRemaining = 15;
+        let gameItems = [];
+        let basketCounts = { "Carbohydrates": 0, "Proteins": 0, "Fats": 0, "Vitamins & Minerals": 0 };
+
+        function initGame() {
+            // Pick 15 random items
+            const shuffled = [...foodPool].sort(() => 0.5 - Math.random());
+            gameItems = shuffled.slice(0, 15);
+            itemsRemaining = gameItems.length;
+            renderItems();
+            updateStats();
+        }
+
+        function renderItems() {
+            const container = document.getElementById('food-source');
+            container.innerHTML = '';
+            gameItems.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = 'food-item';
+                el.draggable = true;
+                el.id = `food-${index}`;
+                el.dataset.type = item.type;
+                el.style.color = item.color;
+                el.innerHTML = `
+                    <i class="fa-solid ${item.icon}"></i>
+                    <span>${item.name}</span>
+                `;
+                el.addEventListener('dragstart', dragStart);
+                container.appendChild(el);
+            });
+        }
+
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.id);
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function dragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function drop(e, basketType) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            const id = e.dataTransfer.getData('text/plain');
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            const correctType = el.dataset.type;
+            const isCorrect = correctType === basketType;
+
+            if (isCorrect) {
+                xp += 10;
+                showFloatingXP("+10 XP", "#10b981", e.clientX, e.clientY);
+                basketCounts[basketType]++;
+                document.getElementById(`count-${basketType}`).innerText = basketCounts[basketType];
+                el.remove();
+                itemsRemaining--;
+            } else {
+                xp = Math.max(0, xp - 5);
+                showFloatingXP("-5 XP", "#ef4444", e.clientX, e.clientY);
+                // Shake the basket
+                e.currentTarget.style.animation = 'shake 0.5s';
+                setTimeout(() => e.currentTarget.style.animation = '', 500);
+            }
+
+            updateStats();
+            if (itemsRemaining === 0) finishGame();
+        }
+
+        function showFloatingXP(text, color, x, y) {
+            const el = document.createElement('div');
+            el.className = 'floating-xp';
+            el.innerText = text;
+            el.style.color = color;
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        }
+
+        function updateStats() {
+            document.getElementById('xp-display').innerText = xp;
+            document.getElementById('rem-display').innerText = itemsRemaining;
+        }
+
+        function finishGame() {
+            document.getElementById('final-xp').innerText = xp;
+            document.getElementById('end-modal').style.display = 'flex';
+            if (xp > 100) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+
+            // Save score
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(username)}&score=${xp}&subject=Science&game_name=G6_Bio_Ch1_L1`
+            });
+        }
+
+        initGame();
+    </script>
+    
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</body>
+</html>
