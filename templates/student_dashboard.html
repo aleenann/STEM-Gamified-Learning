@@ -666,7 +666,8 @@
                 </div>
             </div>
 
-            {% elif subject == 'Maths' and grade|lower == 'g6' and not chapter %}
+            {% elif subject == 'Maths' and not chapter %}
+            {% if grade|lower == 'g6' %}
             <p class="text-muted mb-2">Grade 6 Mathematics Chapters</p>
             <div class="card-grid">
                 <div class="card game-card" onclick="window.location.href='/student/learn?subject=Maths&chapter=1'" style="border: 2px solid var(--border);">
@@ -675,7 +676,23 @@
                     <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
                 </div>
             </div>
+            {% elif grade|lower == 'g7' %}
+            <p class="text-muted mb-2">Grade 7 Mathematics Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Maths&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-arrow-up-9-1 text-primary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Chapter 1: Integers</h3>
+                    <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Maths&chapter=2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-pizza-slice text-primary" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Chapter 2: Fractions & Decimals</h3>
+                    <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+            {% endif %}
             {% elif subject == 'Maths' and chapter == '1' %}
+            {% if grade|lower == 'g6' %}
             <style>
                 .math-notes-container {
                     background: var(--surface);
@@ -1085,6 +1102,460 @@
                     </div>
                 </div>
             </div>
+            {% elif grade|lower == 'g7' %}
+            <style>
+                .integers-notes-container {
+                    background: #0f172a; /* Dark Ninja Slate */
+                    border-radius: var(--radius-lg);
+                    border: 1px solid #1e293b;
+                    padding: 2rem;
+                    color: #f8fafc;
+                }
+                .ninja-card {
+                    background: #1e293b;
+                    border-radius: var(--radius-md);
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                    border-left: 5px solid #22c55e; /* Ninja Green */
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                }
+                .number-line-visual {
+                    background: #334155;
+                    height: 120px;
+                    border-radius: 12px;
+                    position: relative;
+                    margin: 2rem 0;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 40px;
+                }
+                .scale-line {
+                    height: 4px;
+                    background: #94a3b8;
+                    width: 100%;
+                    position: relative;
+                }
+                .scale-mark {
+                    position: absolute;
+                    width: 2px;
+                    height: 15px;
+                    background: #94a3b8;
+                    top: -6px;
+                }
+                .mark-label {
+                    position: absolute;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    font-size: 0.9rem;
+                    font-weight: 700;
+                    color: #94a3b8;
+                }
+                .ninja-marker {
+                    position: absolute;
+                    top: -50px;
+                    left: calc(40px + 25%); /* Example position -5 */
+                    font-size: 2.5rem;
+                    color: #22c55e;
+                    filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.5));
+                }
+                .case-badge {
+                    display: inline-block;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 6px;
+                    font-weight: 800;
+                    margin-bottom: 0.5rem;
+                }
+                .absolute-val {
+                    font-size: 2rem;
+                    font-family: 'Outfit', monospace;
+                    background: #0f172a;
+                    padding: 0.5rem 1rem;
+                    border-radius: 8px;
+                    border: 2px dashed #334155;
+                    color: #22c55e;
+                }
+            </style>
+            <div class="integers-notes-container">
+                <!-- PAGE 1: Intro -->
+                <div id="int-p1">
+                    <h2 style="color: #22c55e; margin-bottom: 1.5rem;"><i class="fa-solid fa-user-ninja"></i> Chapter 1: Integers</h2>
+                    <div class="ninja-card">
+                        <h3 style="color: #4ade80; margin-bottom: 1rem;">1. What are Integers?</h3>
+                        <p style="font-size: 1.2rem; line-height: 1.6;">
+                            Integers are <b>whole numbers</b>, their <b>negatives</b>, and <b>zero</b>.
+                        </p>
+                        <div style="margin-top: 1rem; font-family: monospace; font-size: 1.3rem; letter-spacing: 2px; color: #94a3b8; text-align: center; background: #0f172a; padding: 1rem; border-radius: 8px;">
+                            …, -5, -4, -3, -2, -1, <span style="color: #22c55e;">0</span>, 1, 2, 3, 4, 5 …
+                        </div>
+                    </div>
+
+                    <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="card" style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #f8fafc;">
+                            <h4 style="color: #4ade80;">Positive (+)</h4>
+                            <p>1, 2, 3, …</p>
+                        </div>
+                        <div class="card" style="background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #f8fafc;">
+                            <h4 style="color: #f87171;">Negative (–)</h4>
+                            <p>-1, -2, -3, …</p>
+                        </div>
+                        <div class="card" style="background: rgba(148, 163, 184, 0.1); border-color: #94a3b8; color: #f8fafc;">
+                            <h4 style="color: #cbd5e1;">Zero (0)</h4>
+                            <p>Neutral Ground</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
+                        <button class="menu-btn" style="background: #22c55e; border: none; width: auto;" onclick="document.getElementById('int-p1').style.display='none'; document.getElementById('int-p2').style.display='block'; window.scrollTo(0,0);">Next: Number Line <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PAGE 2: Number Line -->
+                <div id="int-p2" style="display: none;">
+                    <h2 style="color: #22c55e; margin-bottom: 1.5rem;"><i class="fa-solid fa-user-ninja"></i> Chapter 1: Integers</h2>
+                    <h3 style="color: #4ade80; margin-bottom: 1rem;">2. Representation on Number Line</h3>
+                    <p class="text-muted">A scale to see the world of integers.</p>
+
+                    <div class="number-line-visual">
+                        <div class="scale-line">
+                            <div class="scale-mark" style="left: 0%"><span class="mark-label">-10</span></div>
+                            <div class="scale-mark" style="left: 25%"><span class="mark-label">-5</span></div>
+                            <div class="scale-mark" style="left: 50%; background: #22c55e; height: 25px; top: -11px;"><span class="mark-label" style="color: #22c55e; top: 30px;">0</span></div>
+                            <div class="scale-mark" style="left: 75%"><span class="mark-label">5</span></div>
+                            <div class="scale-mark" style="left: 100%"><span class="mark-label">10</span></div>
+                        </div>
+                        <i class="fa-solid fa-user-ninja ninja-marker" style="left: calc(40px + 43%);"></i> <!-- Ninja at -3 -->
+                    </div>
+
+                    <div class="ninja-card">
+                        <ul style="list-style: none; padding: 0; line-height: 2;">
+                            <li>👉 <b style="color: #4ade80;">Right Side:</b> Numbers increase (+)</li>
+                            <li>👉 <b style="color: #f87171;">Left Side:</b> Numbers decrease (–)</li>
+                            <li>👉 <b style="color: #cbd5e1;">Center:</b> Zero is the origin.</li>
+                        </ul>
+                    </div>
+
+                    <div class="ninja-card" style="border-left-color: #3b82f6;">
+                         <h4 style="color: #60a5fa;"><i class="fa-solid fa-person-running mr-1"></i> Movement Rule</h4>
+                         <p>Moving <strong>Right</strong> = Addition (+)<br>Moving <strong>Left</strong> = Subtraction (–)</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" style="width: auto; background: #334155;" onclick="document.getElementById('int-p2').style.display='none'; document.getElementById('int-p1').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="menu-btn" style="background: #22c55e; border: none; width: auto;" onclick="document.getElementById('int-p2').style.display='none'; document.getElementById('int-p3').style.display='block'; window.scrollTo(0,0);">Next: Operations <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PAGE 3: Operations -->
+                <div id="int-p3" style="display: none;">
+                    <h2 style="color: #22c55e; margin-bottom: 1.5rem;"><i class="fa-solid fa-user-ninja"></i> Chapter 1: Integers</h2>
+                    <h3 style="color: #4ade80; margin-bottom: 2rem;">3. Addition & Subtraction Rules</h3>
+
+                    <div class="ninja-card" style="border-left-color: #22c55e;">
+                        <span class="case-badge" style="background: rgba(34, 197, 94, 0.2); color: #4ade80;">CASE 1: Positive + Positive</span>
+                        <p>Add normally: <br><code style="font-size: 1.4rem; color: #22c55e;">4 + 3 = 7</code></p>
+                    </div>
+
+                    <div class="ninja-card" style="border-left-color: #ef4444;">
+                        <span class="case-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">CASE 2: Negative + Negative</span>
+                        <p>Add and keep the sign:<br><code style="font-size: 1.4rem; color: #f87171;">(-4) + (-3) = -7</code></p>
+                    </div>
+
+                    <div class="ninja-card" style="border-left-color: #eab308;">
+                        <span class="case-badge" style="background: rgba(234, 179, 8, 0.2); color: #facc15;">CASE 3: Positive + Negative</span>
+                        <p>Subtract and keep the sign of the <b>bigger</b> number:<br>
+                           <code style="font-size: 1.4rem; color: #facc15;">5 + (-2) = 3</code><br>
+                           <code style="font-size: 1.4rem; color: #f87171;">(-5) + 2 = -3</code>
+                        </p>
+                    </div>
+
+                    <div class="ninja-card" style="background: #0f172a; border: 1px dashed #22c55e;">
+                         <h4 style="color: #22c55e;"><i class="fa-solid fa-scroll mr-1"></i> The Subtraction Rule</h4>
+                         <p>Subtracting is simply <b>adding the opposite</b>.</p>
+                         <p style="font-family: monospace; font-size: 1.2rem; color: #94a3b8;">5 - (-2) &rarr; 5 + 2 = 7</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" style="width: auto; background: #334155;" onclick="document.getElementById('int-p3').style.display='none'; document.getElementById('int-p2').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="menu-btn" style="background: #22c55e; border: none; width: auto;" onclick="document.getElementById('int-p3').style.display='none'; document.getElementById('int-p4').style.display='block'; window.scrollTo(0,0);">Next: Absolute Value <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PAGE 4: Absolute Value -->
+                <div id="int-p4" style="display: none;">
+                    <h2 style="color: #22c55e; margin-bottom: 1.5rem;"><i class="fa-solid fa-user-ninja"></i> Chapter 1: Integers</h2>
+                    <h3 style="color: #4ade80; margin-bottom: 1rem;">4. Absolute Value & Opposites</h3>
+
+                    <div class="ninja-card">
+                        <h4 style="color: #60a5fa;"><i class="fa-solid fa-ruler mr-1"></i> Absolute Value (|x|)</h4>
+                        <p style="margin-bottom: 1rem;">The <b>distance</b> from Zero. Distance is never negative!</p>
+                        <div style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
+                            <div class="absolute-val">|-5| = 5</div>
+                            <div style="font-size: 1.5rem; color: #94a3b8;">&harr;</div>
+                            <div class="absolute-val">|5| = 5</div>
+                        </div>
+                    </div>
+
+                    <div class="ninja-card" style="border-left-color: #facc15;">
+                        <h4 style="color: #facc15;">🎭 Opposite Integers</h4>
+                        <p>Numbers at the same distance from zero but on different sides.</p>
+                        <p style="font-size: 1.2rem;">Example: <b>-6</b> and <b>+6</b></p>
+                        <p style="color: #94a3b8;">Rule: <code style="color: #4ade80;">a + (-a) = 0</code></p>
+                    </div>
+
+                    <div style="background: #1e293b; padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border: 2px dashed #22c55e; text-align: center;">
+                        <h3 style="color: #22c55e; margin-bottom: 1rem;"><i class="fa-solid fa-trophy mr-1"></i> Mission Accomplished!</h3>
+                        <p>The path of integers is now clear to you. Are you ready to face the challenge?</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                            <button class="menu-btn" style="background: #22c55e; border: none; width: auto;" onclick="window.location.href='/student/play/maths/g7/ch1_l1'">Play Ninja Game <i class="fa-solid fa-gamepad"></i></button>
+                            <button class="btn-logout" style="width: auto; background: #334155;" onclick="window.location.href='/student/learn'">Back to Maps</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
+                        <button class="btn-logout" style="width: auto; background: #334155;" onclick="document.getElementById('int-p4').style.display='none'; document.getElementById('int-p3').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% elif subject == 'Maths' and chapter == '2' %}
+            {% if grade|lower == 'g7' %}
+            <style>
+                .fractions-notes-container {
+                    background: #fffdf5; /* Warm Dough */
+                    border-radius: var(--radius-lg);
+                    border: 1px solid #fde68a;
+                    padding: 2rem;
+                    color: #451a03;
+                }
+                .bakery-card {
+                    background: white;
+                    border-radius: var(--radius-md);
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                    border-left: 5px solid #ea580c; /* Pizza Sauce Red */
+                    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.1);
+                }
+                .pizza-viz {
+                    display: flex;
+                    justify-content: center;
+                    gap: 2rem;
+                    margin: 2rem 0;
+                    flex-wrap: wrap;
+                }
+                .pizza-slice-box {
+                    text-align: center;
+                    background: #fefce8;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    border: 2px dashed #facc15;
+                }
+                .fraction-form {
+                    display: inline-flex;
+                    flex-direction: column;
+                    align-items: center;
+                    font-family: 'Outfit', sans-serif;
+                    font-weight: 800;
+                    font-size: 1.8rem;
+                    vertical-align: middle;
+                }
+                .frac-line {
+                    height: 3px;
+                    width: 100%;
+                    background: #451a03;
+                    margin: 2px 0;
+                }
+                .type-badge {
+                    padding: 0.2rem 0.6rem;
+                    border-radius: 4px;
+                    font-size: 0.85rem;
+                    font-weight: 700;
+                    color: white;
+                }
+                .decimal-chart {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 1px;
+                    background: #d1d5db;
+                    border: 1px solid #d1d5db;
+                    margin-top: 1rem;
+                }
+                .decimal-cell {
+                    background: white;
+                    padding: 0.75rem;
+                    text-align: center;
+                }
+                .decimal-header {
+                    background: #fef3c7;
+                    font-weight: 700;
+                    color: #92400e;
+                }
+            </style>
+            <div class="fractions-notes-container">
+                <!-- Page 1: Fractions Intro -->
+                <div id="frac-p1">
+                    <h2 style="color: #ea580c; margin-bottom: 1.5rem;"><i class="fa-solid fa-pizza-slice"></i> Chapter 2: Fractions & Decimals</h2>
+                    <div class="bakery-card">
+                        <h3 style="color: #92400e; margin-bottom: 1rem;">1. What are Fractions?</h3>
+                        <p style="font-size: 1.15rem; line-height: 1.6;">
+                            A fraction represents <b>a part of a whole</b>.
+                        </p>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 3rem; margin-top: 1.5rem;">
+                            <div class="fraction-form">
+                                <span style="color: #ea580c;">3</span>
+                                <div class="frac-line"></div>
+                                <span style="color: #1e40af;">4</span>
+                            </div>
+                            <div style="font-size: 1.1rem; line-height: 1.4;">
+                                <div><i class="fa-solid fa-arrow-left text-muted"></i> <b style="color: #ea580c;">Numerator:</b> Parts taken</div>
+                                <div style="margin-top: 1rem;"><i class="fa-solid fa-arrow-left text-muted"></i> <b style="color: #1e40af;">Denominator:</b> Total equal parts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pizza-viz">
+                        <div class="pizza-slice-box">
+                             <div style="font-size: 2.5rem; display: flex; align-items: center; justify-content: center; height: 3.5rem;">🍕</div>
+                             <div class="fraction-form" style="font-size: 1.2rem; margin-top: 0.5rem;"><span>1</span><div class="frac-line"></div><span>4</span></div>
+                        </div>
+                        <div class="pizza-slice-box">
+                             <div style="font-size: 2.5rem; display: flex; align-items: center; justify-content: center; height: 3.5rem; gap: 4px;">🍕🍕</div>
+                             <div class="fraction-form" style="font-size: 1.2rem; margin-top: 0.5rem;"><span>2</span><div class="frac-line"></div><span>4</span></div>
+                        </div>
+                        <div class="pizza-slice-box">
+                             <div style="font-size: 2.5rem; display: flex; align-items: center; justify-content: center; height: 3.5rem; gap: 4px;">🍕🍕🍕</div>
+                             <div class="fraction-form" style="font-size: 1.2rem; margin-top: 0.5rem;"><span>3</span><div class="frac-line"></div><span>4</span></div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
+                        <button class="menu-btn" style="background: #ea580c; border: none; width: auto;" onclick="document.getElementById('frac-p1').style.display='none'; document.getElementById('frac-p2').style.display='block'; window.scrollTo(0,0);">Next: Types & Equivalent <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2: Types & Equivalent -->
+                <div id="frac-p2" style="display: none;">
+                    <h2 style="color: #ea580c; margin-bottom: 1.5rem;"><i class="fa-solid fa-pizza-slice"></i> Chapter 2: Fractions & Decimals</h2>
+                    <h3 style="color: #92400e; margin-bottom: 1.5rem;">2. Types of Fractions</h3>
+                    
+                    <div class="card-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="card" style="text-align: center; border-bottom: 4px solid #10b981; background: white;">
+                            <span class="type-badge" style="background: #10b981;">Proper</span>
+                            <div class="fraction-form" style="font-size: 1.4rem; margin: 1rem 0;"><span>3</span><div class="frac-line"></div><span>5</span></div>
+                            <p class="text-xs text-muted">Num < Den</p>
+                        </div>
+                        <div class="card" style="text-align: center; border-bottom: 4px solid #ef4444; background: white;">
+                            <span class="type-badge" style="background: #ef4444;">Improper</span>
+                            <div class="fraction-form" style="font-size: 1.4rem; margin: 1rem 0;"><span>7</span><div class="frac-line"></div><span>4</span></div>
+                            <p class="text-xs text-muted">Num &ge; Den</p>
+                        </div>
+                        <div class="card" style="text-align: center; border-bottom: 4px solid #f59e0b; background: white;">
+                            <span class="type-badge" style="background: #f59e0b;">Mixed</span>
+                            <div style="font-size: 1.4rem; margin: 1rem 0; font-weight: 800;">1 <div class="fraction-form" style="font-size: 1.4rem;"><span>3</span><div class="frac-line" style="width: 20px;"></div><span>4</span></div></div>
+                            <p class="text-xs text-muted">Whole + Frac</p>
+                        </div>
+                    </div>
+
+                    <div class="bakery-card" style="margin-top: 2rem; border-left-color: #3b82f6;">
+                        <h3 style="color: #1e40af; margin-bottom: 1rem;">3. Equivalent Fractions</h3>
+                        <p>Fractions that look different but have the <b>same value</b>.</p>
+                        <div style="font-size: 1.5rem; text-align: center; margin: 1rem 0;">
+                            <span class="fraction-form"><span>1</span><div class="frac-line"></div><span>2</span></span> = 
+                            <span class="fraction-form"><span>2</span><div class="frac-line"></div><span>4</span></span> = 
+                            <span class="fraction-form"><span>4</span><div class="frac-line"></div><span>8</span></span>
+                        </div>
+                        <p style="background: #eff6ff; padding: 1rem; border-radius: 8px; border: 1px dashed #3b82f6; font-size: 0.95rem;">
+                            <b>Rule:</b> Multiply or divide both Numerator and Denominator by the <b>same number</b>.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" style="width: auto; background: #92400e; color: white;" onclick="document.getElementById('frac-p2').style.display='none'; document.getElementById('frac-p1').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="menu-btn" style="background: #ea580c; border: none; width: auto;" onclick="document.getElementById('frac-p2').style.display='none'; document.getElementById('frac-p3').style.display='block'; window.scrollTo(0,0);">Next: Operations <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Operations -->
+                <div id="frac-p3" style="display: none;">
+                    <h2 style="color: #ea580c; margin-bottom: 1.5rem;"><i class="fa-solid fa-pizza-slice"></i> Chapter 2: Fractions & Decimals</h2>
+                    <h3 style="color: #92400e; margin-bottom: 1.5rem;">4. Addition & Subtraction</h3>
+
+                    <div class="bakery-card">
+                        <h4 style="color: #ea580c; margin-bottom: 0.5rem;"><i class="fa-solid fa-equals"></i> Same Denominator</h4>
+                        <p>Just add/subtract numerators.</p>
+                        <div style="font-size: 1.4rem; padding: 0.5rem; background: #fff7ed; display: inline-block; border-radius: 6px;">
+                            2/5 + 1/5 = <span style="color: #ea580c; font-weight: 800;">3/5</span>
+                        </div>
+                    </div>
+
+                    <div class="bakery-card" style="border-left-color: #facc15;">
+                        <h4 style="color: #854d0e; margin-bottom: 0.5rem;"><i class="fa-solid fa-shuffle"></i> Different Denominators</h4>
+                        <ol style="padding-left: 1.5rem; margin-bottom: 1rem;">
+                            <li>Find the <b>Common Denominator</b>.</li>
+                            <li>Convert to equivalent fractions.</li>
+                            <li>Add or subtract.</li>
+                        </ol>
+                        <div style="background: #fefce8; padding: 1.5rem; border-radius: 12px; font-family: monospace;">
+                            1/2 + 1/4 &rarr; 2/4 + 1/4 = <span style="color: #ea580c;">3/4</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" style="width: auto; background: #92400e; color: white;" onclick="document.getElementById('frac-p3').style.display='none'; document.getElementById('frac-p2').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="menu-btn" style="background: #ea580c; border: none; width: auto;" onclick="document.getElementById('frac-p3').style.display='none'; document.getElementById('frac-p4').style.display='block'; window.scrollTo(0,0);">Next: Decimals <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 4: Decimals -->
+                <div id="frac-p4" style="display: none;">
+                    <h2 style="color: #ea580c; margin-bottom: 1.5rem;"><i class="fa-solid fa-pizza-slice"></i> Chapter 2: Fractions & Decimals</h2>
+                    <h3 style="color: #92400e; margin-bottom: 1.5rem;">5. Decimals Intro</h3>
+                    <p>Decimals are another way to write fractions!</p>
+
+                    <div class="bakery-card">
+                        <h4 style="color: #3b82f6;">📍 Place Value</h4>
+                        <div class="decimal-chart">
+                            <div class="decimal-cell decimal-header">Whole</div>
+                            <div class="decimal-cell decimal-header">.</div>
+                            <div class="decimal-cell decimal-header">Tenths</div>
+                            <div class="decimal-cell decimal-header">Hundredths</div>
+                            
+                            <div class="decimal-cell" style="font-size: 1.5rem;">0</div>
+                            <div class="decimal-cell" style="font-size: 1.5rem; font-weight: 800;">.</div>
+                            <div class="decimal-cell" style="font-size: 1.5rem; color: #ea580c;">7</div>
+                            <div class="decimal-cell" style="font-size: 1.5rem; color: #ea580c;">5</div>
+                        </div>
+                        <p class="text-muted mt-2" style="font-size: 0.9rem;">0.75 = 7/10 + 5/100</p>
+                    </div>
+
+                    <div class="card-grid">
+                        <div class="card" style="background: #ecfdf5; border-color: #10b981;">
+                             <h4 style="color: #047857;">To Decimal</h4>
+                             <p class="text-xs">Divide Numerator &divide; Denom</p>
+                             <p style="font-family: monospace; font-weight: 700;">1/2 = 0.5</p>
+                        </div>
+                        <div class="card" style="background: #fff7ed; border-color: #ea580c;">
+                             <h4 style="color: #9a3412;">To Fraction</h4>
+                             <p class="text-xs">Place over 10, 100, etc.</p>
+                             <p style="font-family: monospace; font-weight: 700;">0.25 = 25/100 = 1/4</p>
+                        </div>
+                    </div>
+
+                    <div style="background: #fff7ed; padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border: 2px dashed #ea580c; text-align: center;">
+                        <h3 style="color: #ea580c; margin-bottom: 1rem;"><i class="fa-solid fa-utensils mr-1"></i> Order Ready!</h3>
+                        <p>You've mastered Fractions and Decimals. Time to bake some pizzas!</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                            <button class="menu-btn" style="background: #ea580c; border: none; width: auto;" onclick="window.location.href='/student/play/maths/g7/ch2_l1'">Play Pizza Master <i class="fa-solid fa-gamepad"></i></button>
+                            <button class="btn-logout" style="width: auto; background: #92400e; color: white;" onclick="window.location.href='/student/learn'">Back to Maps</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
+                        <button class="btn-logout" style="width: auto; background: #92400e; color: white;" onclick="document.getElementById('frac-p4').style.display='none'; document.getElementById('frac-p3').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
             {% elif subject == 'Engineering' and chapter == '1' %}
             <style>
                 .eng-notes-container {
