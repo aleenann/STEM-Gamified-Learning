@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Master - Grade 7 Fractions & Decimals</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pizza-red: #ef4444;
+            --pizza-crust: #f59e0b;
+            --pizza-cheese: #fbbf24;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: #f8fafc;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-header {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            z-index: 10;
+        }
+
+        .stats-group { display: flex; gap: 2rem; align-items: center; }
+        .stat-item {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .main-kitchen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, #fff 0%, #e2e8f0 100%);
+        }
+
+        /* Order Bubble */
+        .order-bubble {
+            background: white;
+            padding: 1.5rem 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            margin-bottom: 2rem;
+            border: 3px solid var(--pizza-red);
+            text-align: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .order-text { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; color: #64748b; }
+        .target-display { font-size: 3.5rem; font-weight: 900; color: var(--pizza-red); }
+
+        /* Prep Table */
+        .prep-table {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 3rem;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .plate-container {
+            position: relative;
+            width: 380px;
+            height: 380px;
+            background: #fff;
+            border-radius: 50%;
+            border: 10px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1), inset 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .plate-label {
+            position: absolute;
+            bottom: -50px;
+            font-weight: 900;
+            color: var(--text-main);
+            background: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            font-size: 1.2rem;
+        }
+
+        /* Slices Bin */
+        .slices-bin {
+            width: 280px;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .slice-item {
+            background: #f8fafc;
+            border: 3px solid #f1f5f9;
+            padding: 1rem;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .slice-item:hover { border-color: var(--pizza-red); background: #fef2f2; transform: translateX(5px); }
+        .slice-val { font-weight: 900; font-size: 1.4rem; color: var(--text-main); }
+
+        /* Pizza SVG Visualizer */
+        #pizza-visualizer {
+            width: 90%;
+            height: 90%;
+            transform: rotate(-90deg);
+        }
+
+        .slice-path {
+            fill: url(#pizza-pattern);
+            stroke: #fff;
+            stroke-width: 2;
+            transition: opacity 0.3s;
+        }
+
+        /* Chocolate Bar Display */
+        .decimal-mode-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .choc-bar-container {
+            width: 600px;
+            height: 120px;
+            background: #3e2723;
+            border: 8px solid #2d1b19;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            padding: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .choc-segment {
+            background: #5d4037;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choc-segment::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 40%;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .choc-segment.filled { background: #8d6e63; box-shadow: inset 0 0 15px rgba(0,0,0,0.4); }
+        .choc-segment:hover { transform: scale(1.05); z-index: 5; }
+
+        /* Controls */
+        .controls-footer {
+            background: white;
+            padding: 1.5rem 3rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .btn-game {
+            padding: 1.2rem 4rem;
+            font-size: 1.4rem;
+            font-weight: 900;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .btn-serve { background: var(--pizza-red); color: white; }
+        .btn-serve:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); }
+        .btn-serve:active { transform: translateY(0); }
+        
+        .btn-clear { background: #f1f5f9; color: #64748b; border: 2px solid #e2e8f0; }
+        .btn-clear:hover { background: #e2e8f0; color: #1e293b; }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 4rem;
+            border-radius: 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .score-display-big {
+            font-size: 5rem;
+            font-weight: 950;
+            color: var(--pizza-red);
+            margin: 1rem 0;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="/student/play?subject=Maths" class="back-link"><i class="fa-solid fa-arrow-left"></i> Leave Kitchen</a>
+        <div class="stats-group">
+            <div class="stat-item" style="color: #ef4444;"><i class="fa-solid fa-clock"></i> <span id="timer-val">60</span>s</div>
+            <div class="stat-item" style="color: #f59e0b;"><i class="fa-solid fa-star"></i> <span id="score-val">0</span>% Satisfied</div>
+            <div class="stat-item" style="color: #3b82f6;"><i class="fa-solid fa-utensils"></i> Level <span id="level-val">1</span></div>
+        </div>
+    </div>
+
+    <div class="main-kitchen">
+        <div class="order-bubble" id="order-card">
+            <div class="order-text" id="order-inst">Customer Order:</div>
+            <div class="target-display" id="target-display">3/4</div>
+            <div id="conversion-hint" style="margin-top: 0.5rem; font-weight: 700; color: #94a3b8; font-size: 0.9rem;"></div>
+        </div>
+
+        <!-- Fraction Mode -->
+        <div class="prep-table" id="prep-area">
+            <div class="plate-container">
+                <svg id="pizza-visualizer" viewBox="0 0 100 100">
+                    <defs>
+                        <pattern id="pizza-pattern" x="0" y="0" width="1" height="1" patternUnits="objectBoundingBox">
+                            <image href="/static/games/grade7/maths/pizza.png" x="0" y="0" width="100" height="100" />
+                        </pattern>
+                    </defs>
+                    <g id="slices-layer"></g>
+                </svg>
+                <div class="plate-label">Your Plate: <span id="current-fraction" style="color: var(--pizza-red);">0.00</span> / 1.0</div>
+            </div>
+
+            <div class="slices-bin" id="bin">
+                <p style="margin-top: 0; font-weight: 900; color: #1e293b; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Add Portion:</p>
+                <div class="slice-item" onclick="addSlice(1, 4)">
+                    <span class="slice-val">1/4</span>
+                    <i class="fa-solid fa-pizza-slice" style="color: var(--pizza-red);"></i>
+                </div>
+                <div class="slice-item" onclick="addSlice(1, 8)">
+                    <span class="slice-val">1/8</span>
+                    <i class="fa-solid fa-pizza-slice" style="color: var(--pizza-red); font-size: 1rem;"></i>
+                </div>
+                <div class="slice-item" onclick="addSlice(1, 2)">
+                    <span class="slice-val">1/2</span>
+                    <i class="fa-solid fa-pizza-slice" style="color: var(--pizza-red); font-size: 1.5rem;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decimal Mode -->
+        <div class="decimal-mode-container" id="decimal-area">
+            <div class="choc-bar-container" id="choc-bar"></div>
+            <div style="text-align: center; color: #64748b; font-weight: 700;">
+                <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Each segment represents 0.1 (1/10)</p>
+                <p>Click segments to match the customer's request!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls-footer">
+        <button class="btn-game btn-clear" onclick="clearPlate()">
+            <i class="fa-solid fa-trash"></i> Reset
+        </button>
+        <button class="btn-game btn-serve" id="serve-btn" onclick="checkOrder()">
+            <i class="fa-solid fa-bell"></i> Serve Customer!
+        </button>
+    </div>
+
+    <!-- Modals -->
+    <div id="feedback-modal" class="modal">
+        <div class="modal-content">
+            <div id="feedback-icon" style="font-size: 6rem; margin-bottom: 1rem;"></div>
+            <h2 id="feedback-title" style="font-size: 3rem; margin: 0; font-weight: 950;">Awesome!</h2>
+            <p id="feedback-msg" style="font-size: 1.4rem; color: #64748b; margin: 1.5rem 0; line-height: 1.6;"></p>
+            <div id="edu-wisdom" style="background: #f8fafc; padding: 1.5rem; border-radius: 20px; font-size: 1.1rem; color: #475569; margin-bottom: 2rem; border-left: 6px solid var(--pizza-red); text-align: left;">
+                <strong>Chef's Tip:</strong> <span id="wisdom-text"></span>
+            </div>
+            <button class="btn-game btn-serve" style="width: 100%; justify-content: center;" onclick="nextOrder()">Next Order <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h1 style="font-size: 3.5rem; margin-bottom: 0;">Shift Over!</h1>
+            <p style="font-size: 1.4rem; color: #64748b;">You've mastered the portions and decimals!</p>
+            <div style="background: #f1f5f9; padding: 3rem; border-radius: 30px; margin: 2rem 0; position: relative; overflow: hidden;">
+                <p style="text-transform: uppercase; font-size: 1rem; font-weight: 900; color: #94a3b8; letter-spacing: 2px;">Satisfaction Score</p>
+                <div class="score-display-big" id="final-score">0%</div>
+            </div>
+            <button class="btn-game btn-serve" style="width: 100%; justify-content: center;" onclick="location.href='/student/play?subject=Maths'">Collect Earnings & Exit</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const state = {
+            level: 1,
+            score: 0,
+            timer: 60,
+            satisfied: 0,
+            totalOrders: 0,
+            currentPlate: [],
+            target: { n: 3, d: 4, val: 0.75, type: 'fraction' },
+            gameActive: true,
+            username: "{{ session.get('username') }}",
+            difficulty: 'easy'
+        };
+
+        const els = {
+            targetDisplay: document.getElementById('target-display'),
+            currentFrac: document.getElementById('current-fraction'),
+            slicesLayer: document.getElementById('slices-layer'),
+            scoreVal: document.getElementById('score-val'),
+            timerVal: document.getElementById('timer-val'),
+            levelVal: document.getElementById('level-val'),
+            feedbackModal: document.getElementById('feedback-modal'),
+            gameOverModal: document.getElementById('game-over-modal'),
+            prepArea: document.getElementById('prep-area'),
+            decimalArea: document.getElementById('decimal-area'),
+            chocBar: document.getElementById('choc-bar'),
+            wisdom: document.getElementById('wisdom-text'),
+            hint: document.getElementById('conversion-hint')
+        };
+
+        function initGame() {
+            generateOrder();
+            startTimer();
+            setupChocBar();
+        }
+
+        function startTimer() {
+            const interval = setInterval(() => {
+                if (!state.gameActive) { clearInterval(interval); return; }
+                state.timer--;
+                els.timerVal.innerText = state.timer;
+                if (state.timer <= 0) {
+                    state.gameActive = false;
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function generateOrder() {
+            state.currentPlate = [];
+            clearVisuals();
+            
+            // Randomize Level 1 Logic
+            if (state.level === 1) {
+                const denoms = [2, 4, 8];
+                const d = denoms[Math.floor(Math.random() * denoms.length)];
+                const n = Math.floor(Math.random() * (d - 1)) + 1;
+                state.target = { n, d, val: n/d, type: 'fraction' };
+                els.hint.innerText = "";
+                showFractionGame();
+            } else if (state.level === 2) {
+                const val = (Math.floor(Math.random() * 9) + 1) / 10;
+                state.target = { val, type: 'decimal' };
+                els.hint.innerText = `Hint: ${val*10}/10 of the bar`;
+                showDecimalGame();
+            } else {
+                // Conversion Level
+                const d = [2, 4, 10][Math.floor(Math.random() * 3)];
+                const n = Math.floor(Math.random() * (d - 1)) + 1;
+                const val = n/d;
+                state.target = { n, d, val, type: Math.random() > 0.5 ? 'decimal' : 'fraction' };
+                els.hint.innerText = "Challenge: Conversion Request!";
+                if (Math.random() > 0.5) showFractionGame(); else showDecimalGame();
+            }
+
+            if (state.target.type === 'fraction') {
+                els.targetDisplay.innerText = `${state.target.n}/${state.target.d}`;
+            } else {
+                els.targetDisplay.innerText = state.target.val.toFixed(1);
+            }
+        }
+
+        function showFractionGame() {
+            els.prepArea.style.display = 'flex';
+            els.decimalArea.style.display = 'none';
+        }
+
+        function showDecimalGame() {
+            els.prepArea.style.display = 'none';
+            els.decimalArea.style.display = 'flex';
+            resetChocBar();
+        }
+
+        function setupChocBar() {
+            for (let i = 0; i < 10; i++) {
+                const seg = document.createElement('div');
+                seg.className = 'choc-segment';
+                seg.onclick = () => {
+                    seg.classList.toggle('filled');
+                    updateDecimalProgress();
+                };
+                els.chocBar.appendChild(seg);
+            }
+        }
+
+        function resetChocBar() {
+            Array.from(els.chocBar.children).forEach(s => s.classList.remove('filled'));
+        }
+
+        function updateDecimalProgress() {
+            const filled = Array.from(els.chocBar.children).filter(s => s.classList.contains('filled')).length;
+            els.currentFrac.innerText = (filled / 10).toFixed(1);
+        }
+
+        function addSlice(n, d) {
+            const val = n/d;
+            state.currentPlate.push({n, d});
+            renderPizza();
+            updatePlateLabel();
+        }
+
+        function clearPlate() {
+            state.currentPlate = [];
+            renderPizza();
+            updatePlateLabel();
+            resetChocBar();
+        }
+
+        function updatePlateLabel() {
+            const val = state.currentPlate.reduce((acc, s) => acc + s.n/s.d, 0);
+            els.currentFrac.innerText = val.toFixed(2);
+        }
+
+        function renderPizza() {
+            els.slicesLayer.innerHTML = '';
+            let currentAngle = 0;
+            state.currentPlate.forEach(slice => {
+                const angle = (slice.n / slice.d) * 360;
+                const path = createSlicePath(currentAngle, currentAngle + angle);
+                els.slicesLayer.appendChild(path);
+                currentAngle += angle;
+            });
+        }
+
+        function createSlicePath(startAngle, endAngle) {
+            const start = polarToCartesian(50, 50, 48, startAngle);
+            const end = polarToCartesian(50, 50, 48, endAngle);
+            const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+            const d = ["M", 50, 50, "L", start.x, start.y, "A", 48, 48, 0, largeArcFlag, 1, end.x, end.y, "Z"].join(" ");
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", d);
+            path.setAttribute("class", "slice-path");
+            return path;
+        }
+
+        function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+            const angleInRadians = (angleInDegrees * Math.PI) / 180.0;
+            return { x: centerX + radius * Math.cos(angleInRadians), y: centerY + radius * Math.sin(angleInRadians) };
+        }
+
+        function checkOrder() {
+            let currentVal = 0;
+            if (els.decimalArea.style.display === 'flex') {
+                currentVal = Array.from(els.chocBar.children).filter(s => s.classList.contains('filled')).length / 10;
+            } else {
+                currentVal = state.currentPlate.reduce((acc, s) => acc + s.n/s.d, 0);
+            }
+
+            state.totalOrders++;
+            const diff = Math.abs(currentVal - state.target.val);
+            
+            if (diff < 0.01) {
+                state.satisfied++;
+                showFeedback(true);
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.7 } });
+            } else {
+                showFeedback(false, currentVal);
+            }
+
+            state.score = Math.round((state.satisfied / state.totalOrders) * 100);
+            els.scoreVal.innerText = state.score;
+
+            if (state.satisfied % 4 === 0 && state.level < 3) {
+                state.level++;
+                els.levelVal.innerText = state.level;
+            }
+        }
+
+        function showFeedback(success, current) {
+            els.feedbackModal.style.display = 'flex';
+            const icon = document.getElementById('feedback-icon');
+            const title = document.getElementById('feedback-title');
+            const msg = document.getElementById('feedback-msg');
+
+            if (success) {
+                icon.innerHTML = '🍕';
+                title.innerText = "Perfect Serve!";
+                title.style.color = '#10b981';
+                msg.innerText = "The customer loved the exact portion!";
+                els.wisdom.innerText = `You correctly represented ${state.target.val.toFixed(2)}. ${state.target.type === 'decimal' ? 'Decimals show tenths of a whole.' : 'Fractions show parts of a whole.'}`;
+            } else {
+                icon.innerHTML = '🍳';
+                title.innerText = "Cooked too Much/Little!";
+                title.style.color = '#ef4444';
+                msg.innerText = `You served ${current.toFixed(2)}, but the order was ${state.target.val.toFixed(2)}.`;
+                els.wisdom.innerText = `Remember, ${state.target.val.toFixed(2)} is the same as ${Math.round(state.target.val*10)}/10. Always double check your math!`;
+            }
+        }
+
+        function nextOrder() {
+            els.feedbackModal.style.display = 'none';
+            generateOrder();
+        }
+
+        function clearVisuals() {
+            els.slicesLayer.innerHTML = '';
+            els.currentFrac.innerText = '0.00';
+            resetChocBar();
+        }
+
+        function endGame() {
+            document.getElementById('final-score').innerText = state.score + '%';
+            els.gameOverModal.style.display = 'flex';
+
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${state.score}&subject=Maths&game_name=G7_Maths_Ch2_L1`
+            });
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>
