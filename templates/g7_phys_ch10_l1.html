@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direction Quest - Grade 7 Physics</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --grass: #2ecc71;
+            --dirt: #e67e22;
+            --water: #3498db;
+            --player: #f1c40f;
+            --goal: #e74c3c;
+            --stone: #95a5a6;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: #2c3e50;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: #1a252f;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #34495e;
+            z-index: 100;
+        }
+
+        .hud-item {
+            background: #34495e;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        /* Map Area */
+        .game-world {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .grid-map {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            gap: 4px;
+            background: #1a252f;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .tile {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .tile-grass { background: var(--grass); border-bottom: 4px solid #27ae60; }
+        .tile-stone { background: var(--stone); border-bottom: 4px solid #7f8c8d; }
+        .tile-goal { background: #ecf0f1; border: 4px dashed var(--goal); color: var(--goal); animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        #player-sprite {
+            width: 50px;
+            height: 50px;
+            background: var(--player);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c3e50;
+            font-size: 1.8rem;
+            position: absolute;
+            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Compass HUD */
+        .compass-hud {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 120px;
+            height: 120px;
+            background: #1a252f;
+            border: 4px solid #34495e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .compass-label {
+            position: absolute;
+            font-weight: 900;
+            font-size: 1rem;
+            color: #95a5a6;
+        }
+        .label-n { top: 5px; color: var(--goal); }
+        .label-s { bottom: 5px; }
+        .label-e { right: 5px; }
+        .label-w { left: 5px; }
+
+        /* Controls */
+        .controls-area {
+            background: #1a252f;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            border-top: 4px solid #34495e;
+        }
+
+        .d-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 70px);
+            grid-template-rows: repeat(2, 70px);
+            gap: 10px;
+        }
+
+        .btn-dir {
+            width: 70px;
+            height: 70px;
+            background: #34495e;
+            border: none;
+            border-bottom: 4px solid #2c3e50;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+        }
+
+        .btn-dir:hover { background: #485e74; transform: scale(1.05); }
+        .btn-dir:active { transform: translateY(4px); border-bottom-width: 0; }
+
+        .btn-north { grid-column: 2; }
+        .btn-west { grid-column: 1; grid-row: 2; }
+        .btn-south { grid-column: 2; grid-row: 2; }
+        .btn-east { grid-column: 3; grid-row: 2; }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #34495e;
+            padding: 3rem;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 500px;
+            border: 4px solid #1a252f;
+        }
+
+        .score-big { font-size: 3rem; font-weight: 900; color: #f1c40f; margin: 1rem 0; }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="/student/play?subject=Science" style="text-decoration: none; color: #95a5a6; font-weight: 700;">
+            <i class="fa-solid fa-arrow-left"></i> Exit Quest
+        </a>
+        <h2 style="margin: 0; color: #f1c40f;">DIRECTION QUEST</h2>
+        <div style="display: flex; gap: 1.5rem;">
+            <div class="hud-item">
+                <i class="fa-solid fa-shoe-prints" style="color: #3498db;"></i>
+                <span id="move-count">0</span> / <span id="max-moves">15</span> Moves
+            </div>
+            <div class="hud-item">
+                <i class="fa-solid fa-star" style="color: #f1c40f;"></i>
+                <span id="xp-val">0</span> XP
+            </div>
+        </div>
+    </div>
+
+    <div class="game-world">
+        <div class="grid-map" id="map-grid">
+            <!-- Tiles generated by JS -->
+        </div>
+        <div id="player-sprite">
+            <i class="fa-solid fa-person-walking"></i>
+        </div>
+
+        <div class="compass-hud">
+            <div class="compass-label label-n">N</div>
+            <div class="compass-label label-s">S</div>
+            <div class="compass-label label-e">E</div>
+            <div class="compass-label label-w">W</div>
+            <i class="fa-solid fa-compass" style="font-size: 3rem; color: #7f8c8d;"></i>
+        </div>
+    </div>
+
+    <div class="controls-area">
+        <div style="font-weight: 950; font-size: 1.2rem; color: #95a5a6; text-transform: uppercase;">Direction Controls</div>
+        <div class="d-pad">
+            <button class="btn-dir btn-north" onclick="move('N')"><i class="fa-solid fa-arrow-up"></i></button>
+            <button class="btn-dir btn-west" onclick="move('W')"><i class="fa-solid fa-arrow-left"></i></button>
+            <button class="btn-dir btn-south" onclick="move('S')"><i class="fa-solid fa-arrow-down"></i></button>
+            <button class="btn-dir btn-east" onclick="move('E')"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <div id="result-icon" style="font-size: 5rem; margin-bottom: 1rem;"></div>
+            <h1 id="result-title">Quest Complete!</h1>
+            <p id="result-msg" style="color: #bdc3c7; font-size: 1.2rem;"></p>
+            <div class="score-big" id="result-xp">+50 XP</div>
+            <button class="btn-dir" style="width: 100%; border-radius: 16px; background: var(--grass);" onclick="nextLevel()">NEXT LEVEL</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const state = {
+            level: 0,
+            xp: 0,
+            moves: 0,
+            maxMoves: 15,
+            player: { x: 0, y: 7 },
+            goal: { x: 7, y: 0 },
+            obstacles: [],
+            gridSize: 8,
+            tileSize: 64, // 60px + 4px gap
+            username: "{{ session.get('username') }}",
+            active: true
+        };
+
+        const levels = [
+            { start: {x:0, y:7}, goal: {x:7, y:0}, obstacles: [[2,2], [2,3], [2,4], [5,5], [5,6], [5,4]], moves: 20 },
+            { start: {x:0, y:0}, goal: {x:7, y:7}, obstacles: [[1,1], [2,1], [3,1], [5,5], [5,6], [6,5]], moves: 18 },
+            { start: {x:4, y:4}, goal: {x:0, y:0}, obstacles: [[1,0], [1,1], [1,2], [3,3], [3,4], [4,3]], moves: 15 }
+        ];
+
+        function initMap() {
+            const grid = document.getElementById('map-grid');
+            grid.innerHTML = '';
+            const current = levels[state.level % levels.length];
+            
+            state.player = {...current.start};
+            state.goal = {...current.goal};
+            state.obstacles = current.obstacles;
+            state.maxMoves = current.moves;
+            state.moves = 0;
+            state.active = true;
+
+            document.getElementById('move-count').innerText = '0';
+            document.getElementById('max-moves').innerText = state.maxMoves;
+
+            for(let y=0; y<state.gridSize; y++) {
+                for(let x=0; x<state.gridSize; x++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile tile-grass';
+                    
+                    if(x === state.goal.x && y === state.goal.y) {
+                        tile.classList.add('tile-goal');
+                        tile.innerHTML = '<i class="fa-solid fa-flag-checkered"></i>';
+                    }
+                    
+                    if(state.obstacles.some(o => o[0] === x && o[1] === y)) {
+                        tile.className = 'tile tile-stone';
+                        tile.innerHTML = '<i class="fa-solid fa-mountain"></i>';
+                    }
+                    
+                    grid.appendChild(tile);
+                }
+            }
+            updatePlayerPos();
+        }
+
+        function updatePlayerPos() {
+            const sprite = document.getElementById('player-sprite');
+            const mapRect = document.getElementById('map-grid').getBoundingClientRect();
+            
+            sprite.style.left = (mapRect.left + 8 + (state.player.x * state.tileSize) + 5) + 'px';
+            sprite.style.top = (mapRect.top + 8 + (state.player.y * state.tileSize) + 5) + 'px';
+        }
+
+        function move(dir) {
+            if(!state.active) return;
+
+            let nextX = state.player.x;
+            let nextY = state.player.y;
+
+            if(dir === 'N') nextY--;
+            if(dir === 'S') nextY++;
+            if(dir === 'E') nextX++;
+            if(dir === 'W') nextX--;
+
+            // Bounds check
+            if(nextX < 0 || nextX >= state.gridSize || nextY < 0 || nextY >= state.gridSize) return;
+            
+            // Obstacle check
+            if(state.obstacles.some(o => o[0] === nextX && o[1] === nextY)) return;
+
+            state.player.x = nextX;
+            state.player.y = nextY;
+            state.moves++;
+            document.getElementById('move-count').innerText = state.moves;
+
+            updatePlayerPos();
+            checkWin();
+        }
+
+        function checkWin() {
+            if(state.player.x === state.goal.x && state.player.y === state.goal.y) {
+                showResult(true);
+            } else if(state.moves >= state.maxMoves) {
+                showResult(false);
+            }
+        }
+
+        function showResult(win) {
+            state.active = false;
+            const modal = document.getElementById('result-modal');
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const msg = document.getElementById('result-msg');
+            const xpEl = document.getElementById('result-xp');
+
+            if(win) {
+                icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--grass);"></i>';
+                title.innerText = "Quest Complete!";
+                msg.innerText = `You reached the destination using Directions logic in ${state.moves} moves.`;
+                const bonus = Math.max(0, state.maxMoves - state.moves) * 5;
+                const gain = 50 + bonus;
+                state.xp += gain;
+                xpEl.innerText = `+${gain} XP`;
+                confetti();
+            } else {
+                icon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color: var(--goal);"></i>';
+                title.innerText = "Quest Failed";
+                msg.innerText = "You ran out of moves! Directions must be precise.";
+                xpEl.innerText = "+0 XP";
+            }
+
+            document.getElementById('xp-val').innerText = state.xp;
+            modal.style.display = 'flex';
+            saveScore();
+        }
+
+        function nextLevel() {
+            document.getElementById('result-modal').style.display = 'none';
+            state.level++;
+            initMap();
+        }
+
+        function saveScore() {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${state.xp}&subject=Science&game_name=G7_Phys_Ch10_L1`
+            });
+        }
+
+        window.onload = initMap;
+        window.onresize = updatePlayerPos;
+
+        // Key support
+        window.onkeydown = (e) => {
+            if(e.key === 'ArrowUp') move('N');
+            if(e.key === 'ArrowDown') move('S');
+            if(e.key === 'ArrowLeft') move('W');
+            if(e.key === 'ArrowRight') move('E');
+        }
+    </script>
+</body>
+</html>
