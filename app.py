@@ -599,6 +599,13 @@ def play_g6_maths_ch1_l3():
     
     return render_template("g6_maths_ch1_l3.html")
 
+# Grade 7 Maths Game 1 Route (Number Line Ninja)
+@app.route("/student/play/maths/g7/ch1_l1")
+def play_g7_maths_ch1_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g7_maths_ch1_l1.html")
+
 # Grade 6 Biology Game 1 Route (Nutrient Sort)
 @app.route("/student/play/bio/g6/ch1_l1")
 def play_g6_bio_ch1_l1():

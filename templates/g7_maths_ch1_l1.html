@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Line Ninja - Grade 7 Integers</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --ninja-primary: #1e293b;
+            --ninja-accent: #ef4444;
+            --ninja-gold: #f59e0b;
+            --dojo-bg: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--dojo-bg);
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* Ninja Dojo Background Overlay */
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: url('/static/games/grade7/maths/dojo_bg.png') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            z-index: 1;
+        }
+
+        /* HUD */
+        .hud {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--ninja-primary);
+            margin-bottom: 20px;
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--ninja-primary);
+        }
+
+        .hearts { color: var(--ninja-accent); }
+        .xp { color: var(--ninja-gold); }
+        .level-badge {
+            background: var(--ninja-primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 9999px;
+            font-size: 1rem;
+        }
+
+        /* Game Board */
+        .game-board {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 1000px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border: 4px solid var(--ninja-primary);
+        }
+
+        /* Number Line Styling */
+        #number-line-svg {
+            width: 100%;
+            height: 150px;
+        }
+
+        .line-base {
+            stroke: var(--ninja-primary);
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+
+        .tick {
+            stroke: var(--ninja-primary);
+            stroke-width: 2;
+        }
+
+        .tick-label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            fill: var(--ninja-primary);
+            text-anchor: middle;
+        }
+
+        .origin-mark {
+            fill: var(--ninja-accent);
+            opacity: 0.3;
+        }
+
+        .trap-zone {
+            fill: rgba(239, 68, 68, 0.2);
+            stroke: var(--ninja-accent);
+            stroke-dasharray: 4, 4;
+        }
+
+        /* Ninja Sprite */
+        #ninja-sprite {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            z-index: 20;
+            transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), bottom 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+
+        .ninja-jump {
+            animation: jumpAnim 0.8s ease-in-out;
+        }
+
+        @keyframes jumpAnim {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-80px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Questions and Controls */
+        .question-area {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--ninja-primary);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-target {
+            background: white;
+            color: var(--ninja-primary);
+            border: 2px solid var(--ninja-primary);
+            padding: 10px 25px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-target:hover {
+            background: var(--ninja-primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Feedback Modals */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border: 5px solid var(--ninja-primary);
+            animation: scaleIn 0.3s cubic-bezier(0.17, 0.67, 0.83, 1.3);
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            background: var(--ninja-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* Success/Failure Icons */
+        .feedback-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .success { color: #10b981; }
+        .failure { color: var(--ninja-accent); }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 30;
+            background: white;
+            border: 2px solid var(--ninja-primary);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--ninja-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/student/play?subject=Maths" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Leave Dojo</a>
+
+    <div class="game-container">
+        <div class="overlay"></div>
+
+        <!-- HUD -->
+        <div class="hud">
+            <div class="hud-item hearts"><i class="fa-solid fa-heart"></i> <span id="lives-count">3</span></div>
+            <div class="hud-item xp"><i class="fa-solid fa-scroll"></i> <span id="xp-count">0</span></div>
+            <div class="hud-item level-badge">LEVEL <span id="level-display">1</span></div>
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-board" id="board">
+            <img id="ninja-sprite" src="/static/games/grade7/maths/ninja.png" alt="Ninja">
+            
+            <svg id="number-line-svg" viewBox="0 0 1000 150">
+                <!-- Base Line -->
+                <line x1="50" y1="75" x2="950" y2="75" class="line-base" />
+                <g id="ticks"></g>
+                <g id="traps"></g>
+            </svg>
+
+            <div class="question-area">
+                <div class="question-text" id="question-text">Loading Trial...</div>
+                <div class="controls" id="choice-buttons">
+                    <!-- Buttons will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="modal">
+        <div class="modal-content">
+            <div id="feedback-icon" class="feedback-icon"></div>
+            <h2 id="feedback-title" style="font-size: 2rem; margin-bottom: 10px;"></h2>
+            <p id="feedback-desc" style="font-size: 1.2rem; color: #64748b; line-height: 1.6;"></p>
+            <div id="explanation-box" style="margin-top: 15px; padding: 15px; background: #f1f5f9; border-radius: 15px; text-align: left; font-size: 1rem;">
+                <strong>Master's Wisdom:</strong> <span id="explanation-text"></span>
+            </div>
+            <button class="btn-action" id="modal-action-btn" onclick="nextQuestion()">Continue Path</button>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-skull-crossbones failure feedback-icon"></i>
+            <h2 style="font-size: 2.5rem; color: var(--ninja-primary);">Fate Sealed</h2>
+            <p style="font-size: 1.2rem; color: #64748b;">You have lost all your lives. Do not worry, even failure is a teacher.</p>
+            <div style="background: var(--ninja-primary); color: white; padding: 20px; border-radius: 20px; margin-top: 20px;">
+                <div style="font-size: 0.9rem; text-transform: uppercase;">Total XP Gathered</div>
+                <div style="font-size: 3rem; font-weight: 900;" id="final-xp">0</div>
+            </div>
+            <button class="btn-action" onclick="location.reload()">Return to Training</button>
+            <button class="btn-action" style="background: #64748b; margin-top: 10px;" onclick="location.href='/student/play?subject=Maths'">Exit to Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            currentPos: 0,
+            xp: 0,
+            lives: 3,
+            level: 1,
+            range: { min: -10, max: 10 },
+            question: null,
+            username: "{{ session.get('username') }}",
+            gameActive: true
+        };
+
+        const config = {
+            levels: [
+                { id: 1, min: -5, max: 5, ops: 1 },
+                { id: 2, min: -10, max: 10, ops: 2 },
+                { id: 3, min: -15, max: 15, ops: 3, traps: 2 }
+            ],
+            svgWidth: 1000,
+            svgPadding: 50,
+            ninjaBottom: 120
+        };
+
+        const elements = {
+            ticksGroup: document.getElementById('ticks'),
+            trapsGroup: document.getElementById('traps'),
+            ninja: document.getElementById('ninja-sprite'),
+            questionText: document.getElementById('question-text'),
+            choiceButtons: document.getElementById('choice-buttons'),
+            xpDisplay: document.getElementById('xp-count'),
+            livesDisplay: document.getElementById('lives-count'),
+            levelDisplay: document.getElementById('level-display'),
+            feedbackModal: document.getElementById('feedback-modal'),
+            feedbackIcon: document.getElementById('feedback-icon'),
+            feedbackTitle: document.getElementById('feedback-title'),
+            feedbackDesc: document.getElementById('feedback-desc'),
+            explanationText: document.getElementById('explanation-text'),
+            gameOverModal: document.getElementById('game-over-modal'),
+            finalXp: document.getElementById('final-xp'),
+            svg: document.getElementById('number-line-svg'),
+            board: document.getElementById('board')
+        };
+
+        function posToX(pos) {
+            const rangeWidth = state.range.max - state.range.min;
+            const pxWidth = config.svgWidth - 2 * config.svgPadding;
+            const x = config.svgPadding + ((pos - state.range.min) / rangeWidth) * pxWidth;
+            return x;
+        }
+
+        function drawNumberLine() {
+            elements.ticksGroup.innerHTML = '';
+            for (let i = state.range.min; i <= state.range.max; i++) {
+                const x = posToX(i);
+                
+                // Tick
+                const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                tick.setAttribute("x1", x);
+                tick.setAttribute("y1", 65);
+                tick.setAttribute("x2", x);
+                tick.setAttribute("y2", 85);
+                tick.setAttribute("class", "tick");
+                elements.ticksGroup.appendChild(tick);
+
+                // Label
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", x);
+                text.setAttribute("y", 110);
+                text.setAttribute("class", "tick-label");
+                text.textContent = i;
+                if (i === 0) text.setAttribute("style", "fill: var(--ninja-accent); font-size: 18px;");
+                elements.ticksGroup.appendChild(text);
+                
+                // Highlight Origin
+                if (i === 0) {
+                    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    circle.setAttribute("cx", x);
+                    circle.setAttribute("cy", 75);
+                    circle.setAttribute("r", 15);
+                    circle.setAttribute("class", "origin-mark");
+                    elements.ticksGroup.appendChild(circle);
+                }
+            }
+        }
+
+        function updateNinjaPosition(animated = true) {
+            const x = posToX(state.currentPos);
+            // Translate SVG X (0-1000) to actual board pixels
+            const boardWidth = elements.board.clientWidth;
+            const xInPixels = (x / 1000) * boardWidth;
+            const leftOffset = xInPixels - 60; // 60 is half-width (120/2)
+
+            elements.ninja.style.left = `${leftOffset}px`;
+            
+            if (animated) {
+                elements.ninja.classList.add('ninja-jump');
+                setTimeout(() => elements.ninja.classList.remove('ninja-jump'), 800);
+            }
+        }
+
+        function generateQuestion() {
+            const lvlConfig = config.levels[state.level - 1];
+            state.range = { min: lvlConfig.min, max: lvlConfig.max };
+            drawNumberLine();
+
+            let currentVal = Math.floor(Math.random() * (lvlConfig.max - lvlConfig.min + 1)) + lvlConfig.min;
+            state.currentPos = currentVal;
+            updateNinjaPosition(false);
+
+            let questionStr = `Start at ${currentVal}`;
+            let operations = [];
+            let targetVal = currentVal;
+
+            for (let i = 0; i < lvlConfig.ops; i++) {
+                let opVal;
+                // Ensure target stays in range
+                let attempts = 0;
+                do {
+                    opVal = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                    attempts++;
+                } while ((targetVal + opVal < state.range.min || targetVal + opVal > state.range.max) && attempts < 20);
+                
+                targetVal += opVal;
+                operations.push(opVal);
+                questionStr += `, move ${opVal > 0 ? '+' : ''}${opVal}`;
+            }
+
+            questionStr += ". Where are you?";
+            state.question = { start: currentVal, ops: operations, answer: targetVal };
+
+            elements.questionText.innerText = questionStr;
+            renderChoices(targetVal);
+        }
+
+        function renderChoices(correctAnswer) {
+            elements.choiceButtons.innerHTML = '';
+            let choices = new Set([correctAnswer]);
+            while (choices.size < 4) {
+                let wrong = Math.floor(Math.random() * (state.range.max - state.range.min + 1)) + state.range.min;
+                choices.add(wrong);
+            }
+
+            const sortedChoices = Array.from(choices).sort((a, b) => a - b);
+            sortedChoices.forEach(val => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-target';
+                btn.innerText = val;
+                btn.onclick = () => checkAnswer(val);
+                elements.choiceButtons.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected) {
+            if (!state.gameActive) return;
+
+            const isCorrect = selected === state.question.answer;
+
+            if (isCorrect) {
+                state.xp += 10 * state.level;
+                state.currentPos = selected;
+                updateNinjaPosition(true);
+                showFeedback(true);
+            } else {
+                state.lives--;
+                showFeedback(false);
+            }
+
+            updateHUD();
+            
+            // Level up condition
+            if (state.xp >= state.level * 50 && state.level < 3) {
+                state.level++;
+            }
+        }
+
+        function showFeedback(success) {
+            elements.feedbackModal.style.display = 'flex';
+            if (success) {
+                elements.feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check success"></i>';
+                elements.feedbackTitle.innerText = "Strike!";
+                elements.feedbackDesc.innerText = `Accurate move, Ninja! You arrived at ${state.question.answer}.`;
+                elements.explanationText.innerText = `Adding/Subtracting on the number line means moving right (+) or left (-). You followed the path perfectly!`;
+                document.getElementById('modal-action-btn').innerText = "Next Trial";
+            } else {
+                elements.feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark failure"></i>';
+                elements.feedbackTitle.innerText = "Misstep!";
+                elements.feedbackDesc.innerText = `The target was ${state.question.answer}.`;
+                elements.explanationText.innerText = `Remember: Positive (+) moves right, Negative (-) moves left!`;
+                document.getElementById('modal-action-btn').innerText = "Continue Path";
+            }
+        }
+
+        function nextQuestion() {
+            elements.feedbackModal.style.display = 'none';
+            if (state.lives <= 0) {
+                endGame();
+            } else {
+                generateQuestion();
+            }
+        }
+
+        function updateHUD() {
+            elements.xpDisplay.innerText = state.xp;
+            elements.livesDisplay.innerText = state.lives;
+            elements.levelDisplay.innerText = state.level;
+        }
+
+        function endGame() {
+            state.gameActive = false;
+            elements.finalXp.innerText = state.xp;
+            elements.gameOverModal.style.display = 'flex';
+
+            // Submit score to DB
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${state.xp}&subject=Maths&game_name=G7_Maths_Ch1_L1`
+            });
+        }
+
+        // Initialize
+        window.onload = () => {
+            generateQuestion();
+        };
+
+        // Handle window resize for ninja positioning
+        window.onresize = () => updateNinjaPosition(false);
+    </script>
+</body>
+</html>
