@@ -612,6 +612,12 @@ def play_g7_maths_ch2_l1():
         return redirect("/")
     return render_template("g7_maths_ch2_l1.html")
 
+@app.route("/student/play/chem/g7/ch5_l1")
+def play_g7_chem_ch5_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g7_chem_ch5_l1.html")
+
 # Grade 6 Biology Game 1 Route (Nutrient Sort)
 @app.route("/student/play/bio/g6/ch1_l1")
 def play_g6_bio_ch1_l1():
