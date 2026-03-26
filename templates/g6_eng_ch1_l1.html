@@ -297,72 +297,62 @@
             1: {
                 name: "Simple Circuit",
                 slots: [
-                    { id: 's1', type: 'battery', x: 350, y: 350 },
-                    { id: 's2', type: 'bulb', x: 350, y: 50 },
-                    { id: 's3', type: 'wire', x: 100, y: 155, orient: 'v', len: 90 } // Aligned
+                    { id: 's1', type: 'battery', x: 360, y: 350 },
+                    { id: 's2', type: 'bulb', x: 360, y: 50 },
+                    { id: 's3', type: 'wire', x: 100, y: 155, orient: 'v', len: 90 }
                 ],
-                prefilled: [
-                     { x: 600, y: 200, type: 'wire' } 
-                ],
+                prefilled: [],
                 wires: [
-                    { x1: 350, y1: 395, x2: 100, y2: 395 },
-                    { x1: 100, y1: 395, x2: 100, y2: 245 }, 
-                    { x1: 100, y1: 155, x2: 100, y2: 95 }, 
-                    { x1: 100, y1: 95, x2: 350, y2: 95 },
-                    { x1: 440, y1: 95, x2: 700, y2: 95 },
-                    { x1: 700, y1: 95, x2: 700, y2: 395 },
-                    { x1: 700, y1: 395, x2: 440, y2: 395 }
+                    { x1: 360, y1: 390, x2: 100, y2: 390 },
+                    { x1: 100, y1: 390, x2: 100, y2: 245 }, 
+                    { x1: 100, y1: 155, x2: 100, y2: 90 }, 
+                    { x1: 100, y1: 90, x2: 360, y2: 90 },
+                    { x1: 440, y1: 90, x2: 700, y2: 90 },
+                    { x1: 700, y1: 90, x2: 700, y2: 390 },
+                    { x1: 700, y1: 390, x2: 440, y2: 390 }
                 ],
                 hint: "Add a battery, bulb, and wire to bridge the gap!"
             },
             2: {
                 name: "Series Circuit",
                 slots: [
-                    { id: 's1', type: 'bulb', x: 200, y: 50 },
-                    { id: 's2', type: 'bulb', x: 500, y: 50 },
-                    { id: 's3', type: 'wire', x: 290, y: 50, orient: 'h', len: 60 }
+                    { id: 's1', type: 'bulb', x: 150, y: 50 },
+                    { id: 's2', type: 'bulb', x: 570, y: 50 },
+                    { id: 's3', type: 'wire', x: 230, y: 50, orient: 'h', len: 340 }
                 ],
                 prefilled: [
-                    { x: 350, y: 350, type: 'battery' },
-                    { x: 100, y: 200, type: 'wire' },
-                    { x: 600, y: 200, type: 'wire' }
+                    { x: 360, y: 350, type: 'battery' }
                 ],
                 wires: [
-                    { x1: 350, y1: 395, x2: 100, y2: 395 },
-                    { x1: 100, y1: 395, x2: 100, y2: 95 },
-                    { x1: 100, y1: 95, x2: 200, y2: 95 },
-                    { x1: 350, y1: 95, x2: 350, y2: 95 }, // Static gap
-                    { x1: 440, y1: 95, x2: 500, y2: 95 },
-                    { x1: 590, y1: 95, x2: 700, y2: 95 },
-                    { x1: 700, y1: 95, x2: 700, y2: 395 },
-                    { x1: 700, y1: 395, x2: 440, y2: 395 }
+                    { x1: 360, y1: 390, x2: 100, y2: 390 },
+                    { x1: 100, y1: 390, x2: 100, y2: 90 },
+                    { x1: 100, y1: 90, x2: 150, y2: 90 },
+                    { x1: 650, y1: 90, x2: 700, y2: 90 },
+                    { x1: 700, y1: 90, x2: 700, y2: 390 },
+                    { x1: 700, y1: 390, x2: 440, y2: 390 }
                 ],
                 hint: "Connect two bulbs in a SINGLE path. If one breaks, both go out!"
             },
             3: {
                 name: "Parallel Circuit",
                 slots: [
-                    { id: 's1', type: 'wire', x: 50, y: 50, orient: 'v', len: 195 },
-                    { id: 's2', type: 'wire', x: 750, y: 50, orient: 'v', len: 195 },
-                    { id: 's3', type: 'wire', x: 350, y: 50, orient: 'h', len: 90 },
-                    { id: 's4', type: 'wire', x: 350, y: 245, orient: 'h', len: 90 }
+                    { id: 's1', type: 'wire', x: 50, y: 50, orient: 'v', len: 340 },
+                    { id: 's2', type: 'wire', x: 750, y: 50, orient: 'v', len: 340 },
+                    { id: 's3', type: 'wire', x: 440, y: 50, orient: 'h', len: 310 },
+                    { id: 's4', type: 'wire', x: 440, y: 220, orient: 'h', len: 310 }
                 ],
                 prefilled: [
-                    { x: 350, y: 350, type: 'battery' },
-                    { x: 350, y: 200, type: 'bulb' },
-                    { x: 350, y: 5, type: 'bulb' }
+                    { x: 360, y: 350, type: 'battery' },
+                    { x: 360, y: 180, type: 'bulb' },
+                    { x: 360, y: 10, type: 'bulb' }
                 ],
                 wires: [
-                    { x1: 350, y1: 395, x2: 50, y2: 395 },
-                    { x1: 50, y1: 395, x2: 50, y2: 245 },
-                    { x1: 50, y1: 50, x2: 50, y2: 50 },
-                    
-                    { x1: 440, y1: 50, x2: 750, y2: 50 },
-                    { x1: 750, y1: 50, x2: 750, y2: 395 },
-                    { x1: 750, y1: 395, x2: 440, y2: 395 },
-
-                    { x1: 50, y1: 245, x2: 350, y2: 245 },
-                    { x1: 440, y1: 245, x2: 750, y2: 245 }
+                    { x1: 360, y1: 390, x2: 50, y2: 390 },
+                    { x1: 50, y1: 390, x2: 50, y2: 50 },
+                    { x1: 50, y1: 50, x2: 360, y2: 50 },
+                    { x1: 50, y1: 220, x2: 360, y2: 220 },
+                    { x1: 750, y1: 390, x2: 440, y2: 390 },
+                    { x1: 750, y1: 390, x2: 750, y2: 50 }
                 ],
                 hint: "Connect components in multiple paths. Each path works independently!"
             }
@@ -412,20 +402,18 @@
                 slot.dataset.orient = s.orient || 'v';
                 slot.dataset.len = s.len || 90;
                 
+                slot.style.left = (s.type === 'wire' && s.orient === 'v' ? s.x - 20 : s.x) + 'px';
+                slot.style.top = (s.type === 'wire' && s.orient === 'h' ? s.y + 20 : s.y) + 'px';
+
                 if(s.type === 'wire') {
                     if(s.orient === 'h') {
                         slot.style.width = s.len + 'px';
                         slot.style.height = '40px';
-                        slot.style.top = (s.y + 25) + 'px';
                     } else {
                         slot.style.width = '40px';
                         slot.style.height = s.len + 'px';
-                        slot.style.left = (s.x - 20) + 'px';
                     }
                 }
-                
-                slot.style.left = (s.type === 'wire' ? (s.orient === 'h' ? s.x : s.x - 18) : s.x) + 'px';
-                slot.style.top = (s.type === 'wire' ? (s.orient === 'v' ? s.y : s.y + 75) : s.y) + 'px';
                 
                 slot.ondragover = (e) => {
                     e.preventDefault();
@@ -446,11 +434,11 @@
                      wire.style.height = '4px';
                      wire.style.width = Math.abs(w.x2 - w.x1) + 'px';
                      wire.style.left = Math.min(w.x1, w.x2) + 'px';
-                     wire.style.top = w.y1 + 'px';
+                     wire.style.top = (w.y1 - 2) + 'px';
                  } else {
                      wire.style.width = '4px';
                      wire.style.height = Math.abs(w.y2 - w.y1) + 'px';
-                     wire.style.left = w.x1 + 'px';
+                     wire.style.left = (w.x1 - 2) + 'px';
                      wire.style.top = Math.min(w.y1, w.y2) + 'px';
                  }
                  board.appendChild(wire);
@@ -463,11 +451,11 @@
             
             if(slot) {
                 const orient = slot.dataset.orient;
-                const len = slot.dataset.len;
+                const len = parseInt(slot.dataset.len);
                 if(orient === 'h') {
-                    return `<div class="wire-line" style="width: ${len}px; height: 4px; margin-top: 18px;"></div>`;
+                    return `<div class="wire-line" style="width: ${len + 4}px; height: 4px; margin-top: 18px; margin-left: -2px;"></div>`;
                 } else {
-                    return `<div class="wire-line" style="width: 4px; height: ${len}px; margin-left: 18px;"></div>`;
+                    return `<div class="wire-line" style="width: 4px; height: ${len + 4}px; margin-left: 18px; margin-top: -2px;"></div>`;
                 }
             }
             return '<i class="fa-solid fa-lines-leaning text-secondary"></i>';
