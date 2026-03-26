@@ -618,6 +618,18 @@ def play_g7_chem_ch5_l1():
         return redirect("/")
     return render_template("g7_chem_ch5_l1.html")
 
+@app.route("/student/play/chem/g7/ch3_l1")
+def play_g7_chem_ch3_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g7_chem_ch3_l1.html")
+
+@app.route("/student/play/phys/g7/ch9_l1")
+def play_g7_phys_ch9_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g7_phys_ch9_l1.html")
+
 # Grade 6 Biology Game 1 Route (Nutrient Sort)
 @app.route("/student/play/bio/g6/ch1_l1")
 def play_g6_bio_ch1_l1():

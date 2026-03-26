@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Racer Lab - Grade 7 Motion & Time</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --lab-blue: #3b82f6;
+            --lab-bg: #1e293b;
+            --lab-surface: #0f172a;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--lab-surface);
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: var(--lab-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #334155;
+            z-index: 100;
+        }
+
+        .stat-badge {
+            background: #334155;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        /* Main Lab Area */
+        .lab-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            gap: 2rem;
+            position: relative;
+        }
+
+        /* Track */
+        .track-container {
+            width: 100%;
+            height: 150px;
+            background: #334155;
+            border-radius: 20px;
+            position: relative;
+            margin-top: 4rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            border: 4px solid #475569;
+        }
+
+        .grid-line {
+            position: absolute;
+            height: 100%;
+            width: 2px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .distance-marker {
+            position: absolute;
+            bottom: 5px;
+            font-size: 0.8rem;
+            font-weight: 950;
+            color: #94a3b8;
+        }
+
+        #racer {
+            position: absolute;
+            left: 0;
+            font-size: 3rem;
+            color: var(--lab-blue);
+            transition: left 0.1s linear;
+            z-index: 5;
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+        }
+
+        .finish-line {
+            position: absolute;
+            right: 0;
+            height: 100%;
+            width: 40px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 10px, #000 10px, #000 20px);
+            opacity: 0.5;
+        }
+
+        /* Controls & Instrumentation */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 2rem;
+            background: var(--lab-bg);
+            padding: 2rem;
+            border-top: 4px solid #334155;
+        }
+
+        .instrument-panel {
+            background: var(--lab-surface);
+            border-radius: 24px;
+            padding: 1.5rem;
+            border: 2px solid #1e293b;
+            text-align: center;
+        }
+
+        .gauge-val { font-size: 3rem; font-weight: 950; line-height: 1; }
+        .gauge-unit { font-size: 1rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
+
+        .control-sliders {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        input[type=range] { width: 100%; cursor: pointer; }
+
+        .btn-launch {
+            background: var(--lab-blue);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 16px;
+            font-size: 1.5rem;
+            font-weight: 950;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-launch:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
+        .btn-launch:disabled { background: #475569; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Notification & Results */
+        .challenge-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid var(--lab-blue);
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--lab-bg);
+            padding: 3rem;
+            border-radius: 32px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid #334155;
+        }
+
+        .math-box {
+            background: var(--lab-surface);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin: 1.5rem 0;
+            font-family: monospace;
+            font-size: 1.4rem;
+            text-align: left;
+            border-left: 6px solid var(--lab-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="/student/play?subject=Science" style="text-decoration: none; color: #94a3b8; font-weight: 700;">
+            <i class="fa-solid fa-arrow-left"></i> Leave Lab
+        </a>
+        <h2 style="margin: 0; color: var(--lab-blue);">SPEED RACER LAB</h2>
+        <div class="stat-badge" style="color: #fbbf24;">
+            <i class="fa-solid fa-trophy"></i> <span id="score-val">0</span> XP
+        </div>
+    </div>
+
+    <div class="lab-main">
+        <div class="challenge-box">
+            <p style="text-transform: uppercase; font-size: 0.8rem; font-weight: 900; color: var(--lab-blue); margin-top: 0;">Missions: Motion & Time</p>
+            <h3 style="margin: 0.5rem 0;" id="challenge-text">Reach exactly 400m in 10 seconds.</h3>
+            <p style="margin: 0; font-size: 0.9rem; color: #94a3b8;">Formula Tip: Speed = Distance / Time</p>
+        </div>
+
+        <div class="track-container" id="track">
+            <!-- Grid lines and markers will be generated -->
+            <div class="finish-line"></div>
+            <div id="racer"><i class="fa-solid fa-car-side"></i></div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="instrument-panel">
+            <i class="fa-solid fa-gauge-high" style="color: var(--lab-blue); font-size: 1.5rem;"></i>
+            <div class="gauge-unit">Speedometer</div>
+            <div class="gauge-val" id="speed-display">0</div>
+            <div class="gauge-unit">Meters / Second</div>
+        </div>
+
+        <div class="control-sliders">
+            <div class="slider-group">
+                <div style="display: flex; justify-content: space-between;">
+                    <label style="font-weight: 900;">SET SPEED (V)</label>
+                    <span id="speed-val-label" style="color: var(--lab-blue); font-weight: 900;">0 m/s</span>
+                </div>
+                <input type="range" id="speed-slider" min="0" max="100" value="0">
+            </div>
+            
+            <button class="btn-launch" id="launch-btn" onclick="startRace()">
+                LAUNCH EXPERIMENT <i class="fa-solid fa-play"></i>
+            </button>
+        </div>
+
+        <div class="instrument-panel">
+            <i class="fa-solid fa-stopwatch" style="color: var(--accent-red); font-size: 1.5rem;"></i>
+            <div class="gauge-unit">Stopwatch</div>
+            <div class="gauge-val" id="time-display">0.00</div>
+            <div class="gauge-unit">Seconds</div>
+        </div>
+    </div>
+
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <div id="result-icon" style="font-size: 5rem; margin-bottom: 1rem;"></div>
+            <h1 id="result-title">Perfect Match!</h1>
+            <p id="result-msg" style="color: #94a3b8; font-size: 1.1rem;"></p>
+            
+            <div class="math-box" id="explanation">
+                <!-- Calc will be here -->
+            </div>
+
+            <button class="btn-launch" style="width: 100%; justify-content: center;" onclick="nextLevel()">
+                Next Challenge <i class="fa-solid fa-forward"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const state = {
+            targetDist: 400,
+            targetTime: 10,
+            currentSpeed: 0,
+            xp: 0,
+            isRacing: false,
+            username: "{{ session.get('username') }}"
+        };
+
+        const els = {
+            racer: document.getElementById('racer'),
+            speedSlider: document.getElementById('speed-slider'),
+            speedLabel: document.getElementById('speed-val-label'),
+            speedDisplay: document.getElementById('speed-display'),
+            timeDisplay: document.getElementById('time-display'),
+            launchBtn: document.getElementById('launch-btn'),
+            track: document.getElementById('track'),
+            modal: document.getElementById('result-modal')
+        };
+
+        function initTrack() {
+            // Generate grid
+            for(let i=0; i<=10; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line';
+                line.style.left = (i*10) + '%';
+                els.track.appendChild(line);
+
+                const marker = document.createElement('div');
+                marker.className = 'distance-marker';
+                marker.style.left = (i*10) + '%';
+                marker.innerText = (i*50) + 'm';
+                els.track.appendChild(marker);
+            }
+        }
+
+        els.speedSlider.oninput = function() {
+            state.currentSpeed = parseInt(this.value);
+            els.speedLabel.innerText = state.currentSpeed + ' m/s';
+            els.speedDisplay.innerText = state.currentSpeed;
+        };
+
+        function startRace() {
+            if (state.isRacing || state.currentSpeed === 0) return;
+            state.isRacing = true;
+            els.launchBtn.disabled = true;
+
+            const totalDist = 500; // Track end
+            const raceTime = state.targetTime; 
+            const speed = state.currentSpeed;
+            
+            let timeElapsed = 0;
+            const interval = 50; // ms
+            const raceTimer = setInterval(() => {
+                timeElapsed += interval / 1000;
+                const distanceCovered = speed * timeElapsed;
+                const percent = (distanceCovered / totalDist) * 100;
+
+                els.racer.style.left = Math.min(percent, 100) + '%';
+                els.timeDisplay.innerText = timeElapsed.toFixed(2);
+
+                if (timeElapsed >= raceTime || percent >= 100) {
+                    clearInterval(raceTimer);
+                    evaluateRace(distanceCovered, timeElapsed);
+                }
+            }, interval);
+        }
+
+        function evaluateRace(d, t) {
+            const finalD = Math.round(d);
+            const success = Math.abs(finalD - state.targetDist) < 10;
+            
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const msg = document.getElementById('result-msg');
+            const exp = document.getElementById('explanation');
+
+            if (success) {
+                icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i>';
+                title.innerText = "Mission Success!";
+                msg.innerText = `You covered ${finalD}m in ${t.toFixed(1)}s. Accurate speed calculation!`;
+                state.xp += 50;
+                document.getElementById('score-val').innerText = state.xp;
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                saveScore();
+            } else {
+                icon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color: var(--accent-red);"></i>';
+                title.innerText = "Mission Failed";
+                msg.innerText = `You reached ${finalD}m but the target was ${state.targetDist}m.`;
+            }
+
+            exp.innerHTML = `
+                <div style="color: var(--lab-blue);">Formula: Speed = Distance / Time</div>
+                <div>v = ${state.targetDist} / ${state.targetTime}</div>
+                <div>v = <b>${state.targetDist / state.targetTime} m/s</b></div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: #94a3b8;">Your set speed: ${state.currentSpeed} m/s</div>
+            `;
+
+            setTimeout(() => {
+                els.modal.style.display = 'flex';
+            }, 1000);
+        }
+
+        function nextLevel() {
+            els.modal.style.display = 'none';
+            els.launchBtn.disabled = false;
+            state.isRacing = false;
+            els.racer.style.left = '0';
+            els.timeDisplay.innerText = '0.00';
+            
+            // Randomize challenge
+            const distances = [200, 300, 400, 500];
+            const times = [5, 10, 20];
+            state.targetDist = distances[Math.floor(Math.random() * distances.length)];
+            state.targetTime = times[Math.floor(Math.random() * times.length)];
+            
+            document.getElementById('challenge-text').innerText = `Reach exactly ${state.targetDist}m in ${state.targetTime} seconds.`;
+        }
+
+        function saveScore() {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${state.xp}&subject=Science&game_name=G7_Phys_Ch9_L1`
+            });
+        }
+
+        window.onload = initTrack;
+    </script>
+</body>
+</html>

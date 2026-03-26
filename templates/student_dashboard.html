@@ -2410,12 +2410,36 @@
             {% elif subject == 'Science' and sub_subject == 'Chemistry' and grade|lower == 'g7' and not chapter %}
             <p class="text-muted mb-2">Select a Chapter to explore games!</p>
             <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Chemistry&chapter=3'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #a855f7;"></i>
+                    <h3 style="color: #6b21a8; font-size: 1.5rem;">Chapter 3</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Fibre to Fabric</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #f3e8ff; color: #a855f7; border: 1px solid #e9d5ff;">1 Game</span>
+                    </div>
+                </div>
                 <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Chemistry&chapter=5'" style="border: 2px solid var(--border);">
                     <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #16a34a;"></i>
                     <h3 style="color: #166534; font-size: 1.5rem;">Chapter 5</h3>
                     <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Acids, Bases and Salts</p>
                     <div style="text-align: center; margin-top: 1rem;">
                         <span class="level-badge mt-1" style="display:inline-block; background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0;">1 Game</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Chemistry' and grade|lower == 'g7' and chapter == '3' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #6b21a8; background: #f3e8ff; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 3: Fibre to Fabric</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play/chem/g7/ch3_l1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-industry text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #a855f7;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Fiber Factory</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Moderate</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #f3e8ff; color: #a855f7;">Play Game</span>
                     </div>
                 </div>
             </div>
@@ -2432,6 +2456,35 @@
                     <p class="text-muted mt-1 text-sm">Difficulty: Beginner</p>
                     <div style="text-align: center;">
                         <span class="level-badge mt-1" style="display:inline-block; background: #dcfce7; color: #16a34a;">Play Game</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g7' and not chapter %}
+            <p class="text-muted mb-2">Select a Chapter to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=9'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
+                    <h3 style="color: #1e3a8a; font-size: 1.5rem;">Chapter 9</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Motion and Time</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #e0e7ff; color: #3b82f6; border: 1px solid #bfdbfe;">1 Game</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g7' and chapter == '9' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #1e3a8a; background: #e0e7ff; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 9: Motion and Time</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play/phys/g7/ch9_l1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-gauge-high text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Speed Racer Lab</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Beginner</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #e0e7ff; color: #3b82f6;">Play Game</span>
                     </div>
                 </div>
             </div>
