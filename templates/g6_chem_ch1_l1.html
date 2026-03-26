@@ -370,6 +370,9 @@
 
     <div class="status-header">
         <div style="display: flex; align-items: center; gap: 1rem;">
+            <button onclick="window.location.href='/student/play?subject=Science'" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
+                <i class="fa-solid fa-arrow-left"></i> Exit
+            </button>
             <div class="task-card">
                 <i class="fa-solid fa-flask-vial text-primary"></i>
                 <span id="step-name">Step 1: Frozen Obstacle</span>
@@ -441,8 +444,11 @@
                 <button class="finish-btn btn-retry" onclick="location.reload()">
                     <i class="fa-solid fa-rotate-right"></i> Restart
                 </button>
+                <button class="finish-btn btn-catalog" style="background: #64748b;" onclick="window.location.href='/student/play?subject=Science'">
+                    <i class="fa-solid fa-house"></i> Back to Dashboard
+                </button>
                 <button class="finish-btn btn-catalog" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Chemistry&chapter=1'">
-                    <i class="fa-solid fa-house"></i> View Notes
+                    <i class="fa-solid fa-file-lines"></i> View Notes
                 </button>
             </div>
         </div>
