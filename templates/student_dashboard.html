@@ -2497,6 +2497,35 @@
                 </div>
             </div>
 
+            {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g7' and not chapter %}
+            <p class="text-muted mb-2">Select a Biology Chapter to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Biology&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #9d174d;"></i>
+                    <h3 style="color: #9d174d; font-size: 1.5rem;">Chapter 1</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Life Processes</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #fdf2f8; color: #9d174d; border: 1px solid #fbcfe8;">1 Game</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g7' and chapter == '1' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #9d174d; background: #fdf2f8; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 1: Life Processes</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play/bio/g7/ch1_l1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-microscope text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #9d174d;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Human Body Adventure</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Adventure</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #fdf2f8; color: #9d174d;">Play Game</span>
+                    </div>
+                </div>
+            </div>
+
             {% elif subject == 'Technology' and grade|lower == 'g7' and not chapter %}
             <p class="text-muted mb-2">Select a Technology Chapter to explore games!</p>
             <div class="card-grid">

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Body Adventure - Grade 7 Biology</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --body-bg: #450a0a;
+            --organ-red: #991b1b;
+            --accent-pink: #f472b6;
+            --success-green: #10b981;
+            --text-light: #fee2e2;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--body-bg);
+            color: var(--text-light);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .main-adventure {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Sidebar Progress */
+        .sidebar {
+            width: 280px;
+            background: rgba(0,0,0,0.2);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .health-bar {
+            height: 20px;
+            background: #450a0a;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--accent-pink);
+        }
+        #health-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f472b6);
+            transition: width 0.3s;
+        }
+
+        .organ-node {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0.4;
+            transition: all 0.3s;
+        }
+        .organ-node.active { opacity: 1; transform: scale(1.05); }
+        .organ-icon {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--organ-red);
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--accent-pink);
+        }
+
+        /* Stage Canvas */
+        .stage-canvas {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: radial-gradient(circle, #7f1d1d 0%, #450a0a 100%);
+        }
+
+        .mini-game-container {
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 32px;
+            position: relative;
+            display: none;
+            overflow: hidden;
+            border: 2px solid rgba(244, 114, 182, 0.2);
+        }
+        .mini-game-active { display: block; }
+
+        /* Mouth Stage */
+        #mouth-game { text-align: center; padding-top: 50px; }
+        .food-particle {
+            width: 100px; height: 100px;
+            background: #d97706;
+            border-radius: 20px;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            user-select: none;
+        }
+        .food-particle:active { transform: scale(0.9); }
+
+        /* Stomach Stage */
+        #stomach-game { display: grid; grid-template-columns: 1fr 1fr; padding: 2rem; gap: 2rem; justify-items: center; align-items: center;}
+        .enzyme {
+            padding: 1rem; background: var(--accent-pink); color: white; border-radius: 12px;
+            cursor: grab; display: inline-block; margin: 0.5rem; font-weight: 800;
+        }
+        .target-food {
+            width: 150px; height: 150px; border: 3px dashed var(--accent-pink);
+            border-radius: 24px; display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 0.5rem;
+        }
+
+        /* Lung Stage */
+        #lung-game { position: relative; }
+        .molecule {
+            position: absolute; width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: move;
+            font-size: 0.8rem; z-index: 20; color: white;
+        }
+        .mol-o2 { background: #60a5fa; box-shadow: 0 0 15px #60a5fa; }
+        .mol-co2 { background: #94a3b8; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+        .zone {
+            position: absolute; width: 150px; height: 100%; top: 0;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            font-weight: 900; letter-spacing: 0.1em;
+        }
+        .zone-blood { right: 0; background: rgba(239, 68, 68, 0.2); border-left: 2px solid #ef4444; }
+        .zone-airway { left: 0; background: rgba(255,255,255,0.05); border-right: 2px solid white; }
+
+        /* Heart Stage */
+        #heart-game { display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .heart-svg { width: 140px; height: 140px; fill: #ef4444; animation: beat 1s infinite; filter: drop-shadow(0 0 15px #ef4444); }
+        @keyframes beat { 0% { transform: scale(1); } 20% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .pump-btn {
+            background: #ef4444; color: white; border: none; padding: 1.2rem 2.5rem;
+            border-radius: 99px; font-size: 1.3rem; font-weight: 900; cursor: pointer;
+            margin-top: 1.5rem; box-shadow: 0 8px 0 #b91c1c; transition: all 0.1s;
+        }
+        .pump-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #b91c1c; }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(69, 10, 10, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #7f1d1d;
+            padding: 3rem;
+            border-radius: 32px;
+            text-align: center;
+            border: 2px solid var(--accent-pink);
+            max-width: 500px;
+        }
+
+        .menu-btn { cursor: pointer; font-weight: 800; padding: 1rem; border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="/student/play?subject=Science" style="text-decoration: none; color: #f472b6; font-weight: 700;">
+            <i class="fa-solid fa-arrow-left"></i> Abort Mission
+        </a>
+        <h2 style="margin: 0; letter-spacing: 0.1em; color: var(--accent-pink);">HUMAN BODY ADVENTURE</h2>
+        <div style="background: rgba(0,0,0,0.3); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 800; color: #10b981;">
+            <i class="fa-solid fa-bolt"></i> <span id="xp-val">0</span> XP
+        </div>
+    </div>
+
+    <div class="main-adventure">
+        <div class="sidebar">
+            <div>
+                <h4 style="margin: 0 0 0.5rem 0; font-size: 0.8rem; text-transform: uppercase;">Body Health</h4>
+                <div class="health-bar"><div id="health-fill"></div></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="organ-node active" id="node-mouth">
+                    <div class="organ-icon"><i class="fa-solid fa-cookie"></i></div>
+                    <div><b>Mouth</b><div style="font-size: 0.7rem; color: #f9a8d4;">Digestive Start</div></div>
+                </div>
+                <div class="organ-node" id="node-stomach">
+                    <div class="organ-icon"><i class="fa-solid fa-flask"></i></div>
+                    <div><b>Stomach</b><div style="font-size: 0.7rem; color: #f9a8d4;">Enzyme Breakup</div></div>
+                </div>
+                <div class="organ-node" id="node-lungs">
+                    <div class="organ-icon"><i class="fa-solid fa-wind"></i></div>
+                    <div><b>Lungs</b><div style="font-size: 0.7rem; color: #f9a8d4;">Gas Exchange</div></div>
+                </div>
+                <div class="organ-node" id="node-heart">
+                    <div class="organ-icon"><i class="fa-solid fa-heart"></i></div>
+                    <div><b>Heart</b><div style="font-size: 0.7rem; color: #f9a8d4;">Circulation</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stage-canvas">
+            <h1 id="stage-title" style="margin-bottom: 1rem; color: var(--accent-pink);">Target: Mouth</h1>
+            <p id="stage-desc" style="max-width: 600px; text-align: center; color: #f9a8d4; margin-bottom: 2rem;">
+                Shrink down and enter! First step: Break down the food by chewing. Click the food 10 times quickly!
+            </p>
+
+            <!-- Mouth Mini-game -->
+            <div id="mouth-game" class="mini-game-container mini-game-active">
+                <div class="food-particle" id="food" onclick="chew()">🍔</div>
+                <div style="margin-top: 50px; text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 900;" id="chew-count">0 / 10</div>
+                    <p style="font-weight: 700;">CHEWS COMPLETED</p>
+                </div>
+            </div>
+
+            <!-- Stomach Mini-game -->
+            <div id="stomach-game" class="mini-game-container">
+                <div style="display: flex; flex-direction: column; gap: 1rem; padding: 2rem;">
+                    <p>Drag Enzymes to Target:</p>
+                    <div class="enzyme" draggable="true" ondragstart="drag(event)" id="enz-p">PEPSIN</div>
+                    <div class="enzyme" draggable="true" ondragstart="drag(event)" id="enz-h">HCl ACID</div>
+                </div>
+                <div style="display: flex; gap: 2rem; padding: 2rem;">
+                    <div class="target-food" ondrop="drop(event, 'enz-p', this)" ondragover="allowDrop(event)">
+                        <span style="font-size: 2.5rem;">🥩</span>
+                        <small style="font-weight: 700;">Protein</small>
+                    </div>
+                    <div class="target-food" ondrop="drop(event, 'enz-h', this)" ondragover="allowDrop(event)">
+                        <span style="font-size: 2.5rem;">🦠</span>
+                        <small style="font-weight: 700;">Bacteria</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lung Mini-game -->
+            <div id="lung-game" class="mini-game-container">
+                <div class="zone zone-airway">AIRWAY<br>(Out)</div>
+                <div class="zone zone-blood">BLOOD<br>(In)</div>
+                <!-- Molecules spawned by JS -->
+            </div>
+
+            <!-- Heart Mini-game -->
+            <div id="heart-game" class="mini-game-container">
+                <svg class="heart-svg" viewBox="0 0 32 32">
+                    <path d="M16 28.5L4.5 17C2 14.5 2 10.5 4.5 8C7 5.5 11 5.5 13.5 8L16 10.5L18.5 8C21 5.5 25 5.5 27.5 8C30 10.5 30 14.5 27.5 17L16 28.5Z"/>
+                </svg>
+                <button class="pump-btn" onmousedown="pump()" id="pump-btn">PUMP NOW!</button>
+                <p id="pump-status" style="margin-top: 1.5rem; font-weight: 900; font-size: 1.2rem;">Wait for the heart to expand...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <h1 id="res-title">Organ Conquered!</h1>
+            <p id="res-msg" style="color: #f9a8d4; line-height: 1.6;"></p>
+            <div style="font-size: 4rem; margin: 2rem 0;">🔬</div>
+            <button class="menu-btn" style="width: 100%; background: var(--accent-pink); border: none; color: white; font-size: 1.1rem;" onclick="nextStage()">CONTINUE ADVENTURE</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const state = {
+            stage: 0,
+            xp: 0,
+            health: 100,
+            mouthChews: 0,
+            stomachMatches: 0,
+            lungSuccess: 0,
+            heartPumps: 0,
+            username: "{{ session.get('username') }}"
+        };
+
+        const stages = [
+            { id: 'mouth', title: 'Target: Mouth', desc: "Shrink down! First step: Break down the food by chewing. Click the food 10 times quickly!" },
+            { id: 'stomach', title: 'Target: Stomach', desc: "Digestion! Drag PEPSIN to the protein (meat) and HCl ACID to the bacteria to break them down." },
+            { id: 'lungs', title: 'Target: Lungs', desc: "Gas Exchange! Drag blue O2 into the BLOOD to be absorbed, and gray CO2 into the AIRWAY to be exhaled." },
+            { id: 'heart', title: 'Target: Heart', desc: "Circulation! Wait for the heart to Expand (Scale Up), then click PUMP to move blood forward." }
+        ];
+
+        function chew() {
+            if(state.stage !== 0) return;
+            state.mouthChews++;
+            document.getElementById('chew-count').innerText = `${state.mouthChews} / 10`;
+            if(state.mouthChews >= 10) showResult("Food is chewed! Traveling down the esophagus to the stomach...");
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev, correctId, targetEl) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            if (data === correctId) {
+                state.stomachMatches++;
+                targetEl.style.background = 'var(--success-green)';
+                targetEl.style.borderColor = '#065f46';
+                targetEl.innerHTML = '<span style="font-size:2.5rem">✔️</span><small>DISSOLVED</small>';
+                if(state.stomachMatches >= 2) showResult("Digestion complete! Moving deeper into the respiratory system...");
+            } else {
+                damage(10);
+                alert("Incorrect enzyme! This could cause indigestion.");
+            }
+        }
+
+        function spawnMolecules() {
+            const container = document.getElementById('lung-game');
+            for(let i=0; i<10; i++) {
+                const mol = document.createElement('div');
+                const isO2 = Math.random() > 0.5;
+                mol.className = `molecule ${isO2 ? 'mol-o2' : 'mol-co2'}`;
+                mol.innerText = isO2 ? 'O2' : 'CO2';
+                mol.draggable = true;
+                mol.style.top = (Math.random() * 300 + 50) + 'px';
+                mol.style.left = (Math.random() * 100 + 300) + 'px';
+                
+                mol.ondragstart = (e) => e.dataTransfer.setData("type", isO2 ? 'o2' : 'co2');
+                container.appendChild(mol);
+            }
+
+            container.ondragover = allowDrop;
+            container.ondrop = (e) => {
+                const type = e.dataTransfer.getData("type");
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                
+                if((type === 'o2' && x > 600) || (type === 'co2' && x < 200)) {
+                   state.lungSuccess++;
+                   e.target.style.opacity = '0'; // Fake hide
+                   if(state.lungSuccess >= 10) showResult("Oxygen levels rising! Transporting O2 to the heart...");
+                } else {
+                    damage(5);
+                }
+            };
+        }
+
+        function pump() {
+            if(state.stage !== 3) return;
+            const heart = document.querySelector('.heart-svg');
+            const style = window.getComputedStyle(heart);
+            const matrix = new WebKitCSSMatrix(style.transform);
+            
+            if(matrix.a > 1.1) {
+                state.heartPumps++;
+                document.getElementById('pump-status').innerText = `SUCCESS! Pumps: ${state.heartPumps}/5`;
+                document.getElementById('pump-status').style.color = 'var(--success-green)';
+                if(state.heartPumps >= 5) showFinal();
+            } else {
+                damage(15);
+                document.getElementById('pump-status').innerText = "POOR TIMING! Heart wasn't full.";
+                document.getElementById('pump-status').style.color = '#f87171';
+            }
+        }
+
+        function damage(val) {
+            state.health = Math.max(0, state.health - val);
+            document.getElementById('health-fill').style.width = state.health + '%';
+            if(state.health <= 0) {
+                alert("The body is exhausted! Rebuilding organs...");
+                location.reload();
+            }
+        }
+
+        function showResult(msg) {
+            const modal = document.getElementById('result-modal');
+            modal.style.display = 'flex';
+            document.getElementById('res-msg').innerText = msg;
+            state.xp += 100;
+            document.getElementById('xp-val').innerText = state.xp;
+            confetti();
+            saveScore();
+        }
+
+        function nextStage() {
+            const modal = document.getElementById('result-modal');
+            if(state.stage >= 3) { window.location.href = '/student/play?subject=Science'; return; }
+            
+            modal.style.display = 'none';
+            document.querySelector('.mini-game-active').classList.remove('mini-game-active');
+            
+            state.stage++;
+            const s = stages[state.stage];
+            document.getElementById('stage-title').innerText = s.title;
+            document.getElementById('stage-desc').innerText = s.desc;
+            document.getElementById(`${s.id}-game`).classList.add('mini-game-active');
+            document.getElementById(`node-${s.id}`).classList.add('active');
+
+            if(s.id === 'lungs') spawnMolecules();
+        }
+
+        function showFinal() {
+            document.getElementById('res-title').innerText = "Quest Complete!";
+            showResult("You've navigated the major systems of the body! Digestion, Respiration, and Circulation are all functioning perfectly.");
+        }
+
+        function saveScore() {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${state.xp}&subject=Biology&game_name=G7_Bio_Ch1_L1`
+            });
+        }
+    </script>
+</body>
+</html>
