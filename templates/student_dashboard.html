@@ -2508,6 +2508,14 @@
                         <span class="level-badge mt-1" style="display:inline-block; background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd;">1 Game</span>
                     </div>
                 </div>
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Technology&chapter=2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--secondary);"></i>
+                    <h3 style="color: #0369a1; font-size: 1.5rem;">Chapter 2</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Algorithms & Logic</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd;">1 Game</span>
+                    </div>
+                </div>
             </div>
 
             {% elif subject == 'Technology' and grade|lower == 'g7' and chapter == '1' %}
@@ -2520,6 +2528,22 @@
                     <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
                     <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">App Creator Challenge</h3>
                     <p class="text-muted mt-1 text-sm">Difficulty: Beginner</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #f0f9ff; color: #0369a1;">Play Game</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Technology' and grade|lower == 'g7' and chapter == '2' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #0369a1; background: #f0f9ff; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 2: Algorithms & Logic</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play/tech/g7/ch2_l1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-code text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--secondary);"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Logic Builder</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Intermediate</p>
                     <div style="text-align: center;">
                         <span class="level-badge mt-1" style="display:inline-block; background: #f0f9ff; color: #0369a1;">Play Game</span>
                     </div>
