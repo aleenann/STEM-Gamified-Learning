@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Network Engineer - Grade 7 Engineering</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --nw-bg: #0f172a;
+            --nw-panel: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-light: #f1f5f9;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--nw-bg);
+            color: var(--text-light);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .nw-header {
+            background: var(--nw-panel);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #334155;
+            z-index: 100;
+        }
+
+        .main-engine {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar Tools */
+        .tools-panel {
+            width: 280px;
+            background: var(--nw-panel);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            border-right: 2px solid #334155;
+        }
+
+        .device-btn {
+            background: #334155;
+            border: 2px solid transparent;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s;
+            color: white;
+            user-select: none;
+        }
+        .device-btn:hover { border-color: var(--accent-blue); background: #1e293b; }
+        .device-btn.active { border-color: var(--accent-blue); background: #0f172a; }
+
+        .btn-action {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        /* Canvas */
+        .canvas-area {
+            flex: 1;
+            position: relative;
+            background-color: #0f172a;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        #link-canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+
+        .node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: var(--nw-panel);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: grab;
+            border: 2px solid #334155;
+            z-index: 10;
+            transition: border-color 0.2s;
+        }
+        .node:hover { border-color: var(--accent-blue); }
+        .node.selected { border-color: var(--accent-green); box-shadow: 0 0 15px var(--accent-green); }
+        .node-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            white-space: nowrap;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Packet Animation */
+        .packet {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: 0 0 10px var(--accent-blue);
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* Mission Panel */
+        .mission-panel {
+            width: 300px;
+            background: var(--nw-panel);
+            padding: 1.5rem;
+            border-left: 2px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .mission-card {
+            background: #334155;
+            padding: 1.2rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--nw-panel);
+            padding: 3rem;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid #334155;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nw-header">
+        <a href="/student/play?subject=Engineering" style="text-decoration: none; color: #94a3b8; font-weight: 700;">
+            <i class="fa-solid fa-arrow-left"></i> End Session
+        </a>
+        <h2 style="margin: 0;">SMART NETWORK ENGINEER</h2>
+        <div style="background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 800; color: var(--accent-green);">
+            <i class="fa-solid fa-signal"></i> Network Health: <span id="health-val">100</span>%
+        </div>
+    </div>
+
+    <div class="main-engine">
+        <!-- Tools -->
+        <div class="tools-panel">
+            <h4 style="margin: 0; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase;">Equipment</h4>
+            <div class="device-btn active" onclick="setMode('place-pc')">
+                <i class="fa-solid fa-laptop"></i> 
+                <div><b>PC</b><div style="font-size: 0.6rem; opacity: 0.7;">Client Device</div></div>
+            </div>
+            <div class="device-btn" onclick="setMode('place-router')">
+                <i class="fa-solid fa-route"></i> 
+                <div><b>Router</b><div style="font-size: 0.6rem; opacity: 0.7;">Data Switch</div></div>
+            </div>
+            <div class="device-btn" onclick="setMode('place-server')">
+                <i class="fa-solid fa-server"></i> 
+                <div><b>Server</b><div style="font-size: 0.6rem; opacity: 0.7;">Data Source</div></div>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px solid #334155; margin: 0.5rem 0;">
+            
+            <div class="device-btn" onclick="setMode('link')">
+                <i class="fa-solid fa-link"></i> 
+                <div><b>Cable</b><div style="font-size: 0.6rem; opacity: 0.7;">Create Link</div></div>
+            </div>
+
+            <button class="btn-action" onclick="testNetwork()">
+                <i class="fa-solid fa-paper-plane"></i> SEND TEST DATA
+            </button>
+            <button style="background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 0.5rem; border-radius: 8px; cursor: pointer; font-weight: 700;" onclick="clearNetwork()">
+                RESET GRID
+            </button>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-area" id="canvas-container" onclick="handleCanvasClick(event)">
+            <canvas id="link-canvas"></canvas>
+            <!-- Nodes placed here -->
+        </div>
+
+        <!-- Mission -->
+        <div class="mission-panel">
+            <h4 style="margin: 0; font-size: 0.8rem; color: #94a3b8; text-transform: uppercase;">Mission Objective</h4>
+            <div class="mission-card">
+                <h4 id="mission-title" style="margin-top: 0;">School Lab</h4>
+                <p id="mission-desc" style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.4;">
+                    Connect the 'Student PC' to the 'School Server'. You'll need at least one 'Router' in between to handle the data!
+                </p>
+                <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--accent-blue); font-weight: 700;">
+                    <i class="fa-solid fa-check-circle"></i> Destination: Server<br>
+                    <i class="fa-solid fa-check-circle"></i> Requires: 1 Router
+                </div>
+            </div>
+
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(59, 130, 246, 0.2);">
+                <b>Engineer Tip:</b> Redundant paths (multiple routes) ensure the network stays up even if one cable breaks!
+            </div>
+            
+            <div style="margin-top: auto;">
+                <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.5rem;">Inventory</div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <div style="background: #334155; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.7rem;">Cables: <span id="cable-count">∞</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <h1 id="res-title">Network Verified! 🌐</h1>
+            <p id="res-msg" style="color: #94a3b8; line-height: 1.6;"></p>
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 2rem; border-radius: 20px; margin: 1.5rem 0;">
+                <div style="font-size: 3rem; font-weight: 900; color: var(--accent-green);" id="efficiency-val">98%</div>
+                <div style="font-size: 0.8rem; color: var(--accent-green); font-weight: 800;">EFFICIENCY RATING</div>
+            </div>
+            <button class="btn-action" style="width: 100%; border: none;" onclick="nextMission()">NEXT ASSIGNMENT</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const state = {
+            mode: 'place-pc',
+            nodes: [],
+            links: [],
+            selectedNode: null,
+            xp: 0,
+            mission: 0,
+            username: "{{ session.get('username') }}"
+        };
+
+        const missions = [
+            { title: "Home Office", desc: "Connect the PC to the Server through a Router.", req_router: 1 },
+            { title: "School Lab", desc: "Connect two PCs to a Server via a central Router.", req_router: 1 },
+            { title: "Data Center", desc: "Connect 2 Servers with 2 redundant PC links.", req_router: 2 }
+        ];
+
+        function setMode(mode) {
+            state.mode = mode;
+            document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            state.selectedNode = null;
+            document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+        }
+
+        function handleCanvasClick(e) {
+            if (e.target.id !== 'canvas-container') return;
+            
+            if (state.mode.startsWith('place')) {
+                const type = state.mode.split('-')[1];
+                addNode(type, e.offsetX - 30, e.offsetY - 30);
+            }
+        }
+
+        function addNode(type, x, y) {
+            const id = 'node-' + Date.now();
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.id = id;
+            node.style.left = x + 'px';
+            node.style.top = y + 'px';
+            
+            let icon = '';
+            if(type === 'pc') icon = '<i class="fa-solid fa-laptop"></i>';
+            if(type === 'router') icon = '<i class="fa-solid fa-route"></i>';
+            if(type === 'server') icon = '<i class="fa-solid fa-server"></i>';
+            
+            node.innerHTML = icon + `<div class="node-label">${type.toUpperCase()}</div>`;
+            node.onclick = (e) => { e.stopPropagation(); handleNodeClick(id); };
+
+            document.getElementById('canvas-container').appendChild(node);
+            state.nodes.push({ id, type, x: x + 30, y: y + 30 });
+        }
+
+        function handleNodeClick(id) {
+            if (state.mode === 'link') {
+                if (!state.selectedNode) {
+                    state.selectedNode = id;
+                    document.getElementById(id).classList.add('selected');
+                } else if (state.selectedNode !== id) {
+                    addLink(state.selectedNode, id);
+                    document.getElementById(state.selectedNode).classList.remove('selected');
+                    state.selectedNode = null;
+                }
+            } else {
+                if(confirm("Delete device and its links?")) {
+                    document.getElementById(id).remove();
+                    state.nodes = state.nodes.filter(n => n.id !== id);
+                    state.links = state.links.filter(l => l.start !== id && l.end !== id);
+                    drawLinks();
+                }
+            }
+        }
+
+        function addLink(start, end) {
+            if (state.links.some(l => (l.start === start && l.end === end) || (l.start === end && l.end === start))) return;
+            state.links.push({ start, end });
+            drawLinks();
+        }
+
+        function drawLinks() {
+            const canvas = document.getElementById('link-canvas');
+            const container = document.getElementById('canvas-container');
+            if(!canvas) return;
+            
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#475569';
+            ctx.lineCap = 'round';
+
+            state.links.forEach(link => {
+                const s = state.nodes.find(n => n.id === link.start);
+                const e = state.nodes.find(n => n.id === link.end);
+                if (s && e) {
+                    ctx.beginPath();
+                    ctx.moveTo(s.x, s.y);
+                    ctx.lineTo(e.x, e.y);
+                    ctx.stroke();
+                }
+            });
+        }
+
+        function testNetwork() {
+            const clients = state.nodes.filter(n => n.type === 'pc');
+            const server = state.nodes.find(n => n.type === 'server');
+            
+            if (clients.length === 0 || !server) {
+                alert("Ensure you have placed at least one PC and one Server!");
+                return;
+            }
+
+            // Pathfinding check (BFS)
+            const routesFound = [];
+            clients.forEach(pc => {
+                const visited = new Set();
+                const queue = [pc.id];
+                visited.add(pc.id);
+                const parent = {};
+
+                let reached = false;
+                while (queue.length > 0) {
+                    const curr = queue.shift();
+                    if (curr === server.id) {
+                        routesFound.push({ start: pc.id, parent });
+                        reached = true;
+                        break;
+                    }
+                    state.links.forEach(l => {
+                        let neighbor = null;
+                        if (l.start === curr) neighbor = l.end;
+                        if (l.end === curr) neighbor = l.start;
+                        if (neighbor && !visited.has(neighbor)) {
+                            visited.add(neighbor);
+                            parent[neighbor] = curr;
+                            queue.push(neighbor);
+                        }
+                    });
+                }
+            });
+
+            if (routesFound.length > 0) {
+                animatePackets(routesFound, server.id);
+            } else {
+                alert("Destination unreachable. Ensure cables are connected to a router/server!");
+            }
+        }
+
+        async function animatePackets(routes, targetId) {
+            const container = document.getElementById('canvas-container');
+            
+            for (let route of routes) {
+                const path = [];
+                let curr = targetId;
+                while (curr) { path.unshift(curr); curr = route.parent[curr]; }
+
+                const packet = document.createElement('div');
+                packet.className = 'packet';
+                container.appendChild(packet);
+
+                for (let nodeId of path) {
+                    const node = state.nodes.find(n => n.id === nodeId);
+                    packet.style.left = (node.x - 6) + 'px';
+                    packet.style.top = (node.y - 6) + 'px';
+                    await new Promise(r => setTimeout(r, 400));
+                }
+                packet.remove();
+            }
+            
+            showResult();
+        }
+
+        function showResult() {
+            const modal = document.getElementById('result-modal');
+            const efficiency = Math.min(100, Math.max(60, 100 - (state.links.length * 2)));
+            
+            document.getElementById('efficiency-val').innerText = efficiency + '%';
+            document.getElementById('res-msg').innerText = "All packets successfully delivered! Your routing architecture is sound.";
+            
+            modal.style.display = 'flex';
+            confetti();
+            state.xp += 150;
+            saveScore();
+        }
+
+        function nextMission() {
+            document.getElementById('result-modal').style.display = 'none';
+            clearNetwork();
+            state.mission++;
+            const m = missions[state.mission % missions.length];
+            document.getElementById('mission-title').innerText = m.title;
+            document.getElementById('mission-desc').innerText = m.desc;
+        }
+
+        function clearNetwork() {
+            document.querySelectorAll('.node').forEach(n => n.remove());
+            state.nodes = [];
+            state.links = [];
+            state.selectedNode = null;
+            drawLinks();
+        }
+
+        function saveScore() {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${state.xp}&subject=Engineering&game_name=G7_Eng_Ch1_L1`
+            });
+        }
+
+        window.onresize = drawLinks;
+        window.onload = drawLinks;
+    </script>
+</body>
+</html>
