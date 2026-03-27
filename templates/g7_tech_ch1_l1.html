@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Creator Challenge - Grade 7 Technology</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --builder-bg: #f1f5f9;
+            --phone-bg: #ffffff;
+            --phone-border: #1e293b;
+            --toolbox-bg: #ffffff;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --success-green: #10b981;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--builder-bg);
+            color: #1e293b;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .builder-header {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar Toolbox */
+        .toolbox {
+            width: 300px;
+            background: var(--toolbox-bg);
+            border-right: 2px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .tool-category {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-item {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s;
+            user-select: none;
+            margin-bottom: 0.8rem;
+        }
+
+        .tool-item:hover {
+            border-color: var(--accent-blue);
+            background: #eff6ff;
+            transform: translateX(5px);
+        }
+
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-blue);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Canvas Area */
+        .canvas-area {
+            flex: 1;
+            background: #cbd5e1;
+            background-image: radial-gradient(#94a3b8 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .phone-mockup {
+            width: 320px;
+            height: 600px;
+            background: var(--phone-border);
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 30px;
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 12px;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: var(--phone-border);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 10;
+        }
+
+        /* Widget Styles */
+        .widget {
+            position: relative;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .widget:hover { border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.05); }
+        .widget-delete {
+            position: absolute;
+            top: -8px; right: -8px;
+            background: #ef4444;
+            color: white;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            display: none;
+            align-items: center; justify-content: center;
+            font-size: 10px;
+            z-index: 20;
+        }
+        .widget:hover .widget-delete { display: flex; }
+
+        .w-header { font-size: 1.5rem; font-weight: 800; color: #1e293b; border-bottom: 2px solid #e2e8f0; }
+        .w-text { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+        .w-button { background: var(--accent-blue); color: white; text-align: center; border-radius: 99px; font-weight: 700; padding: 12px; }
+        .w-image { height: 120px; background: #e2e8f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
+        .w-icon { font-size: 2rem; color: var(--accent-blue); text-align: center; }
+
+        /* Goal Panel */
+        .mission-panel {
+            width: 350px;
+            background: #1e293b;
+            color: white;
+            padding: 1.5rem;
+            border-left: 2px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .mission-card {
+            background: #334155;
+            padding: 1.2rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .req-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        .req-met { color: var(--success-green); }
+
+        .btn-finish {
+            background: var(--success-green);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: auto;
+            transition: all 0.2s;
+        }
+        .btn-finish:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .text-xs { font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+    <div class="builder-header">
+        <a href="/student/play?subject=Technology" style="text-decoration: none; color: #64748b; font-weight: 700;">
+            <i class="fa-solid fa-arrow-left"></i> Exit Builder
+        </a>
+        <h2 style="margin: 0;">APP CREATOR CHALLENGE</h2>
+        <div style="background: #eff6ff; padding: 0.5rem 1rem; border-radius: 8px; color: var(--accent-blue); font-weight: 800;">
+            <i class="fa-solid fa-star"></i> <span id="xp-val">0</span> XP
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Toolbox -->
+        <div class="toolbox">
+            <div>
+                <div class="tool-category">Text Elements</div>
+                <div class="tool-item" onclick="addWidget('header')">
+                    <div class="tool-icon"><i class="fa-solid fa-heading"></i></div>
+                    <div><b>Header</b><div class="text-xs text-muted">Big Title</div></div>
+                </div>
+                <div class="tool-item" onclick="addWidget('text')">
+                    <div class="tool-icon"><i class="fa-solid fa-align-left"></i></div>
+                    <div><b>Paragraph</b><div class="text-xs text-muted">Body text</div></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="tool-category">Interactive</div>
+                <div class="tool-item" onclick="addWidget('button')">
+                    <div class="tool-icon"><i class="fa-solid fa-square"></i></div>
+                    <div><b>Button</b><div class="text-xs text-muted">Action trigger</div></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="tool-category">Media & Icons</div>
+                <div class="tool-item" onclick="addWidget('image')">
+                    <div class="tool-icon"><i class="fa-solid fa-image"></i></div>
+                    <div><b>Image</b><div class="text-xs text-muted">A lovely picture</div></div>
+                </div>
+                <div class="tool-item" onclick="addWidget('icon')">
+                    <div class="tool-icon"><i class="fa-solid fa-heart"></i></div>
+                    <div><b>Icon</b><div class="text-xs text-muted">Symbol / Logo</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-area">
+            <div class="phone-mockup">
+                <div class="phone-notch"></div>
+                <div class="phone-screen" id="app-canvas">
+                    <p style="text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 100px;" id="empty-msg">
+                        Pick a tool to start designing!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission -->
+        <div class="mission-panel">
+            <h3 style="margin: 0; color: var(--accent-blue);">DESIGN MISSION</h3>
+            <div class="mission-card" id="mission-card">
+                <h4 id="mission-title" style="margin-top: 0;">Pet Care App</h4>
+                <p id="mission-desc" style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.4;">
+                    Sarah wants an app to track her dog's food. Design a screen that shows a title, a picture of a dog, and a 'Feeding Log' button.
+                </p>
+                
+                <div id="check-list">
+                    <div class="req-item" id="req-header"><i class="fa-solid fa-circle-notch"></i> 1 Header</div>
+                    <div class="req-item" id="req-image"><i class="fa-solid fa-circle-notch"></i> 1 Image</div>
+                    <div class="req-item" id="req-button"><i class="fa-solid fa-circle-notch"></i> 1 Button</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; font-size: 0.85rem;">
+                <b style="color: var(--accent-purple);">Design Tip:</b> Alignment and visual hierarchy help users understand your app faster!
+            </div>
+
+            <button class="btn-finish" onclick="submitDesign()">FINISH DESIGN</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <h1 id="res-title">Awesome UI! 🎨</h1>
+            <p id="res-msg" style="color: #64748b; font-size: 1.1rem; line-height: 1.6;"></p>
+            <div style="background: #f0fdf4; padding: 2rem; border-radius: 20px; margin: 1.5rem 0;">
+                <div style="font-size: 0.9rem; color: #10b981; font-weight: 800; text-transform: uppercase;">Creativity Score</div>
+                <div style="font-size: 3rem; font-weight: 900; color: #065f46;" id="creativity-score">92%</div>
+            </div>
+            <button class="menu-btn" style="width: 100%; border: none; background: var(--accent-blue);" onclick="nextMission()">CONTINUE QUEST</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const state = {
+            xp: 0,
+            mission: 0,
+            widgets: [],
+            username: "{{ session.get('username') }}"
+        };
+
+        const missions = [
+            {
+                title: "Pet Care App",
+                desc: "Design a screen that shows a title, a picture of a dog, and a 'Feeding Log' button.",
+                reqs: { header: 1, image: 1, button: 1 }
+            },
+            {
+                title: "Coffee Shop",
+                desc: "An app for Sarah's Cafe. Needs a Header, an Icon, and a Button for 'Order Now'.",
+                reqs: { header: 1, icon: 1, button: 1 }
+            },
+            {
+                title: "Music Player",
+                desc: "Design a player screen. Needs an Image for cover art, a Header, and 2 Buttons (Play/Skip).",
+                reqs: { header: 1, image: 1, button: 2 }
+            }
+        ];
+
+        function addWidget(type) {
+            document.getElementById('empty-msg').style.display = 'none';
+            const canvas = document.getElementById('app-canvas');
+            const widget = document.createElement('div');
+            widget.className = `widget w-${type}`;
+            widget.id = 'w-' + Date.now();
+            
+            let content = '';
+            if(type === 'header') content = 'My App Title';
+            if(type === 'text') content = 'Click here to add some body text to your design.';
+            if(type === 'button') content = 'ACTION BUTTON';
+            if(type === 'image') content = '<i class="fa-solid fa-camera"></i> Image Box';
+            if(type === 'icon') content = '<i class="fa-solid fa-star"></i>';
+
+            widget.innerHTML = `<span class="widget-content">${content}</span> <div class="widget-delete" onclick="event.stopPropagation(); removeWidget('${widget.id}')">✕</div>`;
+            widget.onclick = (e) => {
+                if(!e.target.classList.contains('widget-delete')) editWidget(widget);
+            };
+
+            canvas.appendChild(widget);
+            state.widgets.push({ id: widget.id, type: type });
+            updateChecklist();
+        }
+
+        function removeWidget(id) {
+            const el = document.getElementById(id);
+            if(el) el.remove();
+            state.widgets = state.widgets.filter(w => w.id !== id);
+            updateChecklist();
+        }
+
+        function editWidget(el) {
+            const contentSpan = el.querySelector('.widget-content');
+            const current = contentSpan.innerText.trim();
+            const newVal = prompt("Edit label:", current);
+            if(newVal !== null) {
+                const icon = contentSpan.querySelector('i');
+                if(icon) {
+                    contentSpan.innerHTML = `${icon.outerHTML} ${newVal}`;
+                } else {
+                    contentSpan.innerText = newVal;
+                }
+            }
+        }
+
+        function updateChecklist() {
+            const currentMission = missions[state.mission % missions.length];
+            const counts = {};
+            state.widgets.forEach(w => counts[w.type] = (counts[w.type] || 0) + 1);
+
+            Object.keys(currentMission.reqs).forEach(type => {
+                const el = document.getElementById(`req-${type}`);
+                if(el) {
+                    const met = (counts[type] || 0) >= currentMission.reqs[type];
+                    el.className = 'req-item' + (met ? ' req-met' : '');
+                    el.innerHTML = `<i class="fa-solid fa-${met ? 'check-circle' : 'circle-notch'}"></i> ${currentMission.reqs[type]} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                }
+            });
+        }
+
+        function submitDesign() {
+            const currentMission = missions[state.mission % missions.length];
+            const counts = {};
+            state.widgets.forEach(w => counts[w.type] = (counts[w.type] || 0) + 1);
+
+            let allMet = true;
+            Object.keys(currentMission.reqs).forEach(type => {
+                if((counts[type] || 0) < currentMission.reqs[type]) allMet = false;
+            });
+
+            if(!allMet) {
+                alert("The design doesn't meet Sarah's needs yet! Check the requirements.");
+                return;
+            }
+
+            const modal = document.getElementById('result-modal');
+            const scoreEl = document.getElementById('creativity-score');
+            const msgEl = document.getElementById('res-msg');
+
+            const variety = new Set(state.widgets.map(w => w.type)).size;
+            const score = 80 + (variety * 3) + (state.widgets.length > 4 ? 5 : 0);
+            
+            scoreEl.innerText = Math.min(score, 100) + '%';
+            msgEl.innerText = `Great job solving the user problem for "${currentMission.title}"! Your UI was clean and functional.`;
+            
+            state.xp += 100;
+            document.getElementById('xp-val').innerText = state.xp;
+            modal.style.display = 'flex';
+            confetti();
+            saveScore();
+        }
+
+        function nextMission() {
+            document.getElementById('result-modal').style.display = 'none';
+            document.getElementById('app-canvas').innerHTML = '<p style="text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 100px;" id="empty-msg">Pick a tool to start designing!</p>';
+            state.widgets = [];
+            state.mission++;
+            
+            const next = missions[state.mission % missions.length];
+            document.getElementById('mission-title').innerText = next.title;
+            document.getElementById('mission-desc').innerText = next.desc;
+            
+            const list = document.getElementById('check-list');
+            list.innerHTML = '';
+            Object.keys(next.reqs).forEach(type => {
+                const req = document.createElement('div');
+                req.className = 'req-item';
+                req.id = `req-${type}`;
+                req.innerHTML = `<i class="fa-solid fa-circle-notch"></i> ${next.reqs[type]} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                list.appendChild(req);
+            });
+        }
+
+        function saveScore() {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${state.xp}&subject=Technology&game_name=G7_Tech_Ch1_L1`
+            });
+        }
+    </script>
+</body>
+</html>
