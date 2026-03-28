@@ -22,8 +22,8 @@
             color: white;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-y: auto;
         }
 
         .game-header {
@@ -160,9 +160,9 @@
 <body>
 
     <div class="game-header">
-        <a href="/student/play?subject=Science" style="text-decoration: none; color: #94a3b8; font-weight: 700;">
-            <i class="fa-solid fa-flask-vial"></i> End Session
-        </a>
+        <button class="btn-exit" onclick="history.back()">
+            <i class="fa-solid fa-person-running"></i> EXIT
+        </button>
         <h2 style="margin: 0; color: var(--brass);">Chapter 1: Pendulum Lab 🕰️</h2>
         <div style="background: #1e293b; padding: 0.5rem 1.2rem; border-radius: 99px; font-weight: 700; color: #fbbf24;">
             XP: <span id="xp-val">0</span>
@@ -179,7 +179,7 @@
             
             <div style="position: absolute; bottom: 2rem; background: var(--glass); padding: 1.5rem; border-radius: 20px; border: 1px solid #1e293b; max-width: 80%;">
                 <p style="margin: 0 0 0.5rem; font-weight: 800; color: var(--brass);">MISSION: MEASURE PERIODIC MOTION</p>
-                <p style="margin: 0; color: #cbd5e1;">Start the pendulum. Count 10 oscillations (one back-and-forth swing = 1 oscillation). Stop the timer and calculate the Time Period.</p>
+                <p id="mission-desc" style="margin: 0; color: #cbd5e1;">Start the pendulum. Count 10 oscillations (one back-and-forth swing = 1 oscillation). Stop the timer and calculate the Time Period.</p>
             </div>
         </div>
 
@@ -212,12 +212,16 @@
     <div id="success-modal" class="modal">
         <div class="modal-content">
             <i class="fa-solid fa-medal" style="font-size: 5rem; color: #facc15; margin-bottom: 1rem;"></i>
-            <h1 style="font-size: 2.5rem; margin: 0;">Lab Expert!</h1>
-            <p style="font-size: 1.2rem; color: #94a3b8;">You accurately measured the period of a pendulum.</p>
+            <h1 id="success-title" style="font-size: 2.5rem; margin: 0;">Lab Expert!</h1>
+            <p id="success-text" style="font-size: 1.2rem; color: #94a3b8;">You accurately measured the period.</p>
             <div style="background: rgba(234, 179, 8, 0.1); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--brass); margin: 1.5rem 0;">
-                <span style="font-size: 2rem; font-weight: 900; color: var(--brass);">+80 XP</span>
+                <span id="xp-added" style="font-size: 2rem; font-weight: 900; color: var(--brass);">+80 XP</span>
             </div>
-            <button class="btn-lab btn-start" onclick="location.href='/student/play?subject=Science'">Finish Chapter</button>
+            <div id="modal-actions" style="display: flex; flex-direction: column; gap: 1rem;">
+                <button id="next-q-btn" class="btn-lab btn-start" onclick="nextQuestion()">Next Experiment</button>
+                <button id="finish-btn" class="btn-lab btn-start" style="display: none;" onclick="location.href='/student/play?subject=Science'">Finish Chapter</button>
+                <button class="btn-lab" style="background: #475569; color: white;" onclick="location.href='/student/play?subject=Science'">Go Back</button>
+            </div>
         </div>
     </div>
 
@@ -226,12 +230,61 @@
         let startTime, timerInterval;
         let isRunning = false;
         const pendulum = document.getElementById('pendulum');
+        const variants = [
+            { count: 10, period: 2.0 },
+            { count: 5, period: 3.0 },
+            { count: 15, period: 1.5 }
+        ];
+
         const state = {
             username: "{{ session.get('username') }}",
             xp: 0,
-            actualPeriod: 2.0, // Swings every 2s
-            labStartTime: Date.now()
+            actualPeriod: 2.0, // Default
+            labStartTime: Date.now(),
+            questionsCompleted: 0,
+            totalQuestions: 3,
+            usedVariants: []
         };
+
+        function initRandomQuestion() {
+            if (state.usedVariants.length >= variants.length) {
+                state.usedVariants = [];
+            }
+            
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * variants.length);
+            } while (state.usedVariants.includes(randomIndex));
+            
+            state.usedVariants.push(randomIndex);
+            const v = variants[randomIndex];
+            
+            state.actualPeriod = v.period;
+            
+            // Adjust pendulum animation speed (duration = period)
+            pendulum.style.animationDuration = v.period + 's';
+            
+            // Update UI
+            document.getElementById('count-input').value = v.count;
+            document.getElementById('mission-desc').innerText = `Start the pendulum. Count ${v.count} oscillations (one back-and-forth swing = 1 oscillation). Stop the timer and calculate the Time Period.`;
+            
+            // Reset tool state
+            document.getElementById('stopwatch').innerText = "00:00.0";
+            document.getElementById('time-input').value = "";
+            document.getElementById('period-input').value = "";
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('stop-btn').disabled = true;
+            document.getElementById('submit-btn').disabled = true;
+            pendulum.style.animationPlayState = 'paused';
+            isRunning = false;
+        }
+
+        function nextQuestion() {
+            document.getElementById('success-modal').style.display = 'none';
+            initRandomQuestion();
+        }
+
+        window.onload = initRandomQuestion;
 
         function toggleLab() {
             isRunning = true;
@@ -287,9 +340,28 @@
         }
 
         function showSuccess() {
+            state.questionsCompleted++;
             document.getElementById('xp-val').innerText = state.xp;
+            document.getElementById('xp-added').innerText = `+${state.xp} XP`;
             saveScore(state.xp);
+            
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+
+            const nextQBtn = document.getElementById('next-q-btn');
+            const finishBtn = document.getElementById('finish-btn');
+            
+            if (state.questionsCompleted >= state.totalQuestions) {
+                document.getElementById('success-title').innerText = "Lab Master! 🏁";
+                document.getElementById('success-text').innerText = `Level complete. You've aced all ${state.totalQuestions} lab experiments!`;
+                nextQBtn.style.display = 'none';
+                finishBtn.style.display = 'block';
+            } else {
+                document.getElementById('success-title').innerText = "Accurate! ⭐";
+                document.getElementById('success-text').innerText = `Experiment ${state.questionsCompleted} of ${state.totalQuestions} complete.`;
+                nextQBtn.style.display = 'block';
+                finishBtn.style.display = 'none';
+            }
+
             document.getElementById('success-modal').style.display = 'flex';
         }
 

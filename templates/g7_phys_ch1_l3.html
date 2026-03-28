@@ -23,8 +23,8 @@
             color: white;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-y: auto;
         }
 
         .game-header {
@@ -116,6 +116,11 @@
         .btn-launch { background: var(--neon-blue); color: white; margin-top: 2rem; }
 
         .btn-action:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-action.selected {
+            border: 3px solid white;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
+            transform: scale(1.05);
+        }
 
         /* Modal */
         .modal {
@@ -134,9 +139,9 @@
 <body>
 
     <div class="game-header">
-        <a href="/student/play?subject=Science" style="text-decoration: none; color: #94a3b8; font-weight: 700;">
-            <i class="fa-solid fa-arrow-left"></i> Leave Graph City
-        </a>
+        <button class="btn-exit" onclick="history.back()">
+            <i class="fa-solid fa-person-running"></i> EXIT
+        </button>
         <h2 style="margin: 0; color: var(--neon-blue);">Chapter 1: Graph City 📊</h2>
         <div style="background: #1e293b; padding: 0.5rem 1.2rem; border-radius: 99px; font-weight: 700; color: #fbbf24;">
             XP: <span id="xp-val">0</span>
@@ -156,9 +161,10 @@
                 <h3 style="margin-top: 0;"><i class="fa-solid fa-magnifying-glass-chart"></i> Analysis</h3>
                 <p id="question" style="color: #cbd5e1; line-height: 1.5;">Identify the type of motion shown in the graph and match the car's speed. Look at the slope of the line!</p>
                 
-                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <button class="btn-action btn-uniform" onclick="selectType('uniform')">Uniform</button>
-                    <button class="btn-action btn-nonuniform" onclick="selectType('non-uniform')">Non-Uniform</button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
+                    <button class="btn-action btn-uniform" onclick="selectType('uniform', this)">Uniform</button>
+                    <button class="btn-action btn-nonuniform" onclick="selectType('non-uniform', this)">Non-Uniform</button>
+                    <button class="btn-action" style="background: #64748b; color: white;" onclick="selectType('stationary', this)">Stationary</button>
                 </div>
             </div>
 
@@ -174,24 +180,37 @@
     <div id="success-modal" class="modal">
         <div class="modal-content">
             <i class="fa-solid fa-check-double" style="font-size: 5rem; color: var(--graph-green); margin-bottom: 1rem;"></i>
-            <h1 style="font-size: 2.5rem; margin: 0;">Graph Decoded!</h1>
-            <p style="font-size: 1.2rem; color: #94a3b8;">You can now read distance-time graphs like a pro.</p>
+            <h1 id="success-title" style="font-size: 2.5rem; margin: 0;">Graph Decoded!</h1>
+            <p id="success-text" style="font-size: 1.2rem; color: #94a3b8;">Question complete.</p>
             <div style="background: rgba(34, 197, 94, 0.1); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--graph-green); margin: 1.5rem 0;">
-                <span style="font-size: 2rem; font-weight: 900; color: var(--graph-green);">+70 XP</span>
+                <span id="xp-added" style="font-size: 2rem; font-weight: 900; color: var(--graph-green);">+70 XP</span>
             </div>
-            <button class="btn-action btn-launch" onclick="location.href='/student/play?subject=Science&chapter=1'">Final Level Locked</button>
+            <div id="modal-actions" style="display: flex; flex-direction: column; gap: 1rem;">
+                <button id="next-q-btn" class="btn-action btn-launch" onclick="nextQuestion()">Next Question</button>
+                <button id="next-lvl-btn" class="btn-action btn-launch" style="display: none;" onclick="location.href='/student/play/phys/g7/ch1_l4'">Next Level</button>
+                <button class="btn-action" style="background: #475569; color: white;" onclick="location.href='/student/play?subject=Science'">Go Back</button>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         const ctx = document.getElementById('motionGraph').getContext('2d');
+        const questions = [
+            { type: 'uniform', data: [0, 20, 40, 60, 80, 100], tension: 0 },
+            { type: 'stationary', data: [40, 40, 40, 40, 40, 40], tension: 0 },
+            { type: 'non-uniform', data: [0, 5, 20, 45, 80, 125], tension: 0.4 }
+        ];
+
         let motionType = null;
         let wrongPenalty = 0;
         const state = {
             username: "{{ session.get('username') }}",
             xp: 0,
-            correctAnswer: 'uniform'
+            correctAnswer: 'uniform',
+            questionsCompleted: 0,
+            totalQuestions: 3,
+            usedQuestions: []
         };
 
         const graph = new Chart(ctx, {
@@ -219,10 +238,49 @@
             }
         });
 
-        function selectType(type) {
+        function initRandomQuestion() {
+            if (state.usedQuestions.length >= questions.length) {
+                state.usedQuestions = [];
+            }
+            
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * questions.length);
+            } while (state.usedQuestions.includes(randomIndex));
+            
+            state.usedQuestions.push(randomIndex);
+            const q = questions[randomIndex];
+            
+            state.correctAnswer = q.type;
+            graph.data.datasets[0].data = q.data;
+            graph.data.datasets[0].tension = q.tension;
+            graph.update();
+            
+            // Reset for new question
+            motionType = null;
+            document.querySelectorAll('.btn-action').forEach(b => b.classList.remove('selected'));
+            document.getElementById('status-msg').innerText = "Select motion type first";
+            document.getElementById('launch-btn').disabled = true;
+            const car = document.getElementById('car');
+            car.style.transition = 'none';
+            car.style.left = '20px';
+        }
+
+        function nextQuestion() {
+            document.getElementById('success-modal').style.display = 'none';
+            initRandomQuestion();
+        }
+
+        window.onload = initRandomQuestion;
+
+        function selectType(type, btn) {
             motionType = type;
             document.getElementById('status-msg').innerText = `Ready to sync: ${type.toUpperCase()}`;
             document.getElementById('launch-btn').disabled = false;
+            
+            // Highlight selection
+            document.querySelectorAll('.btn-action').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
         }
 
         function animateGraphCar() {
@@ -235,8 +293,24 @@
             const car = document.getElementById('car');
             const trackWidth = document.querySelector('.car-track').offsetWidth - 80;
             
-            car.style.transition = 'left 3s linear';
-            car.style.left = trackWidth + 'px';
+            // Clear previous animation
+            car.style.transition = 'none';
+            car.style.left = '20px';
+            
+            // Trigger reflow
+            car.offsetHeight;
+
+            if (state.correctAnswer === 'uniform') {
+                car.style.transition = 'left 3s linear';
+                car.style.left = trackWidth + 'px';
+            } else if (state.correctAnswer === 'non-uniform') {
+                car.style.transition = 'left 3s cubic-bezier(0.4, 0, 1, 1)'; // Accelerating
+                car.style.left = trackWidth + 'px';
+            } else if (state.correctAnswer === 'stationary') {
+                // Stationary - just a small visual nudge or stay put
+                car.style.transition = 'left 3s linear';
+                car.style.left = '20px';
+            }
 
             // Formula: 100 + Graph Accuracy + Interpretation Bonus - Penalty
             let base = 100;
@@ -248,9 +322,28 @@
         }
 
         function showSuccess() {
+            state.questionsCompleted++;
             document.getElementById('xp-val').innerText = state.xp;
+            document.getElementById('xp-added').innerText = `+${state.xp} XP`;
             saveScore(state.xp);
+            
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+
+            const nextQBtn = document.getElementById('next-q-btn');
+            const nextLvlBtn = document.getElementById('next-lvl-btn');
+            
+            if (state.questionsCompleted >= state.totalQuestions) {
+                document.getElementById('success-title').innerText = "Graph Expert! 🏁";
+                document.getElementById('success-text').innerText = `Level complete. You've decoded all ${state.totalQuestions} graphs!`;
+                nextQBtn.style.display = 'none';
+                nextLvlBtn.style.display = 'block';
+            } else {
+                document.getElementById('success-title').innerText = "Success! ⭐";
+                document.getElementById('success-text').innerText = `Graph ${state.questionsCompleted} of ${state.totalQuestions} decoded.`;
+                nextQBtn.style.display = 'block';
+                nextLvlBtn.style.display = 'none';
+            }
+
             document.getElementById('success-modal').style.display = 'flex';
         }
 

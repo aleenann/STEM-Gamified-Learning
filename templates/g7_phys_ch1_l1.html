@@ -21,10 +21,10 @@
             font-family: 'Outfit', sans-serif;
             background: #0f172a;
             color: white;
-            overflow: hidden;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         .game-header {
@@ -45,6 +45,25 @@
             display: flex;
             align-items: center;
             gap: 0.8rem;
+        }
+
+        .btn-exit {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 800;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-exit:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateX(-5px);
         }
 
         /* Track Area */
@@ -206,9 +225,9 @@
 <body>
 
     <div class="game-header">
-        <a href="/student/play?subject=Science" style="text-decoration: none; color: #94a3b8; font-weight: 700;">
-            <i class="fa-solid fa-arrow-left"></i> Exit Track
-        </a>
+        <button class="btn-exit" onclick="history.back()">
+            <i class="fa-solid fa-person-running"></i> EXIT
+        </button>
         <div class="hud-item" style="color: var(--road-yellow);">
             <i class="fa-solid fa-trophy"></i> XP: <span id="xp-val">0</span>
         </div>
@@ -245,12 +264,16 @@
     <div id="success-modal" class="modal">
         <div class="modal-content">
             <i class="fa-solid fa-circle-check" style="font-size: 5rem; color: var(--success-green); margin-bottom: 1rem;"></i>
-            <h1 style="font-size: 2.5rem; margin: 0;">Perfect Run!</h1>
-            <p style="font-size: 1.2rem; color: #94a3b8;">You've mastered the basics of speed calculations.</p>
+            <h1 id="success-title" style="font-size: 2.5rem; margin: 0;">Success!</h1>
+            <p id="success-text" style="font-size: 1.2rem; color: #94a3b8;">Question complete.</p>
             <div style="background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--success-green); margin: 1.5rem 0;">
-                <span style="font-size: 2rem; font-weight: 900;">+50 XP</span>
+                <span id="xp-added" style="font-size: 2rem; font-weight: 900;">+50 XP</span>
             </div>
-            <button class="btn-launch" onclick="location.href='/student/play?subject=Science&chapter=1'">Continue Course</button>
+            <div id="modal-actions" style="display: flex; flex-direction: column; gap: 1rem;">
+                <button id="next-q-btn" class="btn-launch" onclick="nextQuestion()">Next Question</button>
+                <button id="next-lvl-btn" class="btn-launch" style="display: none;" onclick="location.href='/student/play/phys/g7/ch1_l2'">Next Level</button>
+                <button class="btn-launch" style="background: #475569;" onclick="location.href='/student/play?subject=Science'">Go Back</button>
+            </div>
         </div>
     </div>
 
@@ -266,14 +289,56 @@
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
+        const questions = [
+            { dist: 100, time: 10, text: "Reach exactly 100 meters in exactly 10 seconds." },
+            { dist: 150, time: 10, text: "Target: 150 meters in 10 seconds. Calculate your speed!" },
+            { dist: 80, time: 4, text: "Mission: 80 meters in 4 seconds. Go fast!" }
+        ];
+
         const state = {
             targetDistance: 100,
             targetTime: 10,
             xp: 0,
+            questionsCompleted: 0,
+            totalQuestions: 3,
+            usedQuestions: [],
             username: "{{ session.get('username') }}",
             active: true,
             startTime: Date.now()
         };
+
+        function initRandomQuestion() {
+            if (state.usedQuestions.length >= questions.length) {
+                state.usedQuestions = [];
+            }
+            
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * questions.length);
+            } while (state.usedQuestions.includes(randomIndex));
+            
+            state.usedQuestions.push(randomIndex);
+            const q = questions[randomIndex];
+            
+            state.targetDistance = q.dist;
+            state.targetTime = q.time;
+            document.getElementById('task-text').innerText = q.text;
+            document.getElementById('distance-label').innerText = q.dist + "m TARGET";
+            
+            // Reset for new question
+            state.active = true;
+            state.startTime = Date.now();
+            document.getElementById('launch-btn').disabled = false;
+            document.getElementById('speed-slider').disabled = false;
+            car.style.left = '20px';
+        }
+
+        function nextQuestion() {
+            document.getElementById('success-modal').style.display = 'none';
+            initRandomQuestion();
+        }
+
+        window.onload = initRandomQuestion;
 
         const slider = document.getElementById('speed-slider');
         const speedValText = document.getElementById('speed-val');
@@ -327,14 +392,26 @@
         }
 
         function showSuccess() {
+            state.questionsCompleted++;
             document.getElementById('xp-val').innerText = state.xp;
             saveScore(state.xp);
             
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+
+            const nextQBtn = document.getElementById('next-q-btn');
+            const nextLvlBtn = document.getElementById('next-lvl-btn');
+            
+            if (state.questionsCompleted >= state.totalQuestions) {
+                document.getElementById('success-title').innerText = "Level Complete! 🏁";
+                document.getElementById('success-text').innerText = `You've solved all ${state.totalQuestions} missions!`;
+                nextQBtn.style.display = 'none';
+                nextLvlBtn.style.display = 'block';
+            } else {
+                document.getElementById('success-title').innerText = "Great Job! ⭐";
+                document.getElementById('success-text').innerText = `Question ${state.questionsCompleted} of ${state.totalQuestions} complete.`;
+                nextQBtn.style.display = 'block';
+                nextLvlBtn.style.display = 'none';
+            }
 
             document.getElementById('success-modal').style.display = 'flex';
         }
