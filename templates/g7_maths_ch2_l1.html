@@ -270,7 +270,9 @@
 <body>
 
     <div class="game-header">
-        <a href="/student/play?subject=Maths" class="back-link"><i class="fa-solid fa-arrow-left"></i> Leave Kitchen</a>
+        <button class="btn-exit" onclick="history.back()">
+            <i class="fa-solid fa-person-running"></i> EXIT
+        </button>
         <div class="stats-group">
             <div class="stat-item" style="color: #ef4444;"><i class="fa-solid fa-clock"></i> <span id="timer-val">60</span>s</div>
             <div class="stat-item" style="color: #f59e0b;"><i class="fa-solid fa-star"></i> <span id="score-val">0</span>% Satisfied</div>
