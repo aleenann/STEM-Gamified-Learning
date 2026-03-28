@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Cleanup: Chemical Actions - Grade 7 Chemistry</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --acid-red: #f43f5e;
+            --base-blue: #3b82f6;
+            --neutral-green: #10b981;
+            --lab-slate: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: #020617;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HUD */
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2.5rem;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--glass-border);
+            z-index: 100;
+        }
+
+        .stat-group { display: flex; gap: 1.5rem; }
+        .stat-badge {
+            background: #1e293b;
+            padding: 0.6rem 1.4rem;
+            border-radius: 99px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Lab Deck */
+        .lab-deck {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .lab-bench {
+            width: 100%;
+            max-width: 1100px;
+            height: 75%;
+            background: rgba(30, 41, 59, 0.5);
+            border: 2px solid var(--glass-border);
+            border-radius: 32px;
+            margin-top: 2rem;
+            position: relative;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+            cursor: crosshair;
+        }
+
+        /* Spills */
+        .spill {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(15px);
+            opacity: 0.8;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: breathe 4s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.6; }
+        }
+
+        .spill.acid { background: radial-gradient(circle, var(--acid-red), #e11d48, transparent); box-shadow: 0 0 40px var(--acid-red); }
+        .spill.base { background: radial-gradient(circle, var(--base-blue), #2563eb, transparent); box-shadow: 0 0 40px var(--base-blue); }
+        .spill.neutralizing { filter: blur(25px) brightness(2); background: #fefce8 !important; }
+
+        /* Inventory / Toolbar */
+        .inventory {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 2rem;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 1.5rem 3rem;
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .bottle {
+            width: 70px;
+            height: 110px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bottle:hover { transform: translateY(-10px); }
+        .bottle.active { transform: translateY(-15px) scale(1.1); filter: drop-shadow(0 0 20px white); }
+
+        .bottle-body {
+            width: 100%;
+            height: 80%;
+            background: rgba(255,255,255,0.1);
+            border: 3px solid rgba(255,255,255,0.2);
+            border-radius: 12px 12px 20px 20px;
+            position: absolute;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        .bottle-liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 75%;
+            transition: height 0.3s;
+        }
+
+        .label {
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Door and Locks */
+        .exit-door {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 150px;
+            height: 250px;
+            background: #1e293b;
+            border: 8px solid #334155;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s;
+        }
+
+        .door-gunk {
+            position: absolute;
+            width: 120%;
+            height: 60%;
+            background: radial-gradient(circle, #4d7c0f 20%, transparent 70%);
+            filter: blur(10px);
+            opacity: 0.9;
+            z-index: 5;
+        }
+
+        /* Overlays */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 4rem;
+            border-radius: 40px;
+            text-align: center;
+            max-width: 600px;
+            border: 2px solid #334155;
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .btn-action {
+            padding: 1.2rem 3.5rem;
+            font-size: 1.3rem;
+            font-weight: 950;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            background: #3b82f6;
+            color: white;
+            margin-top: 2rem;
+            transition: all 0.2s;
+            box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-action:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+        /* Effects */
+        .bubble {
+            position: absolute;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: bubbleUp 1s forwards ease-out;
+        }
+
+        @keyframes bubbleUp {
+            from { transform: translateY(0) scale(1); opacity: 1; }
+            to { transform: translateY(-50px) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hud">
+        <button class="btn-exit" onclick="history.back()">
+            <i class="fa-solid fa-arrow-left"></i> EXIT
+        </button>
+        <div class="stat-group">
+            <div class="stat-badge" style="color: #f43f5e;"><i class="fa-solid fa-heart"></i> <span id="lives-val">3</span></div>
+            <div class="stat-badge" style="color: #10b981;"><i class="fa-solid fa-bolt"></i> <span id="xp-val">0</span> XP</div>
+            <div class="stat-badge" style="color: #fbbf24;"><i class="fa-solid fa-layer-group"></i> Level 2</div>
+        </div>
+    </div>
+
+    <div class="lab-deck">
+        <div class="lab-bench" id="bench">
+            <!-- Spills will be generated here -->
+        </div>
+
+        <div class="exit-door" id="door">
+            <div class="door-gunk" id="door-gunk"></div>
+            <i class="fa-solid fa-lock" id="door-icon" style="font-size: 3rem; color: #64748b; z-index: 10;"></i>
+            <div style="margin-top: 1rem; font-weight: 800; color: #475569; z-index: 10;">CLEAN TO EXIT</div>
+        </div>
+
+        <div class="inventory">
+            <div class="bottle" id="bottle-acid" onclick="selectBottle('acid')">
+                <div class="bottle-body"><div class="bottle-liquid" style="background: var(--acid-red);"></div></div>
+                <div class="label">ACID</div>
+                <div style="position: absolute; top: -15px; width: 100%; text-align: center; font-size: 0.7rem; opacity: 0.6;">HCl</div>
+            </div>
+            <div class="bottle" id="bottle-base" onclick="selectBottle('base')">
+                <div class="bottle-body"><div class="bottle-liquid" style="background: var(--base-blue);"></div></div>
+                <div class="label">BASE</div>
+                <div style="position: absolute; top: -15px; width: 100%; text-align: center; font-size: 0.7rem; opacity: 0.6;">NaOH</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="win-modal" class="modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-vial-circle-check" style="font-size: 6rem; color: #10b981; margin-bottom: 1.5rem;"></i>
+            <h1 style="font-size: 3.5rem; margin: 0;">Lab Sanitized!</h1>
+            <p style="font-size: 1.5rem; color: #94a3b8; margin: 1.5rem 0;">You've mastered neutralization. Chemical waste is no match for you!</p>
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 2rem; border-radius: 24px; border: 1px solid var(--neutral-green);">
+                <p style="text-transform: uppercase; font-size: 1.1rem; font-weight: 900; color: var(--neutral-green); margin-bottom: 0.5rem;">Science Bonus</p>
+                <div style="font-size: 2.8rem; font-weight: 950; color: white;">+100 XP</div>
+            </div>
+            <button class="btn-action" onclick="location.href='/student/play?subject=Science&sub_subject=Chemistry&chapter=1'">Back to Dashboard</button>
+        </div>
+    </div>
+
+    <div id="fail-modal" class="modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 6rem; color: #f43f5e; margin-bottom: 1.5rem;"></i>
+            <h1 style="font-size: 3.5rem; margin: 0;">Corrosion!</h1>
+            <p style="font-size: 1.5rem; color: #94a3b8; margin: 1.5rem 0;">Mixing the same chemicals caused a runaway reaction!</p>
+            <button class="btn-action" style="background: #ef4444;" onclick="location.reload()">Reset Lab</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const state = {
+            lives: 3,
+            xp: 0,
+            selectedTool: null,
+            spills: [],
+            spillsCount: 6,
+            doorCleaned: false,
+            username: "{{ session.get('username') }}"
+        };
+
+        function initLevel() {
+            const bench = document.getElementById('bench');
+            for(let i = 0; i < state.spillsCount; i++) {
+                createSpill();
+            }
+        }
+
+        function createSpill() {
+            const bench = document.getElementById('bench');
+            const type = Math.random() > 0.5 ? 'acid' : 'base';
+            const size = 60 + Math.random() * 80;
+            const x = 50 + Math.random() * (bench.offsetWidth - 200);
+            const y = 50 + Math.random() * (bench.offsetHeight - 150);
+
+            const spill = document.createElement('div');
+            spill.className = `spill ${type}`;
+            spill.style.width = `${size}px`;
+            spill.style.height = `${size}px`;
+            spill.style.left = `${x}px`;
+            spill.style.top = `${y}px`;
+            
+            spill.onclick = (e) => handleSpillAction(spill, type, e);
+            bench.appendChild(spill);
+            state.spills.push(spill);
+        }
+
+        function selectBottle(type) {
+            state.selectedTool = type;
+            document.querySelectorAll('.bottle').forEach(b => b.classList.remove('active'));
+            document.getElementById(`bottle-${type}`).classList.add('active');
+        }
+
+        function handleSpillAction(element, type, event) {
+            if (!state.selectedTool) return;
+
+            if (state.selectedTool !== type) {
+                // NEUTRALIZED!
+                element.classList.add('neutralizing');
+                createBubbles(event.clientX, event.clientY);
+                
+                state.xp += 15;
+                document.getElementById('xp-val').innerText = state.xp;
+
+                setTimeout(() => {
+                    element.remove();
+                    state.spills = state.spills.filter(s => s !== element);
+                    checkWinCondition();
+                }, 500);
+            } else {
+                // WRONG - Corrosion!
+                state.lives--;
+                document.getElementById('lives-val').innerText = state.lives;
+                element.style.transform = 'scale(1.5)';
+                
+                if (state.lives <= 0) {
+                    document.getElementById('fail-modal').style.display = 'flex';
+                }
+            }
+        }
+
+        function createBubbles(x, y) {
+            for(let i=0; i<8; i++) {
+                const b = document.createElement('div');
+                b.className = 'bubble';
+                const size = Math.random() * 20 + 5;
+                b.style.width = `${size}px`;
+                b.style.height = `${size}px`;
+                b.style.left = `${x - size/2}px`;
+                b.style.top = `${y - size/2}px`;
+                document.body.appendChild(b);
+                setTimeout(() => b.remove(), 1000);
+            }
+        }
+
+        document.getElementById('door').onclick = (e) => {
+            if (!state.selectedTool) return;
+            
+            // Door cleanup requires bothAcid and Base or just any action for this simple level
+            if (state.spills.length === 0) {
+                const gunk = document.getElementById('door-gunk');
+                gunk.style.opacity = '0';
+                document.getElementById('door-icon').className = 'fa-solid fa-lock-open';
+                document.getElementById('door-icon').style.color = '#10b981';
+                state.doorCleaned = true;
+                
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+
+                setTimeout(() => {
+                    saveScore(state.xp + 100);
+                    document.getElementById('win-modal').style.display = 'flex';
+                }, 1000);
+            } else {
+                alert("The floor is too messy to reach the door safely! Clean the spills first.");
+            }
+        };
+
+        function checkWinCondition() {
+            if (state.spills.length === 0) {
+                document.getElementById('door').style.boxShadow = '0 0 30px var(--neutral-green)';
+            }
+        }
+
+        function saveScore(finalXp) {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${finalXp}&subject=Science&game_name=G7_Chem_Ch1_L2`
+            });
+        }
+
+        window.onload = initLevel;
+    </script>
+</body>
+</html>

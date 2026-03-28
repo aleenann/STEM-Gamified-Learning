@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Escape: Acids & Bases - Grade 7 Chemistry</title>
+    <title>Color Quest: Acid or Base - Grade 7 Chemistry</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
@@ -12,209 +12,197 @@
             --acid-red: #f43f5e;
             --base-blue: #3b82f6;
             --neutral-green: #10b981;
-            --lab-slate: #1e293b;
-            --glass-bg: rgba(255, 255, 255, 0.1);
+            --china-rose: #ec4899;
+            --turmeric-yellow: #facc15;
+            --cabbage-purple: #8b5cf6;
+            --table-wood: #2c1810;
         }
 
         body {
             margin: 0;
             font-family: 'Outfit', sans-serif;
             background: #0f172a;
+            color: white;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            color: white;
         }
 
-        /* Lab Environment */
-        .lab-container {
+        /* HUD */
+        .game-hud {
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            padding: 0.6rem 1.2rem;
+            border-radius: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Discovery Area */
+        .discovery-area {
             flex: 1;
             position: relative;
-            background: linear-gradient(to bottom, #1e293b 0%, #0f172a 100%);
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 2rem;
-            overflow: hidden;
+            overflow-y: auto;
         }
 
-        .lab-bench {
-            width: 100%;
-            max-width: 1000px;
-            height: 200px;
-            background: #334155;
-            border-top: 8px solid #475569;
-            position: absolute;
-            bottom: 0;
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            padding-top: 20px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-        }
-
-        /* HUD */
-        .lab-hud {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.8);
-            padding: 1rem 2rem;
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid #334155;
-            z-index: 100;
-        }
-
-        .stat-badge {
-            background: #334155;
-            padding: 0.5rem 1.2rem;
-            border-radius: 99px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 1.1rem;
-        }
-
-        /* Puzzle Area */
-        .puzzle-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #334155;
-            padding: 2rem;
-            border-radius: 24px;
+        .objective-panel {
             text-align: center;
-            max-width: 600px;
-            margin-bottom: 3rem;
-            animation: fadeIn 0.5s ease;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.8s ease;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .objective-panel h1 { font-size: 2.5rem; margin: 0; font-weight: 900; }
+        .objective-panel p { font-size: 1.2rem; color: #94a3b8; margin-top: 0.5rem; }
 
-        .objective-text { font-size: 1.5rem; font-weight: 700; color: #94a3b8; }
-        .target-substance { font-size: 2.5rem; font-weight: 950; color: white; display: block; margin: 0.5rem 0; }
+        /* Items Grid */
+        .items-grid {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
 
-        /* Chemistry Bottles */
-        .bottle-container {
+        .item-card {
+            width: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
             position: relative;
-            width: 80px;
-            height: 120px;
-            cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .bottle-container:hover { transform: translateY(-10px) scale(1.1); filter: drop-shadow(0 0 15px rgba(255,255,255,0.2)); }
-        .bottle-container.selected { transform: translateY(-20px) scale(1.2); filter: drop-shadow(0 0 20px var(--base-blue)); border: 2px solid var(--base-blue); border-radius: 10px; }
+        .item-card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.1); }
+        .item-card.active { border-color: var(--turmeric-yellow); scale: 1.05; background: rgba(255, 255, 255, 0.15); }
+        .item-card.identified { filter: grayscale(1); opacity: 0.6; cursor: default; }
 
-        .bottle-body {
-            width: 60px;
-            height: 90px;
-            background: rgba(255,255,255,0.1);
-            border: 3px solid rgba(255,255,255,0.2);
-            border-radius: 8px 8px 15px 15px;
-            position: absolute;
-            bottom: 0;
-            left: 10px;
-            overflow: hidden;
-        }
+        .item-img { width: 120px; height: 120px; object-fit: contain; margin-bottom: 1rem; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
+        .item-name { font-weight: 800; font-size: 1.1rem; color: #f1f5f9; }
 
-        .liquid {
-            position: absolute;
-            bottom: 0; width: 100%; height: 70%;
-            background: rgba(255,255,255,0.1); /* Default transparent */
-        }
-
-        .bottle-neck {
-            width: 20px; height: 25px;
-            background: rgba(255,255,255,0.1);
-            border: 3px solid rgba(255,255,255,0.2);
-            border-bottom: none;
-            position: absolute;
-            top: 5px; left: 30px;
-            border-radius: 4px 4px 0 0;
-        }
-
-        .bottle-label {
-            position: absolute;
-            bottom: 20px; width: 100%; text-align: center;
-            font-size: 0.8rem; font-weight: 900; color: #94a3b8;
-        }
-
-        /* Litmus Tools */
-        .tool-bench {
-            display: flex;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .litmus-strip {
-            width: 40px;
-            height: 120px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            writing-mode: vertical-rl;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .lit-blue { background: #3b82f6; color: white; border: 2px solid #2563eb; }
-        .lit-red { background: #f43f5e; color: white; border: 2px solid #e11d48; }
-        .litmus-strip:hover { transform: scale(1.1) rotate(5deg); }
-        .litmus-strip.active { border: 4px solid white; box-shadow: 0 0 20px white; }
-
-        /* Colors for reactions */
-        .color-changed-red { background: #f43f5e !important; }
-        .color-changed-blue { background: #3b82f6 !important; }
-
-        /* Selection and Door */
-        .escape-door {
-            width: 120px; height: 180px;
-            background: #334155;
-            border: 6px solid #475569;
-            border-bottom: none;
-            border-radius: 20px 20px 0 0;
-            position: absolute;
-            right: 50px; bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .door-lock { font-size: 2rem; color: #94a3b8; }
-        .door-unlocked { color: #10b981 !important; transform: rotate(-10deg); transition: all 0.5s; }
-
-        /* Notification */
-        #reaction-toast {
-            position: fixed;
-            bottom: 220px;
-            background: white;
-            color: #0f172a;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-weight: 900;
+        /* Testing Bench */
+        .testing-bench {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 3rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 32px;
+            padding: 2.5rem;
+            border: 2px solid rgba(255,255,255,0.05);
             display: none;
-            z-index: 200;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
         }
+
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .test-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 2rem;
+        }
+
+        .indicator-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .indicator-btn {
+            background: #1e293b;
+            border: 2px solid rgba(255,255,255,0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-align: left;
+            width: 250px;
+        }
+
+        .indicator-btn:hover { background: #334155; transform: translateX(10px); }
+        .indicator-btn.used { opacity: 0.5; border-color: #10b981; }
+        .indicator-btn img { width: 40px; height: 40px; }
+
+        .results-panel {
+            flex: 1;
+            padding: 1.5rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            min-height: 200px;
+        }
+
+        .result-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            opacity: 0; transform: translateX(-20px);
+            transition: all 0.5s;
+        }
+        .result-row.visible { opacity: 1; transform: translateX(0); }
+
+        .color-blob { width: 40px; height: 40px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.2); }
+
+        /* Decision Section */
+        .decision-section {
+            margin-top: 2rem;
+            text-align: center;
+            display: none;
+        }
+
+        .btn-decision {
+            padding: 1.2rem 3rem;
+            font-size: 1.4rem;
+            font-weight: 900;
+            border-radius: 18px;
+            border: none;
+            cursor: pointer;
+            margin: 0 1rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-acid { background: var(--acid-red); box-shadow: 0 8px 15px rgba(244, 63, 94, 0.3); }
+        .btn-base { background: var(--base-blue); box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3); }
+        .btn-decision:hover { transform: scale(1.05); filter: brightness(1.2); }
 
         /* Modals */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(2, 6, 23, 0.98);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
         }
 
         .modal-content {
@@ -224,215 +212,269 @@
             text-align: center;
             max-width: 600px;
             width: 90%;
-            border: 2px solid #334155;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255,255,255,0.1);
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes bounceIn { 0% { scale: 0; opacity: 0; } 100% { scale: 1; opacity: 1; } }
 
-        .btn-lab {
-            padding: 1.2rem 3rem;
-            font-size: 1.2rem;
-            font-weight: 900;
-            border-radius: 16px;
-            border: none;
-            cursor: pointer;
-            background: #3b82f6;
+        .btn-primary {
+            background: #10b981;
             color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 16px;
+            font-weight: 950;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
             margin-top: 2rem;
-            transition: all 0.2s;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
         }
+        /* Feedbacks */
+        .feedback-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border-radius: 32px;
+            z-index: 50;
+            font-size: 5rem;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { scale: 0; opacity: 0; } to { scale: 1; opacity: 1; } }
+        .feedback-correct { background: rgba(16, 185, 129, 0.4); color: #10b981; }
+        .feedback-incorrect { background: rgba(244, 63, 94, 0.4); color: #f43f5e; }
 
-        .btn-lab:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
     </style>
 </head>
 <body>
 
-    <div class="lab-hud">
+    <div class="game-hud">
         <button class="btn-exit" onclick="history.back()">
             <i class="fa-solid fa-person-running"></i> EXIT
         </button>
         <div style="display: flex; gap: 1.5rem;">
-            <div class="stat-badge" style="color: #ef4444;"><i class="fa-solid fa-heart"></i> <span id="lives-val">3</span></div>
-            <div class="stat-badge" style="color: #fbbf24;"><i class="fa-solid fa-flask-vial"></i> <span id="tests-val">Unlimited</span> Tests</div>
-            <div class="stat-badge" style="color: #10b981;"><i class="fa-solid fa-scroll"></i> Level <span id="level-val">1</span></div>
+            <div class="stat-card" style="color: #60a5fa;"><i class="fa-solid fa-magnifying-glass"></i> <span id="progress-val">0/3</span> Identified</div>
+            <div class="stat-card" style="color: #ef4444;"><i class="fa-solid fa-heart"></i> <span id="lives-val">3</span></div>
+            <div class="stat-card" style="color: #fbbf24;"><i class="fa-solid fa-star"></i> <span id="score-val">0</span> XP</div>
         </div>
     </div>
 
-    <div class="lab-container">
-        <div class="puzzle-card">
-            <span class="objective-text">The level-lock requires an:</span>
-            <span class="target-substance" id="target-sub">ACID</span>
-            <p style="color: #64748b; font-weight: 600;">Identify the correct substance and use it on the door!</p>
+    <div class="discovery-area">
+        <div class="objective-panel">
+            <h1>Color Quest: Acid or Base</h1>
+            <p>Use Turmeric, China Rose, and Red Cabbage to identify whether these substances are acids or bases!</p>
         </div>
 
-        <div class="tool-bench">
-            <div class="litmus-strip lit-blue" id="lit-blue-strip" onclick="selectLitmus('blue')">Blue Litmus</div>
-            <div class="litmus-strip lit-red" id="lit-red-strip" onclick="selectLitmus('red')">Red Litmus</div>
+        <div class="items-grid" id="items-grid">
+            <!-- Items generated here -->
         </div>
 
-        <div id="reaction-toast"></div>
+        <div class="testing-bench" id="testing-bench" style="position: relative;">
+            <div id="feedback-overlay" class="feedback-overlay"></div>
+            <h2 id="current-item-name" style="text-align: center; margin-bottom: 2rem; font-size: 1.8rem;">Testing Item</h2>
+            <div class="test-display">
+                <div class="indicator-buttons">
+                    <button class="indicator-btn" id="btn-turmeric" onclick="runTest('turmeric')">
+                        <img src="/static/games/grade7/chemistry/turmeric.png" alt="Turmeric">
+                        <span>Use Turmeric</span>
+                    </button>
+                    <button class="indicator-btn" id="btn-china_rose" onclick="runTest('china_rose')">
+                        <img src="/static/games/grade7/chemistry/china_rose.png" alt="China Rose">
+                        <span>Use China Rose</span>
+                    </button>
+                    <button class="indicator-btn" id="btn-red_cabbage" onclick="runTest('red_cabbage')">
+                        <img src="/static/games/grade7/chemistry/red_cabbage.png" alt="Red Cabbage">
+                        <span>Use Red Cabbage</span>
+                    </button>
+                </div>
 
-        <div class="lab-bench" id="bench">
-            <!-- Bottles will be generated here -->
-        </div>
+                <div class="results-panel" id="results-panel">
+                    <p id="test-hint" style="text-align: center; color: #64748b; margin-top: 4rem;">Select an indicator to see the reaction...</p>
+                </div>
+            </div>
 
-        <div class="escape-door" id="door" onclick="tryUnlock()">
-            <i class="fa-solid fa-lock door-lock" id="door-icon"></i>
-            <div style="position: absolute; bottom: -30px; font-weight: 900; color: #475569;">EXIT</div>
+            <div class="decision-section" id="decision-section">
+                <p style="font-weight: 800; font-size: 1.2rem; color: #94a3b8; margin-bottom: 1.5rem;">Based on the tests, this item is:</p>
+                <button class="btn-decision btn-acid" onclick="identify('acid')">ACIDIC 🍋</button>
+                <button class="btn-decision btn-base" onclick="identify('base')">BASIC 🧴</button>
+            </div>
         </div>
     </div>
 
     <!-- Modals -->
-    <div id="result-modal" class="modal">
+    <div id="win-modal" class="modal">
         <div class="modal-content">
-            <i class="fa-solid fa-door-open" style="font-size: 6rem; color: #10b981; margin-bottom: 1rem;"></i>
-            <h1 style="font-size: 3rem; margin: 0;">Room Unlocked!</h1>
-            <p style="font-size: 1.4rem; color: #94a3b8; margin: 1.5rem 0;">You've mastered the basic indicators. Onwards to the next lab!</p>
-            <div style="background: rgba(34, 197, 94, 0.1); padding: 2rem; border-radius: 20px; border: 1px solid #10b981;">
-                <p style="text-transform: uppercase; font-size: 1rem; font-weight: 900; color: #10b981; margin-bottom: 0.5rem;">Science Bonus</p>
-                <div style="font-size: 2.5rem; font-weight: 950; color: white;">+50 XP</div>
+            <i class="fa-solid fa-certificate" style="font-size: 6rem; color: #fbbf24; margin-bottom: 1.5rem;"></i>
+            <h1 style="font-size: 3rem; margin: 0;">Lab Expert!</h1>
+            <p style="font-size: 1.3rem; color: #94a3b8; margin: 1.5rem 0;">You've successfully identified all substances using natural indicators.</p>
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 20px; border: 1px solid #10b981;">
+                <p style="font-weight: 900; color: #10b981; text-transform: uppercase;">Total Score</p>
+                <div style="font-size: 2.5rem; font-weight: 950;" id="final-score">100 XP</div>
             </div>
-            <button class="btn-lab" onclick="location.href='/student/play?subject=Science'">Return to Dashboard</button>
+            <button class="btn-primary" onclick="location.href='/student/play?subject=Science'">Return Home</button>
         </div>
     </div>
 
-    <div id="game-over-modal" class="modal">
+    <div id="fail-modal" class="modal">
         <div class="modal-content">
-            <i class="fa-solid fa-skull-crossbones" style="font-size: 6rem; color: #f43f5e; margin-bottom: 1rem;"></i>
-            <h1 style="font-size: 3rem; margin: 0;">Lab Failure</h1>
-            <p style="font-size: 1.4rem; color: #94a3b8; margin: 1.5rem 0;">Incorrect handling of chemicals leads to lab closure!</p>
-            <button class="btn-lab" onclick="location.reload()">Retry Simulation</button>
+            <i class="fa-solid fa-circle-xmark" style="font-size: 6rem; color: #f43f5e; margin-bottom: 1.5rem;"></i>
+            <h1 style="font-size: 3rem; margin: 0;">Try Again</h1>
+            <p style="font-size: 1.3rem; color: #94a3b8; margin: 1.5rem 0;">Don't worry, even scientists make mistakes. Use the indicator results carefully!</p>
+            <button class="btn-primary" style="background: #ef4444;" onclick="location.reload()">Restart Lab</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
+        const substancePool = [
+            { name: "Lemon Juice", type: "acid", img: "lemon_juice.png", reactions: { china_rose: { color: "#be123c", text: "Dark Pink/Red" }, red_cabbage: { color: "#ef4444", text: "Bright Red" }, turmeric: { color: "#facc15", text: "No Change (Yellow)" } } },
+            { name: "Vinegar", type: "acid", img: "vinegar.png", reactions: { china_rose: { color: "#ec4899", text: "Pink" }, turmeric: { color: "#facc15", text: "No Change" }, red_cabbage: { color: "#fca5a5", text: "Reddish Tint" } } },
+            { name: "Curd (Yogurt)", type: "acid", img: "curd.png", reactions: { red_cabbage: { color: "#f43f5e", text: "Reddish Color" }, china_rose: { color: "#ec4899", text: "Pinkish" }, turmeric: { color: "#facc15", text: "No Change" } } },
+            { name: "Orange Juice", type: "acid", img: "orange_juice.png", reactions: { china_rose: { color: "#f43f5e", text: "Pink/Red" }, turmeric: { color: "#facc15", text: "No Change" }, red_cabbage: { color: "#ef4444", text: "Red" } } },
+            { name: "Tamarind Water", type: "acid", img: "tamarind_water.png", reactions: { red_cabbage: { color: "#b91c1c", text: "Deep Red" }, china_rose: { color: "#ec4899", text: "Pink" }, turmeric: { color: "#facc15", text: "No Change" } } },
+            { name: "Soap Solution", type: "base", img: "soap_solution.png", reactions: { turmeric: { color: "#7c2d12", text: "Reddish-Brown" }, china_rose: { color: "#10b981", text: "Bright Green" }, red_cabbage: { color: "#0891b2", text: "Blue-Green" } } },
+            { name: "Baking Soda", type: "base", img: "baking_soda.png", reactions: { red_cabbage: { color: "#10b981", text: "Green/Blue" }, turmeric: { color: "#7c2d12", text: "Reddish-Brown tint" }, china_rose: { color: "#059669", text: "Green tint" } } },
+            { name: "Washing Powder", type: "base", img: "washing_powder.png", reactions: { turmeric: { color: "#7c2d12", text: "Reddish-Brown" }, china_rose: { color: "#10b981", text: "Green" }, red_cabbage: { color: "#065f46", text: "Greenish" } } },
+            { name: "Toothpaste", type: "base", img: "toothpaste.png", reactions: { china_rose: { color: "#10b981", text: "Green" }, turmeric: { color: "#7c2d12", text: "Reddish Tint" }, red_cabbage: { color: "#0d9488", text: "Blue/Green" } } },
+            { name: "Lime Water", type: "base", img: "lime_water.png", reactions: { red_cabbage: { color: "#10b981", text: "Bright Green" }, turmeric: { color: "#7c2d12", text: "Reddish-Brown" }, china_rose: { color: "#059669", text: "Green" } } }
+        ];
+
         const state = {
-            level: 1,
+            activeItems: [],
+            currentItem: null,
+            testedIndicators: new Set(),
+            identifiedCount: 0,
             lives: 3,
-            selectedBottle: null,
-            selectedLitmus: null,
-            targetType: 'acid',
-            bottles: [],
-            isProcessing: false,
+            score: 0,
             username: "{{ session.get('username') }}"
         };
 
-        const substances = [
-            { id: 1, type: 'acid', name: 'Sample A', color: '#f8fafc22' },
-            { id: 2, type: 'base', name: 'Sample B', color: '#f1f5f922' },
-            { id: 3, type: 'neutral', name: 'Sample C', color: '#e2e8f022' },
-            { id: 4, type: 'acid', name: 'Sample D', color: '#f8fafc22' }
-        ];
+        function shuffleItems() {
+            const shuffled = [...substancePool].sort(() => 0.5 - Math.random());
+            state.activeItems = shuffled.slice(0, 3);
+            renderGrid();
+        }
 
-        function generateLevel() {
-            const bench = document.getElementById('bench');
-            bench.innerHTML = '';
-            
-            // Randomize target
-            const types = ['acid', 'base', 'neutral'];
-            state.targetType = types[Math.floor(Math.random() * types.length)];
-            document.getElementById('target-sub').innerText = state.targetType.toUpperCase();
-            document.getElementById('target-sub').style.color = state.targetType === 'acid' ? 'var(--acid-red)' : (state.targetType === 'base' ? 'var(--base-blue)' : 'var(--neutral-green)');
-
-            // Shuffle and pick 4 bottles
-            const shuffled = [...substances].sort(() => 0.5 - Math.random());
-            state.bottles = shuffled.slice(0, 4);
-
-            state.bottles.forEach((bott, idx) => {
-                const bDiv = document.createElement('div');
-                bDiv.className = 'bottle-container';
-                bDiv.innerHTML = `
-                    <div class="bottle-neck"></div>
-                    <div class="bottle-body">
-                        <div class="liquid"></div>
-                    </div>
-                    <div class="bottle-label">#${idx + 1}</div>
+        function renderGrid() {
+            const grid = document.getElementById('items-grid');
+            grid.innerHTML = '';
+            state.activeItems.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'item-card' + (item.identified ? ' identified' : '');
+                card.id = `item-${index}`;
+                card.innerHTML = `
+                    <img src="/static/games/grade7/chemistry/${item.img}" class="item-img" alt="${item.name}">
+                    <div class="item-name">${item.name}</div>
                 `;
-                bDiv.onclick = () => selectBottle(idx, bDiv);
-                bench.appendChild(bDiv);
+                if (!item.identified) {
+                    card.onclick = () => selectItem(index);
+                }
+                grid.appendChild(card);
             });
         }
 
-        function selectBottle(idx, element) {
-            document.querySelectorAll('.bottle-container').forEach(b => b.classList.remove('selected'));
-            element.classList.add('selected');
-            state.selectedBottle = state.bottles[idx];
+        function selectItem(index) {
+            if (state.identifiedCount >= 3) return;
             
-            if (state.selectedLitmus) {
-                performTest();
-            }
-        }
-
-        function selectLitmus(type) {
-            document.querySelectorAll('.litmus-strip').forEach(s => s.classList.remove('active'));
-            document.getElementById(`lit-${type}-strip`).classList.add('active');
-            state.selectedLitmus = type;
+            state.currentItem = state.activeItems[index];
+            state.testedIndicators.clear();
             
-            if (state.selectedBottle) {
-                performTest();
+            // UI
+            document.querySelectorAll('.item-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`item-${index}`).classList.add('active');
+            
+            document.getElementById('testing-bench').style.display = 'block';
+            document.getElementById('current-item-name').innerText = `Testing: ${state.currentItem.name}`;
+            document.getElementById('results-panel').innerHTML = '<p id="test-hint" style="text-align: center; color: #64748b; margin-top: 4rem;">Select an indicator to see the reaction...</p>';
+            document.getElementById('decision-section').style.display = 'none';
+            
+            // Reset indicators
+            document.querySelectorAll('.indicator-btn').forEach(b => b.classList.remove('used'));
+            
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function runTest(indicator) {
+            if (!state.currentItem || state.testedIndicators.has(indicator)) return;
+
+            state.testedIndicators.add(indicator);
+            document.getElementById(`btn-${indicator}`).classList.add('used');
+            
+            const hint = document.getElementById('test-hint');
+            if (hint) hint.remove();
+
+            const reaction = state.currentItem.reactions[indicator];
+            const panel = document.getElementById('results-panel');
+            
+            const row = document.createElement('div');
+            row.className = 'result-row';
+            row.innerHTML = `
+                <div class="color-blob" style="background: ${reaction.color}"></div>
+                <div>
+                    <div style="font-size: 0.8rem; color: #94a3b8; font-weight: 800; text-transform: uppercase;">${indicator.replace('_', ' ')} Result</div>
+                    <div style="font-size: 1.2rem; font-weight: 700;">${reaction.text}</div>
+                </div>
+            `;
+            panel.appendChild(row);
+            setTimeout(() => row.classList.add('visible'), 50);
+
+            if (state.testedIndicators.size === 3) {
+                document.getElementById('decision-section').style.display = 'block';
             }
         }
 
-        function performTest() {
-            if (state.isProcessing) return;
-            state.isProcessing = true;
-
-            const toast = document.getElementById('reaction-toast');
-            const strip = document.getElementById(`lit-${state.selectedLitmus}-strip`);
-            const bottle = state.selectedBottle;
-
-            let resultText = "Neutral response.";
-            let sound = null;
-
-            if (state.selectedLitmus === 'blue' && bottle.type === 'acid') {
-                strip.classList.add('color-changed-red');
-                resultText = "Blue litmus turned RED! (Acid Detected)";
-            } else if (state.selectedLitmus === 'red' && bottle.type === 'base') {
-                strip.classList.add('color-changed-blue');
-                resultText = "Red litmus turned BLUE! (Base Detected)";
-            } else {
-                resultText = "No color change observed.";
-            }
-
-            toast.innerText = resultText;
-            toast.style.display = 'block';
-
-            setTimeout(() => {
-                toast.style.display = 'none';
-                strip.classList.remove('color-changed-red', 'color-changed-blue');
-                document.querySelectorAll('.litmus-strip').forEach(s => s.classList.remove('active'));
-                state.selectedLitmus = null;
-                state.isProcessing = false;
-            }, 2500);
-        }
-
-        function tryUnlock() {
-            if (!state.selectedBottle || state.isProcessing) return;
-
-            const icon = document.getElementById('door-icon');
-            if (state.selectedBottle.type === state.targetType) {
-                icon.className = 'fa-solid fa-lock-open door-lock door-unlocked';
+        function identify(choice) {
+            const isCorrect = choice === state.currentItem.type;
+            const overlay = document.getElementById('feedback-overlay');
+            
+            overlay.style.display = 'flex';
+            if (isCorrect) {
+                overlay.className = 'feedback-overlay feedback-correct';
+                overlay.innerHTML = '<i class="fa-solid fa-check-circle"></i>';
+                
+                state.currentItem.identified = true;
+                state.identifiedCount++;
+                state.score += 50;
+                document.getElementById('score-val').innerText = state.score;
+                document.getElementById('progress-val').innerText = `${state.identifiedCount}/3`;
+                
                 confetti({
-                    particleCount: 150,
+                    particleCount: 80,
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-                saveScore(50);
+
                 setTimeout(() => {
-                    document.getElementById('result-modal').style.display = 'flex';
-                }, 1000);
+                    overlay.style.display = 'none';
+                    if (state.identifiedCount === 3) {
+                        winGame();
+                    } else {
+                        document.getElementById('testing-bench').style.display = 'none';
+                        renderGrid();
+                    }
+                }, 1500);
             } else {
+                overlay.className = 'feedback-overlay feedback-incorrect';
+                overlay.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+                
                 state.lives--;
                 document.getElementById('lives-val').innerText = state.lives;
-                if (state.lives <= 0) {
-                    document.getElementById('game-over-modal').style.display = 'flex';
-                } else {
-                    alert("Incorrect substance! Be careful with the chemicals.");
-                }
+                
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    if (state.lives <= 0) {
+                        document.getElementById('fail-modal').style.display = 'flex';
+                    }
+                }, 1500);
             }
+        }
+
+        function winGame() {
+            document.getElementById('final-score').innerText = `${state.score} XP`;
+            document.getElementById('win-modal').style.display = 'flex';
+            saveScore(state.score);
         }
 
         function saveScore(xp) {
@@ -443,7 +485,7 @@
             });
         }
 
-        window.onload = generateLevel;
+        window.onload = shuffleItems;
     </script>
 </body>
 </html>
