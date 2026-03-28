@@ -618,6 +618,23 @@ def play_g7_chem_ch1_l1():
         return redirect("/")
     return render_template("g7_chem_ch1_l1.html")
 
+@app.route("/student/play/chem/g7/ch1_l2")
+def play_g7_chem_ch1_l2():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    
+    username = session.get("username", "")
+    # Check progression lock: Must complete Level 1 first
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM scores WHERE username=? AND game_name='G7_Chem_Ch1_L1'", (username,))
+    if not cursor.fetchone():
+        conn.close()
+        return redirect("/student/play?subject=Science&sub_subject=Chemistry&chapter=1")
+    conn.close()
+    
+    return render_template("g7_chem_ch1_l2.html")
+
 @app.route("/student/play/phys/g7/ch1_l1")
 def play_g7_phys_ch1_l1():
     if "name" not in session or session.get("role") != "student":

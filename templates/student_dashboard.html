@@ -130,6 +130,12 @@
                     <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
                 </div>
             </div>
+
+            {% elif subject == 'Technology' and grade|lower == 'g7' and not chapter %}
+            <p class="text-muted mb-2">Grade 7 Technology Chapters</p>
+            <div class="card-grid">
+                <!-- Empty for now, Chapter 1 was moved to Engineering -->
+            </div>
             {% elif subject == 'Engineering' and grade|lower == 'g6' and not chapter %}
             <p class="text-muted mb-2">Grade 6 Engineering Chapters</p>
             <div class="card-grid">
@@ -137,6 +143,16 @@
                     <i class="fa-solid fa-screwdriver-wrench text-warning" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
                     <h3 style="font-size: 1.3rem;">Chapter 1: Introduction to Engineering & Electricity</h3>
                     <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
+            {% elif subject == 'Engineering' and grade|lower == 'g7' and not chapter %}
+            <p class="text-muted mb-2">Grade 7 Engineering Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Engineering&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-network-wired text-secondary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #6366f1;"></i>
+                    <h3 style="font-size: 1.3rem;">Chapter 1: Basic Networking & Communication</h3>
+                    <button class="menu-btn mt-2" style="background: #6366f1; width: 100%; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
                 </div>
             </div>
             {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g6' and not chapter %}
@@ -631,7 +647,143 @@
                 </div>
             </div>
 
+            {% elif subject == 'Science' and sub_subject == 'Chemistry' and grade|lower == 'g7' and not chapter %}
+            <p class="text-muted mb-2">Grade 7 Chemistry Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Chemistry&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-flask-vial text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #166534;"></i>
+                    <h3 style="font-size: 1.3rem;">Chapter 1: Acids, Bases and Salts</h3>
+                    <button class="menu-btn mt-2" style="background: #166534; width: 100%; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
+            {% elif subject == 'Engineering' and chapter == '1' %}
+            <style>
+                .tech-notes { background: #f8fafc; border-radius: 24px; padding: 2.5rem; border: 1px solid #e2e8f0; }
+                .tech-card { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 6px solid #6366f1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.3s; }
+                .tech-card:hover { transform: translateY(-5px); }
+                .tech-img { max-width: 100%; border-radius: 12px; margin-top: 1rem; border: 1px solid #e2e8f0; }
+                .tech-title { color: #4338ca; font-size: 2rem; font-weight: 950; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
+                .tech-badge { background: #e0e7ff; color: #4338ca; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; font-weight: 800; }
+            </style>
+            <div class="tech-notes">
+                <!-- Page 1 -->
+                <div id="tech-c1-p1">
+                    <h2 class="tech-title"><i class="fa-solid fa-globe"></i> Basic Networking & Communication</h2>
+                    <div class="tech-card">
+                        <h3>1. What is Communication?</h3>
+                        <p>Sharing information from one place or person to another.</p>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                            <span class="tech-badge">📞 Calls</span>
+                            <span class="tech-badge">💬 Messages</span>
+                            <span class="tech-badge">🎥 Videos</span>
+                        </div>
+                    </div>
+                    <div class="tech-card" style="border-left-color: #10b981;">
+                        <h3>2. What is a Computer Network?</h3>
+                        <p>A group of devices connected together to share information.</p>
+                        <img src="/static/games/grade7/technology/concept_network.png" class="tech-img" alt="Network Concept">
+                    </div>
+                    <div class="tech-card" style="border-left-color: #f59e0b;">
+                        <h3>3. Types of Network Devices</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>🖥️ <strong>Computer (Client):</strong> Sends & receives data.</li>
+                            <li>🗄️ <strong>Server:</strong> Stores data (e.g., website data).</li>
+                        </ul>
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="menu-btn" onclick="document.getElementById('tech-c1-p1').style.display='none'; document.getElementById('tech-c1-p2').style.display='block'; window.scrollTo(0,0);" style="background: #6366f1; width: auto; border: none;">Next: Router & Modem <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2 -->
+                <div id="tech-c1-p2" style="display:none;">
+                    <h3 class="tech-title">Routers & Data Travel</h3>
+                    <div class="tech-card" style="border-left-color: #ef4444;">
+                        <h3>📡 Router & Modem</h3>
+                        <p><strong>Router:</strong> Like a traffic controller 🚦 for data. Directs data to correct destination.</p>
+                        <p><strong>Modem:</strong> Connects your network to the internet.</p>
+                        <img src="/static/games/grade7/technology/router_traffic.png" class="tech-img" alt="Router Traffic">
+                    </div>
+                    <div class="tech-card" style="border-left-color: #3b82f6;">
+                        <h3>4. LAN vs WAN</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>🏠 <strong>LAN:</strong> Small area (home, school). Fast & Secure.</li>
+                            <li>🌍 <strong>WAN:</strong> Large areas (countries). Example: <strong>Internet</strong>.</li>
+                        </ul>
+                        <img src="/static/games/grade7/technology/lan_wan.png" class="tech-img" alt="LAN vs WAN">
+                    </div>
+                    <div class="tech-card">
+                        <h3>🔌 5. Wired vs Wireless</h3>
+                        <p><strong>Wired (Ethernet):</strong> Stable but less flexible.</p>
+                        <p><strong>Wireless (Wi-Fi/Bluetooth):</strong> Flexible but signal can weaken.</p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button class="btn-logout" onclick="document.getElementById('tech-c1-p2').style.display='none'; document.getElementById('tech-c1-p1').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="menu-btn" onclick="document.getElementById('tech-c1-p2').style.display='none'; document.getElementById('tech-c1-p3').style.display='block'; window.scrollTo(0,0);" style="background: #6366f1; width: auto; border: none;">Next: Data Packets <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3 -->
+                <div id="tech-c1-p3" style="display:none;">
+                    <h3 class="tech-title">Data Transmission</h3>
+                    <div class="tech-card" style="border-left-color: #8b5cf6;">
+                        <h3>📦 6. Data Packets</h3>
+                        <p>Data travels in small units called <strong>Packets</strong>.</p>
+                        <p>Broken down → Travels → Router decides path → Reassembled.</p>
+                        <img src="/static/games/grade7/technology/data_packets.png" class="tech-img" alt="Data Packets">
+                    </div>
+                    <div class="tech-card">
+                        <h3>9. Network Paths</h3>
+                        <p>Data chooses the <strong>Fast Path</strong> (short) automatically over the <strong>Slow Path</strong> (crowded).</p>
+                    </div>
+                    <div class="tech-card" style="background: #fff1f2; border-left-color: #e11d48;">
+                        <h3>❌ 10. Network Problems</h3>
+                        <ul>
+                            <li>Broken connection (Cable damaged)</li>
+                            <li>Overload (Too many users)</li>
+                            <li>Weak signal (Walls/Distance)</li>
+                        </ul>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button class="btn-logout" onclick="document.getElementById('tech-c1-p3').style.display='none'; document.getElementById('tech-c1-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="menu-btn" onclick="document.getElementById('tech-c1-p3').style.display='none'; document.getElementById('tech-c1-p4').style.display='block'; window.scrollTo(0,0);" style="background: #6366f1; width: auto; border: none;">Next: Safety <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 4 -->
+                <div id="tech-c1-p4" style="display:none;">
+                    <h3 class="tech-title">Safety & Importance</h3>
+                    <div class="tech-card" style="border-left-color: #10b981;">
+                        <h3>🌍 12. Internet Basics</h3>
+                        <p>A global network of networks connecting everyone worldwide! 🌐</p>
+                    </div>
+                    <div class="tech-card" style="border-left-color: #fbbf24;">
+                        <h3>🚀 14. Real-life Examples</h3>
+                        <p>WhatsApp, YouTube, Online classes, and Gaming! 🎮</p>
+                    </div>
+                    <div class="tech-card" style="background: #fef2f2; border-left-color: #ef4444;">
+                        <h3>⚠️ 15. Network Safety</h3>
+                        <ul>
+                            <li>Do not share passwords</li>
+                            <li>Avoid unknown links</li>
+                            <li>Use secure networks</li>
+                        </ul>
+                    </div>
+                    <div style="background: #e0e7ff; padding: 2rem; border-radius: 16px; text-align: center; border: 2px dashed #6366f1;">
+                        <h3 style="color: #4338ca;">Networking Wizard! 🧙‍♂️</h3>
+                        <p>You've connected the dots! Ready to explore more?</p>
+                        <button class="menu-btn mt-2" onclick="window.location.href='/student/learn'" style="background: #6366f1; width: auto; border: none;">Back to Lessons <i class="fa-solid fa-house ml-1"></i></button>
+                    </div>
+                    <div style="text-align: left; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('tech-c1-p4').style.display='none'; document.getElementById('tech-c1-p3').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    </div>
+                </div>
+            </div>
+
             {% elif subject == 'Science' and sub_subject == 'Chemistry' and chapter == '1' %}
+            
+            {% if grade|lower == 'g6' %}
             <style>
                 .chem-notes-container {
                     background: var(--surface);
@@ -821,6 +973,200 @@
                     </div>
                 </div>
             </div>
+
+            {% elif grade|lower == 'g7' %}
+            <style>
+                .g7-chem-notes {
+                    background: var(--surface);
+                    border-radius: var(--radius-lg);
+                    border: 1px solid var(--border);
+                    padding: 2.5rem;
+                    animation: fadeIn 0.8s ease-out;
+                }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                
+                .notes-section { margin-bottom: 4rem; opacity: 0; animation: fadeInUp 0.6s forwards; }
+                .notes-section:nth-child(1) { animation-delay: 0.2s; }
+                .notes-section:nth-child(2) { animation-delay: 0.4s; }
+                .notes-section:nth-child(3) { animation-delay: 0.6s; }
+                
+                @keyframes fadeInUp { 
+                    from { opacity: 0; transform: translateY(30px); } 
+                    to { opacity: 1; transform: translateY(0); } 
+                }
+
+                .notes-title { 
+                    font-size: 2.2rem; font-weight: 900; color: #166534; margin-bottom: 1.5rem; 
+                    display: flex; align-items: center; gap: 1rem;
+                    animation: slideInLow 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+                }
+                @keyframes slideInLow { from { transform: translateX(-50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+                
+                .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+                .comp-item { 
+                    padding: 1.5rem; border-radius: 16px; border-left: 6px solid #cbd5e1;
+                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+                .comp-item:hover { transform: scale(1.05) rotate(1deg); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+                .comp-item.acid { background: #fff1f2; border-color: #f43f5e; }
+                .comp-item.base { background: #eff6ff; border-color: #3b82f6; }
+                
+                .indicator-tbl { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+                .indicator-tbl tr { transition: background 0.3s; }
+                .indicator-tbl tr:hover { background: #f8fafc; }
+                .indicator-tbl th, .indicator-tbl td { padding: 1.2rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+                .indicator-tbl th { background: #f8fafc; font-weight: 800; color: #64748b; }
+                
+                .formula-strip { 
+                    background: #f8fafc; padding: 1.5rem; border-radius: 16px; text-align: center; 
+                    font-size: 1.5rem; font-weight: 900; color: #16a34a; border: 2px dashed #bbf7d0; 
+                    margin: 1.5rem 0;
+                    animation: pulseGlow 3s infinite;
+                }
+                @keyframes pulseGlow {
+                    0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.1); }
+                    50% { box-shadow: 0 0 20px 5px rgba(22, 163, 74, 0.15); }
+                    100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.1); }
+                }
+                
+                .usage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+                .usage-box { 
+                    background: white; padding: 1.2rem; border-radius: 12px; border: 1px solid #e2e8f0;
+                    transition: transform 0.3s;
+                }
+                .usage-box:hover { transform: translateY(-8px); border-color: #fbbf24; }
+                .usage-box i { font-size: 1.3rem; margin-bottom: 0.8rem; color: #fbbf24; animation: bounce 2s infinite; }
+                
+                @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+                
+                .safety-card { background: #fef2f2; border: 1px solid #fee2e2; border-left: 6px solid #ef4444; padding: 1.5rem; border-radius: 16px; animation: flashShake 5s infinite; }
+                @keyframes flashShake { 0%, 90% { transform: scale(1); } 92% { transform: translateX(2px); } 94% { transform: translateX(-2px); } 96% { transform: translateX(2px); } 100% { transform: scale(1); } }
+            </style>
+
+            <div class="g7-chem-notes">
+                <!-- Page 1: Intro -->
+                <div id="g7c1-p1">
+                    <h2 class="notes-title"><i class="fa-solid fa-flask"></i> Chapter 1: Acids, Bases and Salts</h2>
+                    
+                    <div class="notes-section">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">1. What are Acids and Bases?</h3>
+                        <div class="comp-grid">
+                            <div class="comp-item acid">
+                                <h4 style="color: #be123c;"><i class="fa-solid fa-lemon"></i> Acids</h4>
+                                <p>Substances that are sour in taste.</p>
+                                <p style="font-size: 0.9rem; margin-top: 0.5rem;"><strong>Examples:</strong> Lemon juice, Vinegar</p>
+                                <p style="font-size: 0.9rem;"><strong>Action:</strong> Blue Litmus → <span style="color: #e11d48; font-weight: 800;">RED</span></p>
+                            </div>
+                            <div class="comp-item base">
+                                <h4 style="color: #1d4ed8;"><i class="fa-solid fa-soap"></i> Bases</h4>
+                                <p>Substances that are bitter and soapy to touch.</p>
+                                <p style="font-size: 0.9rem; margin-top: 0.5rem;"><strong>Examples:</strong> Soap, Baking soda</p>
+                                <p style="font-size: 0.9rem;"><strong>Action:</strong> Red Litmus → <span style="color: #2563eb; font-weight: 800;">BLUE</span></p>
+                            </div>
+                        </div>
+                        <div style="background: #ecfeff; padding: 1rem; border-radius: 12px; border: 1px solid #bae6fd;">
+                            <p style="margin:0;"><strong>💡 Alkalis:</strong> Bases that dissolve in water. (e.g., Sodium hydroxide)</p>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button class="menu-btn" onclick="document.getElementById('g7c1-p1').style.display='none'; document.getElementById('g7c1-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto; background: #166534; border: none;">Next: Indicators <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2: Indicators -->
+                <div id="g7c1-p2" style="display:none;">
+                    <h2 class="notes-title"><i class="fa-solid fa-palette"></i> 2. Indicators</h2>
+                    <p class="mb-2">Substances that change color to show if something is acidic or basic.</p>
+                    
+                    <table class="indicator-tbl">
+                        <thead>
+                            <tr>
+                                <th>Indicator</th>
+                                <th>Acid</th>
+                                <th>Base</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Litmus</strong></td>
+                                <td style="color: #e11d48; font-weight: 700;">Red</td>
+                                <td style="color: #2563eb; font-weight: 700;">Blue</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Turmeric</strong></td>
+                                <td style="color: #64748b;">Yellow (No change)</td>
+                                <td style="color: #92400e; font-weight: 700;">Reddish-brown</td>
+                            </tr>
+                            <tr>
+                                <td><strong>China Rose</strong></td>
+                                <td style="color: #db2777; font-weight: 700;">Dark Pink</td>
+                                <td style="color: #059669; font-weight: 700;">Green</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="notes-section" style="margin-top: 2rem; padding: 1.5rem; background: #f0fdf4; border-radius: 12px; border-left: 5px solid #16a34a;">
+                        <h4 style="margin-top:0;"><i class="fa-solid fa-droplet text-success"></i> 3. Neutral Substances</h4>
+                        <p>Do not change litmus color. Example: <strong>Pure water</strong>.</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('g7c1-p2').style.display='none'; document.getElementById('g7c1-p1').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+                        <button class="menu-btn" onclick="document.getElementById('g7c1-p2').style.display='none'; document.getElementById('g7c1-p3').style.display='block'; window.scrollTo(0,0);" style="width: auto; background: #166534; border: none;">Next: Neutralization <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Neutralization -->
+                <div id="g7c1-p3" style="display:none;">
+                    <h2 class="notes-title"><i class="fa-solid fa-bolt"></i> 4. Neutralization Reaction</h2>
+                    <p>When an acid reacts with a base, they cancel each other out.</p>
+                    
+                    <div class="formula-strip">
+                        Acid + Base → Salt + Water
+                    </div>
+                    
+                    <div class="notes-section">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">5. Uses in Daily Life</h3>
+                        <div class="usage-grid">
+                            <div class="usage-box">
+                                <i class="fa-solid fa-stethoscope"></i>
+                                <strong>Indigestion</strong>
+                                <p style="font-size: 0.85rem; color: #64748b;">Treated with antacids (Base).</p>
+                            </div>
+                            <div class="usage-box">
+                                <i class="fa-solid fa-bug"></i>
+                                <strong>Ant Bite</strong>
+                                <p style="font-size: 0.85rem; color: #64748b;">Neutralized with Baking Soda.</p>
+                            </div>
+                            <div class="usage-box">
+                                <i class="fa-solid fa-leaf"></i>
+                                <strong>Soil</strong>
+                                <p style="font-size: 0.85rem; color: #64748b;">Acidic soil is treated with Lime.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="safety-card">
+                        <h4 style="margin-top:0;"><i class="fa-solid fa-triangle-exclamation"></i> Safety Precautions</h4>
+                        <ul style="font-size: 0.9rem; padding-left: 1.2rem;">
+                            <li>Never touch or taste chemicals.</li>
+                            <li>Wash hands after every experiment.</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #fefce8; padding: 2rem; border-radius: 16px; border: 2px dashed #facc15; text-align: center; margin-top: 3rem;">
+                        <h3 style="color: #854d0e;">Ready to Quest? 🛡️</h3>
+                        <p>You've mastered the theory! Now prove it in the lab.</p>
+                        <button class="menu-btn mt-2" onclick="window.location.href='/student/play?subject=Science&sub_subject=Chemistry&chapter=1'" style="width: auto; display: inline-block; background: #166534; border: none; padding: 1rem 2rem; font-size: 1.2rem;">🎮 Play Color Quest <i class="fa-solid fa-gamepad ml-1"></i></button>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('g7c1-p3').style.display='none'; document.getElementById('g7c1-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             {% elif subject == 'Maths' and not chapter %}
             {% if grade|lower == 'g6' %}
@@ -2845,19 +3191,43 @@
             </div>
 
             {% elif subject == 'Science' and sub_subject == 'Chemistry' and grade|lower == 'g7' and chapter == '1' %}
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #166534; background: #dcfce7; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 1: Acids, Bases and Salts</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 800; font-size: 1.4rem; color: #166534; background: #dcfce7; padding: 0.8rem 1.5rem; border-radius: 12px; border: 2px solid #bbf7d0;">Chapter 1: Acids, Bases and Salts</p>
             </div>
             <div class="card-grid">
                 <div class="card game-card" onclick="window.location.href='/student/play/chem/g7/ch1_l1'" style="border: 2px solid var(--border);">
                     <i class="fa-solid fa-flask-vial text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #16a34a;"></i>
                     <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
-                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Lab Escape</h3>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Color Quest: Acid or Base</h3>
                     <p class="text-muted mt-1 text-sm">Difficulty: Beginner</p>
                     <div style="text-align: center;">
                         <span class="level-badge mt-1" style="display:inline-block; background: #dcfce7; color: #16a34a;">Play Game</span>
                     </div>
                 </div>
+
+                <!-- Level 2 Card -->
+                {% if 'G7_Chem_Ch1_L1' in completed_games %}
+                <div class="card game-card" onclick="window.location.href='/student/play/chem/g7/ch1_l2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-vial-circle-check" style="font-size: 2.5rem; margin-bottom: 1rem; color: #0891b2;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Chemical Actions</h3>
+                    <p class="text-muted mt-1 text-sm">Difficulty: Intermediate</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #ecfeff; color: #0891b2;">Play Game</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card game-card locked" style="border: 2px solid var(--border); opacity: 0.7; cursor: not-allowed; position: relative;">
+                    <div style="position: absolute; top: 10px; right: 10px; color: #94a3b8;"><i class="fa-solid fa-lock"></i></div>
+                    <i class="fa-solid fa-vial-circle-check" style="font-size: 2.5rem; margin-bottom: 1rem; color: #94a3b8;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem; color: #94a3b8;">Chemical Actions</h3>
+                    <p class="text-muted mt-1 text-sm">Finish Level 1 to Unlock</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #f1f5f9; color: #94a3b8;">Locked</span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
 
             {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g7' and not chapter %}
