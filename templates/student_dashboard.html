@@ -130,6 +130,16 @@
                     <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
                 </div>
             </div>
+
+            {% elif subject == 'Technology' and grade|lower == 'g7' and not chapter %}
+            <p class="text-muted mb-2">Grade 7 Technology Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Technology&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-network-wired text-secondary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #6366f1;"></i>
+                    <h3 style="font-size: 1.3rem;">Chapter 1: Basic Networking & Communication</h3>
+                    <button class="menu-btn mt-2" style="background: #6366f1; width: 100%; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
             {% elif subject == 'Engineering' and grade|lower == 'g6' and not chapter %}
             <p class="text-muted mb-2">Grade 6 Engineering Chapters</p>
             <div class="card-grid">
@@ -638,6 +648,130 @@
                     <i class="fa-solid fa-flask-vial text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #166534;"></i>
                     <h3 style="font-size: 1.3rem;">Chapter 1: Acids, Bases and Salts</h3>
                     <button class="menu-btn mt-2" style="background: #166534; width: 100%; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
+            {% elif subject == 'Technology' and chapter == '1' %}
+            <style>
+                .tech-notes { background: #f8fafc; border-radius: 24px; padding: 2.5rem; border: 1px solid #e2e8f0; }
+                .tech-card { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border-left: 6px solid #6366f1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.3s; }
+                .tech-card:hover { transform: translateY(-5px); }
+                .tech-img { max-width: 100%; border-radius: 12px; margin-top: 1rem; border: 1px solid #e2e8f0; }
+                .tech-title { color: #4338ca; font-size: 2rem; font-weight: 950; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
+                .tech-badge { background: #e0e7ff; color: #4338ca; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; font-weight: 800; }
+            </style>
+            <div class="tech-notes">
+                <!-- Page 1 -->
+                <div id="tech-c1-p1">
+                    <h2 class="tech-title"><i class="fa-solid fa-globe"></i> Basic Networking & Communication</h2>
+                    <div class="tech-card">
+                        <h3>1. What is Communication?</h3>
+                        <p>Sharing information from one place or person to another.</p>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                            <span class="tech-badge">📞 Calls</span>
+                            <span class="tech-badge">💬 Messages</span>
+                            <span class="tech-badge">🎥 Videos</span>
+                        </div>
+                    </div>
+                    <div class="tech-card" style="border-left-color: #10b981;">
+                        <h3>2. What is a Computer Network?</h3>
+                        <p>A group of devices connected together to share information.</p>
+                        <img src="/static/games/grade7/technology/concept_network.png" class="tech-img" alt="Network Concept">
+                    </div>
+                    <div class="tech-card" style="border-left-color: #f59e0b;">
+                        <h3>3. Types of Network Devices</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>🖥️ <strong>Computer (Client):</strong> Sends & receives data.</li>
+                            <li>🗄️ <strong>Server:</strong> Stores data (e.g., website data).</li>
+                        </ul>
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="menu-btn" onclick="document.getElementById('tech-c1-p1').style.display='none'; document.getElementById('tech-c1-p2').style.display='block'; window.scrollTo(0,0);" style="background: #6366f1; width: auto; border: none;">Next: Router & Modem <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2 -->
+                <div id="tech-c1-p2" style="display:none;">
+                    <h3 class="tech-title">Routers & Data Travel</h3>
+                    <div class="tech-card" style="border-left-color: #ef4444;">
+                        <h3>📡 Router & Modem</h3>
+                        <p><strong>Router:</strong> Like a traffic controller 🚦 for data. Directs data to correct destination.</p>
+                        <p><strong>Modem:</strong> Connects your network to the internet.</p>
+                        <img src="/static/games/grade7/technology/router_traffic.png" class="tech-img" alt="Router Traffic">
+                    </div>
+                    <div class="tech-card" style="border-left-color: #3b82f6;">
+                        <h3>4. LAN vs WAN</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>🏠 <strong>LAN:</strong> Small area (home, school). Fast & Secure.</li>
+                            <li>🌍 <strong>WAN:</strong> Large areas (countries). Example: <strong>Internet</strong>.</li>
+                        </ul>
+                        <img src="/static/games/grade7/technology/lan_wan.png" class="tech-img" alt="LAN vs WAN">
+                    </div>
+                    <div class="tech-card">
+                        <h3>🔌 5. Wired vs Wireless</h3>
+                        <p><strong>Wired (Ethernet):</strong> Stable but less flexible.</p>
+                        <p><strong>Wireless (Wi-Fi/Bluetooth):</strong> Flexible but signal can weaken.</p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button class="btn-logout" onclick="document.getElementById('tech-c1-p2').style.display='none'; document.getElementById('tech-c1-p1').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="menu-btn" onclick="document.getElementById('tech-c1-p2').style.display='none'; document.getElementById('tech-c1-p3').style.display='block'; window.scrollTo(0,0);" style="background: #6366f1; width: auto; border: none;">Next: Data Packets <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3 -->
+                <div id="tech-c1-p3" style="display:none;">
+                    <h3 class="tech-title">Data Transmission</h3>
+                    <div class="tech-card" style="border-left-color: #8b5cf6;">
+                        <h3>📦 6. Data Packets</h3>
+                        <p>Data travels in small units called <strong>Packets</strong>.</p>
+                        <p>Broken down → Travels → Router decides path → Reassembled.</p>
+                        <img src="/static/games/grade7/technology/data_packets.png" class="tech-img" alt="Data Packets">
+                    </div>
+                    <div class="tech-card">
+                        <h3>9. Network Paths</h3>
+                        <p>Data chooses the <strong>Fast Path</strong> (short) automatically over the <strong>Slow Path</strong> (crowded).</p>
+                    </div>
+                    <div class="tech-card" style="background: #fff1f2; border-left-color: #e11d48;">
+                        <h3>❌ 10. Network Problems</h3>
+                        <ul>
+                            <li>Broken connection (Cable damaged)</li>
+                            <li>Overload (Too many users)</li>
+                            <li>Weak signal (Walls/Distance)</li>
+                        </ul>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button class="btn-logout" onclick="document.getElementById('tech-c1-p3').style.display='none'; document.getElementById('tech-c1-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="menu-btn" onclick="document.getElementById('tech-c1-p3').style.display='none'; document.getElementById('tech-c1-p4').style.display='block'; window.scrollTo(0,0);" style="background: #6366f1; width: auto; border: none;">Next: Safety <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 4 -->
+                <div id="tech-c1-p4" style="display:none;">
+                    <h3 class="tech-title">Safety & Importance</h3>
+                    <div class="tech-card" style="border-left-color: #10b981;">
+                        <h3>🌍 12. Internet Basics</h3>
+                        <p>A global network of networks connecting everyone worldwide! 🌐</p>
+                    </div>
+                    <div class="tech-card" style="border-left-color: #fbbf24;">
+                        <h3>🚀 14. Real-life Examples</h3>
+                        <p>WhatsApp, YouTube, Online classes, and Gaming! 🎮</p>
+                    </div>
+                    <div class="tech-card" style="background: #fef2f2; border-left-color: #ef4444;">
+                        <h3>⚠️ 15. Network Safety</h3>
+                        <ul>
+                            <li>Do not share passwords</li>
+                            <li>Avoid unknown links</li>
+                            <li>Use secure networks</li>
+                        </ul>
+                    </div>
+                    <div style="background: #e0e7ff; padding: 2rem; border-radius: 16px; text-align: center; border: 2px dashed #6366f1;">
+                        <h3 style="color: #4338ca;">Networking Wizard! 🧙‍♂️</h3>
+                        <p>You've connected the dots! Ready to explore more?</p>
+                        <button class="menu-btn mt-2" onclick="window.location.href='/student/learn'" style="background: #6366f1; width: auto; border: none;">Back to Lessons <i class="fa-solid fa-house ml-1"></i></button>
+                    </div>
+                    <div style="text-align: left; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('tech-c1-p4').style.display='none'; document.getElementById('tech-c1-p3').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    </div>
                 </div>
             </div>
 
