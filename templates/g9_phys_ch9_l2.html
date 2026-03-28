@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F=ma Dash - Grade 9 Physics</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --physics-primary: #10b981;
+            --physics-bg: #f0fdf4;
+            --physics-surface: #ffffff;
+            --accent-blue: #3b82f6;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--physics-bg);
+            color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .game-header {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .stat-badge {
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .game-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            gap: 2rem;
+            position: relative;
+        }
+
+        /* Track Area */
+        .track-container {
+            width: 100%;
+            max-width: 900px;
+            height: 200px;
+            background: #e5e7eb;
+            border-bottom: 8px solid #94a3b8;
+            border-radius: 20px;
+            position: relative;
+            margin-top: 2rem;
+            overflow: hidden;
+            background-image: linear-gradient(90deg, #ffffff11 2px, transparent 2px);
+            background-size: 50px 100%;
+        }
+
+        .sled {
+            position: absolute;
+            bottom: 10px;
+            left: 50px;
+            font-size: 4rem;
+            color: var(--accent-blue);
+            transition: left 2s cubic-bezier(0.45, 0, 0.55, 1);
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+        }
+
+        .finish-line {
+            position: absolute;
+            right: 100px;
+            height: 100%;
+            width: 20px;
+            background: repeating-linear-gradient(
+                0deg,
+                #000,
+                #000 10px,
+                #fff 10px,
+                #fff 20px
+            );
+        }
+
+        /* Controls Area */
+        .controls-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .formula-display {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #334155;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        input[type=range] {
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--physics-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-push {
+            background: var(--physics-primary);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-push:hover { transform: translateY(-2px); background: #059669; }
+        .btn-push:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+
+        .wrong-text { color: #ef4444; font-weight: 700; margin-top: 1rem; display: none; }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="/student/play?subject=Science&sub_subject=Physics&chapter=9" style="text-decoration: none; color: #6b7280; font-weight: 700;">
+            <i class="fa-solid fa-arrow-left"></i> Exit
+        </a>
+        <div style="text-align: center;">
+            <h2 style="margin: 0; color: var(--physics-primary); line-height: 1;">F=ma Dash</h2>
+            <span style="font-size: 0.8rem; font-weight: 700; color: #9ca3af; text-transform: uppercase;">Laws of Motion: Level 2</span>
+        </div>
+        <div class="stat-badge">
+            <i class="fa-solid fa-star" style="color: #fbbf24;"></i>
+            <span id="xp-display">0 XP</span>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div style="text-align: center; max-width: 600px;">
+            <h1 style="font-size: 2rem; margin: 0;">Newton's Second Law Challenge</h1>
+            <p style="color: #6b7280; font-weight: 600; margin-top: 0.5rem;">
+                Distance doesn't matter here! Your goal is to find the <strong>Exact Force (F)</strong> needed to produce the target <strong>Acceleration (a)</strong> for the given <strong>Mass (m)</strong>.
+            </p>
+            <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 0.5rem; border-radius: 8px; display: inline-block; margin-top: 0.5rem; color: #92400e; font-weight: 700;">
+                Calculation: F = m × a
+            </div>
+        </div>
+
+        <div class="track-container">
+            <div class="finish-line"></div>
+            <div class="sled" id="sled"><i class="fa-solid fa-sleigh"></i></div>
+        </div>
+
+        <div class="controls-card">
+            <div class="formula-display">
+                <span style="color: #64748b;">m</span> = <span id="val-mass">25</span> kg &nbsp;&nbsp;|&nbsp;&nbsp; 
+                <span style="color: #64748b;">a</span> = <span id="val-accel">4</span> m/s²
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <span>Set Applied Force (Newtons)</span>
+                    <span id="force-display" style="color: var(--physics-primary); font-size: 1.5rem;">50 N</span>
+                </div>
+                <input type="range" id="force-slider" min="0" max="300" value="50">
+            </div>
+
+            <button class="btn-push" id="push-btn">APPLY FORCE & PUSH!</button>
+            <div id="wrong-msg" class="wrong-text">Calculation Error! Check your math: m × a = F. Try again! (-5 XP)</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-content">
+            <div style="width: 80px; height: 80px; background: #10b981; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem;">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Perfect Push!</h2>
+            <p style="color: #6b7280; margin-bottom: 2rem;">You calculated the exact force required to reach the target. Newton would be proud!</p>
+            <button class="btn-push" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=9'" style="width: 100%;">Next Level <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const state = {
+            mass: 25,
+            accel: 4,
+            force: 50,
+            xp: 0,
+            targetForce: 100,
+            username: "{{ session.get('username') }}"
+        };
+
+        const els = {
+            slider: document.getElementById('force-slider'),
+            forceDisplay: document.getElementById('force-display'),
+            pushBtn: document.getElementById('push-btn'),
+            sled: document.getElementById('sled'),
+            successModal: document.getElementById('success-modal'),
+            xpDisplay: document.getElementById('xp-display'),
+            wrongMsg: document.getElementById('wrong-msg')
+        };
+
+        // Initialize with random values
+        function initRound() {
+            state.mass = Math.floor(Math.random() * 5) * 5 + 10; // 10, 15, 20, 25, 30
+            state.accel = Math.floor(Math.random() * 5) + 2; // 2, 3, 4, 5, 6
+            state.targetForce = state.mass * state.accel;
+            
+            document.getElementById('val-mass').innerText = state.mass;
+            document.getElementById('val-accel').innerText = state.accel;
+        }
+
+        els.slider.oninput = function() {
+            state.force = parseInt(this.value);
+            els.forceDisplay.innerText = state.force + " N";
+        };
+
+        els.pushBtn.onclick = function() {
+            if (state.force === state.targetForce) {
+                // Correct
+                handleSuccess();
+            } else {
+                // Wrong
+                handleWrong();
+            }
+        };
+
+        function handleSuccess() {
+            els.pushBtn.disabled = true;
+            els.wrongMsg.style.display = 'none';
+            state.xp += 100;
+            els.xpDisplay.innerText = state.xp + " XP";
+            
+            // Animate sled
+            els.sled.style.left = 'calc(100% - 150px)';
+            
+            setTimeout(() => {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                els.successModal.style.display = 'flex';
+                saveScore(state.xp);
+            }, 2000);
+        }
+
+        function handleWrong() {
+            state.xp = Math.max(0, state.xp - 5);
+            els.xpDisplay.innerText = state.xp + " XP";
+            els.wrongMsg.style.display = 'block';
+            
+            els.sled.style.transform = 'translateX(10px)';
+            setTimeout(() => { els.sled.style.transform = 'translateX(0)'; }, 100);
+            setTimeout(() => { els.sled.style.transform = 'translateX(10px)'; }, 200);
+            setTimeout(() => { els.sled.style.transform = 'translateX(0)'; }, 300);
+        }
+
+        function saveScore(score) {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${score}&subject=Science&game_name=G9_Phys_Ch9_L2`
+            });
+        }
+
+        initRound();
+    </script>
+</body>
+</html>

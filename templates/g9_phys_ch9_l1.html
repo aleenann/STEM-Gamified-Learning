@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Sort - Grade 9 Physics</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --physics-primary: #7c3aed;
+            --physics-bg: #f5f3ff;
+            --physics-surface: #ffffff;
+            --balanced-color: #10b981;
+            --unbalanced-color: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--physics-bg);
+            color: #1f2937;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .stat-badge {
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .game-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .instruction-box {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .instruction-box h1 {
+            color: var(--physics-primary);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Card Area */
+        .card-deck {
+            position: relative;
+            width: 300px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sort-card {
+            width: 280px;
+            background: white;
+            border: 3px solid var(--physics-primary);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.2);
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: absolute;
+            user-select: none;
+        }
+
+        .sort-card:active { cursor: grabbing; }
+
+        .card-icon {
+            font-size: 3rem;
+            color: var(--physics-primary);
+            margin-bottom: 1rem;
+        }
+
+        .card-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #4b5563;
+        }
+
+        /* Drop Zones */
+        .zones-container {
+            display: flex;
+            gap: 2rem;
+            width: 100%;
+            max-width: 900px;
+            justify-content: center;
+        }
+
+        .drop-zone {
+            flex: 1;
+            height: 200px;
+            border: 3px dashed #d1d5db;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            background: white;
+        }
+
+        .drop-zone.hover {
+            border-color: var(--physics-primary);
+            background: #ede9fe;
+            transform: scale(1.02);
+        }
+
+        .drop-zone i { font-size: 3rem; color: #9ca3af; }
+        .drop-zone span { font-size: 1.25rem; font-weight: 800; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; }
+
+        .zone-balanced.hover { border-color: var(--balanced-color); background: #f0fdf4; }
+        .zone-balanced.correct { border-color: var(--balanced-color); background: #dcfce7; border-style: solid; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+
+        .zone-unbalanced.hover { border-color: var(--unbalanced-color); background: #fef2f2; }
+        .zone-unbalanced.correct { border-color: var(--unbalanced-color); background: #fee2e2; border-style: solid; box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+
+        /* Feedback Appears on Zones */
+        .feedback-pop {
+            position: absolute;
+            top: -40px;
+            font-weight: 900;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .pop-correct { color: var(--balanced-color); transform: translateY(-10px); opacity: 1; }
+        .pop-wrong { color: var(--unbalanced-color); transform: translateY(-10px); opacity: 1; }
+
+        /* Progress Bar */
+        .progress-wrapper {
+            width: 100%;
+            max-width: 600px;
+            background: #e5e7eb;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--physics-primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Success Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .success-modal {
+            background: white;
+            padding: 3rem;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .success-modal.show { transform: scale(1); }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--balanced-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Shake Animation */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .shake { animation: shake 0.4s ease-in-out; }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="/student/play?subject=Science&sub_subject=Physics&chapter=9" style="text-decoration: none; color: #6b7280; font-weight: 700;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <div style="text-align: center;">
+            <h2 style="margin: 0; color: var(--physics-primary); line-height: 1;">Force Sort</h2>
+            <span style="font-size: 0.8rem; font-weight: 700; color: #9ca3af; text-transform: uppercase;">Laws of Motion: Level 1</span>
+        </div>
+        <div class="stat-badge">
+            <i class="fa-solid fa-star" style="color: #fbbf24;"></i>
+            <span id="xp-display">0 XP</span>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="instruction-box">
+            <h1>Balanced or Unbalanced?</h1>
+            <p style="color: #6b7280; font-weight: 600;">Drag the scenario into the correct box to master Newton's First Law!</p>
+        </div>
+
+        <div class="card-deck" id="card-deck">
+            <!-- Current sorting card will appear here -->
+             <div class="sort-card" id="active-card" draggable="true">
+                <div class="card-icon"><i id="active-icon" class="fa-solid fa-book"></i></div>
+                <div class="card-text" id="active-text">A book resting on a table</div>
+             </div>
+        </div>
+
+        <div class="zones-container">
+            <div class="drop-zone zone-balanced" id="zone-balanced" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'balanced')">
+                <div class="feedback-pop" id="feedback-balanced">CORRECT! +20</div>
+                <i class="fa-solid fa-scale-balanced"></i>
+                <span>Balanced Force</span>
+                <p style="font-size: 0.8rem; color: #9ca3af; text-align: center; margin-top: 5px; padding: 0 10px;">Net Force = 0 <br> (No change in motion)</p>
+            </div>
+
+            <div class="drop-zone zone-unbalanced" id="zone-unbalanced" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'unbalanced')">
+                <div class="feedback-pop" id="feedback-unbalanced">CORRECT! +20</div>
+                <i class="fa-solid fa-rocket"></i>
+                <span>Unbalanced Force</span>
+                <p style="font-size: 0.8rem; color: #9ca3af; text-align: center; margin-top: 5px; padding: 0 10px;">Net Force ≠ 0 <br> (Acceleration occurs)</p>
+            </div>
+        </div>
+
+        <div class="progress-wrapper">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="success-modal">
+        <div class="success-modal" id="modal-content">
+            <div class="modal-icon"><i class="fa-solid fa-check"></i></div>
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Physics Pro!</h2>
+            <p style="color: #6b7280; margin-bottom: 2rem;">You successfully categorized all forces. You've earned <strong>+100 XP</strong>!</p>
+            <button class="menu-btn" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=9'" style="width: 100%;">Return to Dashboard</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const cards = [
+            { id: 1, text: "A book resting on a table", type: "balanced", icon: "fa-book" },
+            { id: 2, text: "A falling apple", type: "unbalanced", icon: "fa-apple-whole" },
+            { id: 3, text: "Car at constant speed in a straight line", type: "balanced", icon: "fa-car" },
+            { id: 4, text: "Rocket launching into space", type: "unbalanced", icon: "fa-rocket" },
+            { id: 5, text: "A person standing still", type: "balanced", icon: "fa-person" },
+            { id: 6, text: "Car accelerating from stoplight", type: "unbalanced", icon: "fa-tachometer-alt" }
+        ];
+
+        let currentIndex = 0;
+        let xp = 0;
+        const totalCards = cards.length;
+
+        const activeCard = document.getElementById('active-card');
+        const activeText = document.getElementById('active-text');
+        const activeIcon = document.getElementById('active-icon');
+        const xpDisplay = document.getElementById('xp-display');
+        const progressBar = document.getElementById('progress');
+
+        // Drag events for card
+        activeCard.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', cards[currentIndex].type);
+            activeCard.style.opacity = '0.5';
+        });
+
+        activeCard.addEventListener('dragend', () => {
+            activeCard.style.opacity = '1';
+        });
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('hover');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('hover');
+        }
+
+        function handleDrop(e, zoneType) {
+            e.preventDefault();
+            const zone = e.currentTarget;
+            zone.classList.remove('hover');
+            
+            const cardType = cards[currentIndex].type;
+
+            if (zoneType === cardType) {
+                // Correct
+                handleCorrect(zone);
+            } else {
+                // Wrong
+                handleWrong(zone);
+            }
+        }
+
+        function handleCorrect(zone) {
+            xp += 20;
+            currentIndex++;
+            
+            // UI Feedback
+            zone.classList.add('correct');
+            const feedback = document.getElementById(`feedback-${cards[currentIndex-1].type}`);
+            feedback.innerText = "CORRECT! +20";
+            feedback.className = "feedback-pop pop-correct";
+            
+            xpDisplay.innerText = xp + " XP";
+            progressBar.style.width = (currentIndex / totalCards * 100) + "%";
+
+            setTimeout(() => {
+                zone.classList.remove('correct');
+                feedback.className = "feedback-pop";
+                if (currentIndex < totalCards) {
+                    updateCard();
+                } else {
+                    finishGame();
+                }
+            }, 800);
+        }
+
+        function handleWrong(zone) {
+            activeCard.classList.add('shake');
+            const feedback = zone.id === 'zone-balanced' ? document.getElementById('feedback-balanced') : document.getElementById('feedback-unbalanced');
+            
+            // Subtract 5 XP on mistake
+            xp = Math.max(0, xp - 5);
+            xpDisplay.innerText = xp + " XP";
+            
+            feedback.innerText = "TRY AGAIN! -5 XP";
+            feedback.className = "feedback-pop pop-wrong";
+
+            setTimeout(() => {
+                activeCard.classList.remove('shake');
+                feedback.className = "feedback-pop";
+            }, 800);
+        }
+
+        function updateCard() {
+            const card = cards[currentIndex];
+            activeText.innerText = card.text;
+            activeIcon.className = "fa-solid " + card.icon;
+            // Add entry animation
+            activeCard.style.transform = 'scale(0.8)';
+            activeCard.style.opacity = '0';
+            setTimeout(() => {
+                activeCard.style.transform = 'scale(1)';
+                activeCard.style.opacity = '1';
+            }, 50);
+        }
+
+        function finishGame() {
+            document.getElementById('success-modal').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('modal-content').classList.add('show');
+            }, 10);
+            
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            // Save XP to backend
+            saveScore(xp);
+        }
+
+        function saveScore(score) {
+            const username = "{{ session.get('username') }}"; // Use unique username as identifier
+            fetch('/save_score', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `username=${encodeURIComponent(username)}&score=${score}&subject=Science&game_name=G9_Phys_ForceSort`
+            });
+        }
+    </script>
+</body>
+</html>

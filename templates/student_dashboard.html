@@ -148,6 +148,16 @@
                     <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
                 </div>
             </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g9' and not chapter %}
+            <p class="text-muted mb-2">Grade 9 Physics Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Physics&chapter=9'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-atom text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #7c3aed;"></i>
+                    <h3 style="color: #4c1d95; font-size: 1.3rem;">Chapter 9: Force and Laws of Motion</h3>
+                    <button class="menu-btn mt-2" style="width: 100%; background: #7c3aed; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
             {% elif subject == 'Science' and sub_subject == 'Biology' and chapter == '1' %}
             <style>
                 .bio-notes-container {
@@ -461,6 +471,152 @@
                     
                     <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
                         <button class="btn-logout" onclick="document.getElementById('bio-iron').style.display='none'; document.getElementById('bio-iodine').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Iodine</button>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and chapter == '9' %}
+            <style>
+                .phy-notes-container {
+                    background: var(--surface);
+                    border-radius: var(--radius-lg);
+                    border: 1px solid var(--border);
+                    padding: 2rem;
+                }
+                .phy-card {
+                    background: #f5f3ff;
+                    border-radius: var(--radius-md);
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                    border-left: 5px solid #7c3aed;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                }
+                .phy-img {
+                    max-width: 100%;
+                    border-radius: 8px;
+                    border: 3px solid #7c3aed;
+                    margin-top: 1rem;
+                    max-height: 250px;
+                    object-fit: cover;
+                }
+                .law-title {
+                    color: #5b21b6;
+                    font-weight: 900;
+                    font-size: 1.5rem;
+                    margin-bottom: 1rem;
+                }
+            </style>
+            <div class="phy-notes-container">
+                <!-- PAGE 1: Intro to Force -->
+                <div id="phy-intro">
+                    <h2 style="color: #7c3aed; margin-bottom: 1.5rem;"><i class="fa-solid fa-atom"></i> Chapter 9: Force and Laws of Motion</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">1. What is Force?</h3>
+                    <p class="text-muted mb-2 text-lg">A push or pull upon an object resulting from the object's interaction with another object.</p>
+
+                    <div class="phy-card" style="border-left-color: #7c3aed; background: #ede9fe;">
+                        <h4 class="law-title">Balanced vs. Unbalanced Forces ⚖️</h4>
+                        <p style="font-size: 1.2rem; margin-bottom: 1rem;"><strong>Balanced Forces:</strong> Net force is zero; object state doesn't change.</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 1rem;"><strong>Unbalanced Forces:</strong> Net force is non-zero; causes acceleration or change in motion.</p>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border: 2px dashed #7c3aed; text-align: center;">
+                            <p style="font-size: 1.1rem; color: #4c1d95; margin: 0;">👉 Only <b>Unbalanced Forces</b> can move a stationary object or stop a moving one!</p>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: right; margin-top: 2rem;">
+                        <button class="menu-btn" onclick="document.getElementById('phy-intro').style.display='none'; document.getElementById('phy-1st-law').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block; background: #7c3aed;">Next: 1st Law of Motion <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- PAGE 2: First Law & Inertia -->
+                <div id="phy-1st-law" style="display: none;">
+                    <h2 style="color: #7c3aed; margin-bottom: 1.5rem;"><i class="fa-solid fa-atom"></i> Chapter 9: Force and Laws of Motion</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">2. Newton's First Law (Law of Inertia) 🧊</h3>
+                    
+                    <div class="phy-card" style="border-left-color: #8b5cf6; background: #f5f3ff;">
+                        <p style="font-size: 1.2rem; font-style: italic; border-bottom: 1px solid #ddd6fe; padding-bottom: 1rem; margin-bottom: 1rem;">
+                            "An object remains in a state of rest or of uniform motion in a straight line unless compelled to change that state by an applied force."
+                        </p>
+                        <h4 style="color: #5b21b6; margin-bottom: 0.5rem;">Inertia</h4>
+                        <p style="font-size: 1.1rem; line-height: 1.6;">The natural tendency of objects to resist a change in their state of rest or of uniform motion.</p>
+                        <div style="margin-top: 1rem; background: white; padding: 1rem; border-radius: 8px; border: 1px solid #ddd6fe;">
+                            <strong>💡 Crucial Fact:</strong> Mass is a measure of inertia. A heavier object has more inertia!
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('phy-1st-law').style.display='none'; document.getElementById('phy-intro').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                        <button class="menu-btn" onclick="document.getElementById('phy-1st-law').style.display='none'; document.getElementById('phy-2nd-law').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block; background: #7c3aed;">Next: 2nd Law of Motion <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- PAGE 3: Second Law -->
+                <div id="phy-2nd-law" style="display: none;">
+                    <h2 style="color: #7c3aed; margin-bottom: 1.5rem;"><i class="fa-solid fa-atom"></i> Chapter 9: Force and Laws of Motion</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">3. Newton's Second Law ⚡</h3>
+                    
+                    <div class="phy-card" style="border-left-color: #10b981; background: #f0fdf4;">
+                        <h4 class="law-title" style="color: #065f46;">Force = Mass × Acceleration</h4>
+                        <p style="font-size: 2rem; color: #064e3b; text-align: center; margin: 1rem 0; font-weight: 900;">F = m × a</p>
+                        <p style="font-size: 1.15rem; line-height: 1.6; margin-bottom: 1rem;">
+                            The second law of motion states that the rate of change of momentum of an object is proportional to the applied unbalanced force.
+                        </p>
+                        <div style="background: white; padding: 1rem; border-radius: 8px;">
+                            <p><strong>Momentum (p):</strong> The product of mass and velocity. p = m × v</p>
+                            <p><strong>SI Unit of Force:</strong> kg m/s² or <b>Newton (N)</b></p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('phy-2nd-law').style.display='none'; document.getElementById('phy-1st-law').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                        <button class="menu-btn" onclick="document.getElementById('phy-2nd-law').style.display='none'; document.getElementById('phy-3rd-law').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block; background: #7c3aed;">Next: 3rd Law of Motion <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- PAGE 4: Third Law -->
+                <div id="phy-3rd-law" style="display: none;">
+                    <h2 style="color: #7c3aed; margin-bottom: 1.5rem;"><i class="fa-solid fa-atom"></i> Chapter 9: Force and Laws of Motion</h2>
+                    <h3 class="mb-1" style="font-size: 1.8rem;">4. Newton's Third Law (Action-Reaction) 🤝</h3>
+                    
+                    <div class="phy-card" style="border-left-color: #f59e0b; background: #fffbeb;">
+                        <p style="font-size: 1.3rem; font-weight: 700; text-align: center; color: #92400e; margin-bottom: 1rem;">
+                            "To every action, there is always an equal and opposite reaction."
+                        </p>
+                        <ul style="line-height: 2; margin-top: 1rem;">
+                            <li>Action and reaction forces act on <b>different</b> bodies.</li>
+                            <li>They act <b>simultaneously</b>.</li>
+                            <li>They are always equal in magnitude but opposite in direction.</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('phy-3rd-law').style.display='none'; document.getElementById('phy-2nd-law').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                        <button class="menu-btn" onclick="document.getElementById('phy-3rd-law').style.display='none'; document.getElementById('phy-summary').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block; background: #7c3aed;">Review & Play <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- PAGE 5: Summary & Play Funnel -->
+                <div id="phy-summary" style="display: none;">
+                    <h2 style="color: #7c3aed; margin-bottom: 1.5rem;"><i class="fa-solid fa-atom"></i> Mission Complete! 🚀</h2>
+                    <div class="phy-card" style="background: white; border: 2px dashed #7c3aed; text-align: center;">
+                        <i class="fa-solid fa-circle-check" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+                        <h4 style="font-size: 1.8rem; margin-bottom: 1rem;">Force & Laws of Motion Mastered</h4>
+                        <p class="text-muted" style="font-size: 1.1rem;">You've learned the fundamental laws that govern the motion of everything in our universe, from falling apples to massive rockets.</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.5rem; text-align: left;">
+                            <div style="padding: 0.5rem; background: #f5f3ff; border-radius: 8px; font-size: 0.85rem;">1️⃣ <b>1st Law:</b> Inertia</div>
+                            <div style="padding: 0.5rem; background: #f5f3ff; border-radius: 8px; font-size: 0.85rem;">2️⃣ <b>2nd Law:</b> F = ma</div>
+                            <div style="padding: 0.5rem; background: #f5f3ff; border-radius: 8px; font-size: 0.85rem;">3️⃣ <b>3rd Law:</b> Action/Reaction</div>
+                        </div>
+
+                        <div style="margin-top: 2rem; background: #fffbeb; padding: 1.5rem; border-radius: 12px; border: 1px solid #fcd34d;">
+                            <h5 style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #92400e;">Ready to test your knowledge?</h5>
+                            <button class="menu-btn" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=9'" style="width: 100%; font-size: 1.3rem; background: #7c3aed; border: none; padding: 1.2rem;">🎮 Play Chapter 9 Games <i class="fa-solid fa-play ml-1"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('phy-summary').style.display='none'; document.getElementById('phy-3rd-law').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                        <button class="btn-logout" onclick="window.location.href='/student/learn'" style="width: auto; display: inline-block;">Back to Subject Map</button>
                     </div>
                 </div>
             </div>
@@ -2905,6 +3061,80 @@
                     <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 4</p>
                     <h3 class="text-muted" style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Pendulum Lab</h3>
                     <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g9' and not chapter %}
+            <p class="text-muted mb-2">Select a Chapter to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=9'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #7c3aed;"></i>
+                    <h3 style="color: #4c1d95; font-size: 1.5rem;">Chapter 9</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Force and Laws of Motion</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #ede9fe; color: #7c3aed; border: 1px solid #ddd6fe;">3 Games</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g9' and chapter == '9' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #4c1d95; background: #ede9fe; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 9: Force and Laws of Motion</p>
+            </div>
+            <div class="card-grid">
+                <!-- Level 1 -->
+                <div class="card game-card" onclick="window.location.href='/student/play/phys/g9/ch9_l1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-arrows-to-circle text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #7c3aed;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Force Sort</h3>
+                    <p class="text-muted mt-1 text-sm">Balanced vs Unbalanced</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #7c3aed;">Play Game</span>
+                    </div>
+                </div>
+
+                <!-- Level 2 -->
+                {% if completed_games and ('G9_Phys_ForceSort' in completed_games or 'G9_Phys_Ch9_L1' in completed_games) %}
+                <div class="card game-card" onclick="window.location.href='/student/play/phys/g9/ch9_l2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-gauge-high text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">F=ma Dash</h3>
+                    <p class="text-muted mt-1 text-sm">Newton's Second Law</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #10b981;">Play Game</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card game-card" style="border: 2px solid var(--border); opacity: 0.6; cursor: not-allowed;" title="Complete Level 1 to unlock!">
+                    <i class="fa-solid fa-lock text-muted" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 class="text-muted" style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">F=ma Dash</h3>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Level 3 -->
+                {% if completed_games and 'G9_Phys_Ch9_L2' in completed_games %}
+                <div class="card game-card" onclick="window.location.href='/student/play/phys/g9/ch9_l3'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-people-arrows text-warning" style="font-size: 2.5rem; margin-bottom: 1rem; color: #f59e0b;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 3</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Action-Reaction</h3>
+                    <p class="text-muted mt-1 text-sm">Newton's Third Law</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #f59e0b;">Play Game</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card game-card" style="border: 2px solid var(--border); opacity: 0.6; cursor: not-allowed;" title="Complete Level 2 to unlock!">
+                    <i class="fa-solid fa-lock text-muted" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 3</p>
+                    <h3 class="text-muted" style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Action-Reaction</h3>
+                    <div style="text-align: center; margin-top: 1rem;">
                         <span class="level-badge mt-1" style="display:inline-block; background: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
                     </div>
                 </div>

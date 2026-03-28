@@ -642,6 +642,24 @@ def play_g7_phys_ch1_l4():
         return redirect("/")
     return render_template("g7_phys_ch1_l4.html")
 
+@app.route("/student/play/phys/g9/ch9_l1")
+def play_g9_phys_ch9_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g9_phys_ch9_l1.html")
+
+@app.route("/student/play/phys/g9/ch9_l2")
+def play_g9_phys_ch9_l2():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g9_phys_ch9_l2.html")
+
+@app.route("/student/play/phys/g9/ch9_l3")
+def play_g9_phys_ch9_l3():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g9_phys_ch9_l3.html")
+
 
 @app.route("/student/play/tech/g7/ch1_l1")
 def play_g7_tech_ch1_l1():
@@ -750,14 +768,21 @@ def save_game_score():
 
     conn   = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO scores(username, score, subject, game_name) VALUES (?, ?, ?, ?)",
-        (username, score, subject, game_name)
-    )
-    conn.commit()
+
+    # Check if this user already has a score for this specific game to prevent farming
+    cursor.execute("SELECT id FROM scores WHERE username=? AND game_name=?", (username, game_name))
+    existing = cursor.fetchone()
+
+    if not existing:
+        cursor.execute(
+            "INSERT INTO scores(username, score, subject, game_name) VALUES (?, ?, ?, ?)",
+            (username, score, subject, game_name)
+        )
+        conn.commit()
+
     conn.close()
 
-    return {"success": True, "saved": score}
+    return {"success": True, "saved": score if not existing else 0}
 
 
 if __name__ == "__main__":
