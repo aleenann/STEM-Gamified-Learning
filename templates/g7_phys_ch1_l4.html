@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendulum Lab - Grade 7 Physics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --lab-bg: #0f172a;
+            --brass: #eab308;
+            --string: #94a3b8;
+            --laser: #ef4444;
+            --glass: rgba(30, 41, 59, 0.7);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--lab-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-header {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #1e293b;
+        }
+
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        /* Lab Area */
+        .lab-view {
+            background: rgba(30, 41, 59, 0.5);
+            border: 2px solid #1e293b;
+            border-radius: 40px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 2rem;
+        }
+
+        .pendulum-mount {
+            width: 200px;
+            height: 20px;
+            background: #334155;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .pendulum-container {
+            width: 40px;
+            height: 350px;
+            position: relative;
+            transform-origin: top center;
+            animation: swing 2s ease-in-out infinite alternate;
+            animation-play-state: paused;
+        }
+
+        .string {
+            width: 2px;
+            height: 300px;
+            background: var(--string);
+            margin: 0 auto;
+        }
+
+        .bob {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, var(--brass), #854d0e);
+            border-radius: 50%;
+            margin: -5px auto 0;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
+        }
+
+        @keyframes swing {
+            from { transform: rotate(30deg); }
+            to { transform: rotate(-30deg); }
+        }
+
+        /* Controls */
+        .tools-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .timer-display {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 30px;
+            text-align: center;
+            border: 2px solid #475569;
+        }
+
+        .time-value {
+            font-size: 3.5rem;
+            font-family: monospace;
+            font-weight: 900;
+            color: #22c55e;
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-lab {
+            width: 100%;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 15px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-start { background: #22c55e; color: white; }
+        .btn-osc { background: #3b82f6; color: white; }
+        .btn-submit { background: #a855f7; color: white; margin-top: 1rem; }
+
+        .btn-lab:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .input-box {
+            background: #0f172a;
+            border: 2px solid #334155;
+            padding: 0.8rem;
+            border-radius: 10px;
+            color: white;
+            width: 100%;
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1e293b; padding: 3rem; border-radius: 40px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="/student/play?subject=Science" style="text-decoration: none; color: #94a3b8; font-weight: 700;">
+            <i class="fa-solid fa-flask-vial"></i> End Session
+        </a>
+        <h2 style="margin: 0; color: var(--brass);">Chapter 1: Pendulum Lab 🕰️</h2>
+        <div style="background: #1e293b; padding: 0.5rem 1.2rem; border-radius: 99px; font-weight: 700; color: #fbbf24;">
+            XP: <span id="xp-val">0</span>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="lab-view">
+            <div class="pendulum-mount"></div>
+            <div id="pendulum" class="pendulum-container">
+                <div class="string"></div>
+                <div class="bob"></div>
+            </div>
+            
+            <div style="position: absolute; bottom: 2rem; background: var(--glass); padding: 1.5rem; border-radius: 20px; border: 1px solid #1e293b; max-width: 80%;">
+                <p style="margin: 0 0 0.5rem; font-weight: 800; color: var(--brass);">MISSION: MEASURE PERIODIC MOTION</p>
+                <p style="margin: 0; color: #cbd5e1;">Start the pendulum. Count 10 oscillations (one back-and-forth swing = 1 oscillation). Stop the timer and calculate the Time Period.</p>
+            </div>
+        </div>
+
+        <div class="tools-panel">
+            <div class="timer-display">
+                <p style="margin: 0; color: #64748b; font-weight: 700;">DIGITAL STOPWATCH</p>
+                <div id="stopwatch" class="time-value">00:00.0</div>
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button id="start-btn" class="btn-lab btn-start" onclick="toggleLab()">START SWING</button>
+                    <button id="stop-btn" class="btn-lab btn-osc" onclick="stopLab()" disabled>STOP</button>
+                </div>
+            </div>
+
+            <div class="timer-display" style="text-align: left;">
+                <p style="margin: 0 0 1rem; color: #64748b; font-weight: 700;">LAB REPORT</p>
+                <label>Counted Oscillations:</label>
+                <input type="number" id="count-input" class="input-box" placeholder="10" disabled value="10">
+                
+                <label style="display: block; margin-top: 1rem;">Time for 10 Oscillations (s):</label>
+                <input type="text" id="time-input" class="input-box" readonly>
+                
+                <label style="display: block; margin-top: 1rem;">Time Period (Time ÷ Count):</label>
+                <input type="text" id="period-input" class="input-box" placeholder="Result e.g. 2.0">
+                
+                <button class="btn-lab btn-submit" id="submit-btn" onclick="verifyResults()" disabled>SUBMIT LAB REPORT</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-medal" style="font-size: 5rem; color: #facc15; margin-bottom: 1rem;"></i>
+            <h1 style="font-size: 2.5rem; margin: 0;">Lab Expert!</h1>
+            <p style="font-size: 1.2rem; color: #94a3b8;">You accurately measured the period of a pendulum.</p>
+            <div style="background: rgba(234, 179, 8, 0.1); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--brass); margin: 1.5rem 0;">
+                <span style="font-size: 2rem; font-weight: 900; color: var(--brass);">+80 XP</span>
+            </div>
+            <button class="btn-lab btn-start" onclick="location.href='/student/play?subject=Science'">Finish Chapter</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        let startTime, timerInterval;
+        let isRunning = false;
+        const pendulum = document.getElementById('pendulum');
+        const state = {
+            username: "{{ session.get('username') }}",
+            xp: 0,
+            actualPeriod: 2.0, // Swings every 2s
+            labStartTime: Date.now()
+        };
+
+        function toggleLab() {
+            isRunning = true;
+            pendulum.style.animationPlayState = 'running';
+            startTime = Date.now();
+            timerInterval = setInterval(updateStopwatch, 100);
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('stop-btn').disabled = false;
+        }
+
+        function updateStopwatch() {
+            const now = Date.now();
+            const diff = (now - startTime) / 1000;
+            document.getElementById('stopwatch').innerText = diff.toFixed(1);
+        }
+
+        function stopLab() {
+            clearInterval(timerInterval);
+            pendulum.style.animationPlayState = 'paused';
+            pendulum.style.transform = 'rotate(0deg)';
+            
+            const totalTime = document.getElementById('stopwatch').innerText;
+            document.getElementById('time-input').value = totalTime;
+            document.getElementById('submit-btn').disabled = false;
+            document.getElementById('stop-btn').disabled = true;
+        }
+
+        function verifyResults() {
+            const time = parseFloat(document.getElementById('time-input').value);
+            const count = parseInt(document.getElementById('count-input').value);
+            const userPeriod = parseFloat(document.getElementById('period-input').value);
+            const realPeriod = time / count;
+
+            if (Math.abs(userPeriod - realPeriod) < 0.5) {
+                const submissionTime = Date.now() - state.labStartTime;
+                
+                // Formula: 100 + Oscillation Accuracy + Time Bonus - Penalty
+                // Oscillation Accuracy = 100 * (1 - |Actual - Observed| / Actual)
+                let actual = state.actualPeriod;
+                let observed = userPeriod;
+                let accuracy = 100 * (1 - Math.abs(actual - observed) / actual);
+                
+                let base = 100;
+                let timeBonus = (submissionTime < 60000) ? 20 : 0; // Under 1 minute
+                let penalty = (Math.abs(userPeriod - realPeriod) > 0.1) ? 10 : 0;
+                
+                state.xp = Math.max(0, Math.round(base + accuracy + timeBonus - penalty));
+                
+                showSuccess();
+            } else {
+                alert(`Calculation Error! \nYour period: ${userPeriod} \nCorrect: ${realPeriod.toFixed(2)} \n\nCheck your math!`);
+            }
+        }
+
+        function showSuccess() {
+            document.getElementById('xp-val').innerText = state.xp;
+            saveScore(state.xp);
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            document.getElementById('success-modal').style.display = 'flex';
+        }
+
+        function saveScore(xp) {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${xp}&subject=Science&game_name=G7_Phys_Ch1_L4`
+            });
+        }
+    </script>
+</body>
+</html>

@@ -612,47 +612,42 @@ def play_g7_maths_ch2_l1():
         return redirect("/")
     return render_template("g7_maths_ch2_l1.html")
 
-@app.route("/student/play/chem/g7/ch5_l1")
-def play_g7_chem_ch5_l1():
+@app.route("/student/play/chem/g7/ch1_l1")
+def play_g7_chem_ch1_l1():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("g7_chem_ch5_l1.html")
+    return render_template("g7_chem_ch1_l1.html")
 
-@app.route("/student/play/chem/g7/ch3_l1")
-def play_g7_chem_ch3_l1():
+@app.route("/student/play/phys/g7/ch1_l1")
+def play_g7_phys_ch1_l1():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("g7_chem_ch3_l1.html")
+    return render_template("g7_phys_ch1_l1.html")
 
-@app.route("/student/play/phys/g7/ch9_l1")
-def play_g7_phys_ch9_l1():
+@app.route("/student/play/phys/g7/ch1_l2")
+def play_g7_phys_ch1_l2():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("g7_phys_ch9_l1.html")
+    return render_template("g7_phys_ch1_l2.html")
 
-@app.route("/student/play/phys/g7/ch9_l2")
-def play_g7_phys_ch9_l2():
+@app.route("/student/play/phys/g7/ch1_l3")
+def play_g7_phys_ch1_l3():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("g7_phys_ch9_l2.html")
+    return render_template("g7_phys_ch1_l3.html")
 
-@app.route("/student/play/phys/g7/ch10_l1")
-def play_g7_phys_ch10_l1():
+@app.route("/student/play/phys/g7/ch1_l4")
+def play_g7_phys_ch1_l4():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("g7_phys_ch10_l1.html")
+    return render_template("g7_phys_ch1_l4.html")
+
 
 @app.route("/student/play/tech/g7/ch1_l1")
 def play_g7_tech_ch1_l1():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
     return render_template("g7_tech_ch1_l1.html")
-
-@app.route("/student/play/tech/g7/ch2_l1")
-def play_g7_tech_ch2_l1():
-    if "name" not in session or session.get("role") != "student":
-        return redirect("/")
-    return render_template("g7_tech_ch2_l1.html")
 
 @app.route("/student/play/bio/g7/ch1_l1")
 def play_g7_bio_ch1_l1():

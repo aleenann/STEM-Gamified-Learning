@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph City - Grade 7 Physics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --city-night: #020617;
+            --graph-green: #22c55e;
+            --graph-blue: #3b82f6;
+            --neon-blue: #0ea5e9;
+            --glass: rgba(15, 23, 42, 0.8);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--city-night);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-header {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #1e293b;
+            background: var(--glass);
+        }
+
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        /* Graph Panel */
+        .graph-panel {
+            background: rgba(30, 41, 59, 0.5);
+            border: 2px solid #1e293b;
+            border-radius: 30px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+        }
+
+        /* City View */
+        .city-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .car-track {
+            height: 100px;
+            background: #1e293b;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #334155;
+        }
+
+        .car-track::after {
+            content: '';
+            position: absolute;
+            top: 50%; width: 100%; height: 2px;
+            background: repeating-linear-gradient(90deg, transparent, transparent 20px, #475569 20px, #475569 40px);
+        }
+
+        .car {
+            position: absolute;
+            left: 20px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5rem;
+            color: var(--neon-blue);
+            z-index: 10;
+            filter: drop-shadow(0 0 10px var(--neon-blue));
+        }
+
+        .control-pad {
+            background: var(--glass);
+            padding: 1.5rem;
+            border-radius: 25px;
+            border: 2px solid #334155;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-uniform { background: var(--graph-blue); color: white; }
+        .btn-nonuniform { background: var(--graph-green); color: white; }
+        .btn-launch { background: var(--neon-blue); color: white; margin-top: 2rem; }
+
+        .btn-action:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* Modal */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.95);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1e293b; padding: 3rem; border-radius: 40px; text-align: center;
+            border: 2px solid #334155; max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <a href="/student/play?subject=Science" style="text-decoration: none; color: #94a3b8; font-weight: 700;">
+            <i class="fa-solid fa-arrow-left"></i> Leave Graph City
+        </a>
+        <h2 style="margin: 0; color: var(--neon-blue);">Chapter 1: Graph City 📊</h2>
+        <div style="background: #1e293b; padding: 0.5rem 1.2rem; border-radius: 99px; font-weight: 700; color: #fbbf24;">
+            XP: <span id="xp-val">0</span>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="graph-panel">
+            <h3 style="margin: 0 0 1rem; color: #94a3b8;">DISTANCE-TIME DATA STREAM</h3>
+            <div class="canvas-container">
+                <canvas id="motionGraph"></canvas>
+            </div>
+        </div>
+
+        <div class="city-panel">
+            <div class="control-pad">
+                <h3 style="margin-top: 0;"><i class="fa-solid fa-magnifying-glass-chart"></i> Analysis</h3>
+                <p id="question" style="color: #cbd5e1; line-height: 1.5;">Identify the type of motion shown in the graph and match the car's speed. Look at the slope of the line!</p>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn-action btn-uniform" onclick="selectType('uniform')">Uniform</button>
+                    <button class="btn-action btn-nonuniform" onclick="selectType('non-uniform')">Non-Uniform</button>
+                </div>
+            </div>
+
+            <div class="car-track">
+                <div id="car" class="car"><i class="fa-solid fa-truck-fast"></i></div>
+            </div>
+
+            <button id="launch-btn" class="btn-action btn-launch" onclick="animateGraphCar()" disabled>SYNC & RUN MOTION</button>
+            <p id="status-msg" style="text-align: center; color: #64748b; font-size: 0.9rem;">Select motion type first</p>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <i class="fa-solid fa-check-double" style="font-size: 5rem; color: var(--graph-green); margin-bottom: 1rem;"></i>
+            <h1 style="font-size: 2.5rem; margin: 0;">Graph Decoded!</h1>
+            <p style="font-size: 1.2rem; color: #94a3b8;">You can now read distance-time graphs like a pro.</p>
+            <div style="background: rgba(34, 197, 94, 0.1); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--graph-green); margin: 1.5rem 0;">
+                <span style="font-size: 2rem; font-weight: 900; color: var(--graph-green);">+70 XP</span>
+            </div>
+            <button class="btn-action btn-launch" onclick="location.href='/student/play?subject=Science&chapter=1'">Final Level Locked</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const ctx = document.getElementById('motionGraph').getContext('2d');
+        let motionType = null;
+        let wrongPenalty = 0;
+        const state = {
+            username: "{{ session.get('username') }}",
+            xp: 0,
+            correctAnswer: 'uniform'
+        };
+
+        const graph = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [0, 1, 2, 3, 4, 5],
+                datasets: [{
+                    label: 'Distance (m)',
+                    data: [0, 20, 40, 60, 80, 100],
+                    borderColor: '#3b82f6',
+                    borderWidth: 4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#0ea5e9',
+                    tension: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' }, beginAtZero: true }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        function selectType(type) {
+            motionType = type;
+            document.getElementById('status-msg').innerText = `Ready to sync: ${type.toUpperCase()}`;
+            document.getElementById('launch-btn').disabled = false;
+        }
+
+        function animateGraphCar() {
+            if (motionType !== state.correctAnswer) {
+                wrongPenalty += 30;
+                alert(`Incorrect interpretation! Penalty applied (-30). Look at the slope. A straight line means constant (uniform) speed.`);
+                return;
+            }
+
+            const car = document.getElementById('car');
+            const trackWidth = document.querySelector('.car-track').offsetWidth - 80;
+            
+            car.style.transition = 'left 3s linear';
+            car.style.left = trackWidth + 'px';
+
+            // Formula: 100 + Graph Accuracy + Interpretation Bonus - Penalty
+            let base = 100;
+            let graphAccuracy = 100; // Perfect match animation
+            let interpretationBonus = 50; // Correct type selected
+            state.xp = Math.max(0, base + graphAccuracy + interpretationBonus - wrongPenalty);
+
+            setTimeout(showSuccess, 3500);
+        }
+
+        function showSuccess() {
+            document.getElementById('xp-val').innerText = state.xp;
+            saveScore(state.xp);
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            document.getElementById('success-modal').style.display = 'flex';
+        }
+
+        function saveScore(xp) {
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(state.username)}&score=${xp}&subject=Science&game_name=G7_Phys_Ch1_L3`
+            });
+        }
+    </script>
+</body>
+</html>
