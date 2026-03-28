@@ -102,19 +102,40 @@
         }
 
         .organelle-item {
-            background: var(--bio-bg);
-            padding: 1rem;
-            border-radius: 12px;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 16px;
             border: 2px solid #d1fae5;
             cursor: grab;
-            font-weight: 700;
-            text-align: center;
-            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        .organelle-item:hover { transform: scale(1.05); }
+        .organelle-item:hover { 
+            transform: translateY(-5px);
+            border-color: var(--bio-primary);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
         .organelle-item:active { cursor: grabbing; }
+
+        .organelle-icon {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .organelle-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #374151;
+            text-transform: capitalize;
+        }
 
         /* Cell Diagram */
         .cell-diagram {
@@ -134,17 +155,18 @@
             width: 90%;
             height: 90%;
             border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-            background: #f0fdf9;
+            background: radial-gradient(circle, #f0fdf9 0%, #ccfbf1 100%);
             border: 8px solid var(--bio-primary);
             position: relative;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: inset 0 0 50px rgba(16, 185, 129, 0.1);
         }
 
         .mode-plant .cell-base {
-            border-radius: 20px;
-            background: #f0fdf4;
-            border-color: #059669;
-            box-shadow: inset 0 0 0 10px #dcfce7;
+            border-radius: 40px;
+            background: radial-gradient(circle, #f0fdf4 0%, #dcfce7 100%);
+            border: 12px solid #059669;
+            box-shadow: inset 0 0 0 6px #dcfce7;
         }
 
         /* Drop Zones */
@@ -153,17 +175,21 @@
             border: 2px dashed #9ca3af;
             border-radius: 50%;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             color: #9ca3af;
             text-align: center;
             padding: 5px;
             transition: all 0.3s;
+            overflow: hidden;
         }
 
-        .drop-zone.active { border-color: var(--bio-primary); background: rgba(16, 185, 129, 0.1); }
-        .drop-zone.filled { border: none; background: var(--bio-primary); color: white; font-weight: 900; font-size: 0.8rem; }
+        .drop-zone.active { border-color: var(--bio-primary); background: rgba(16, 185, 129, 0.1); transform: scale(1.1); }
+        .drop-zone.filled { border: 2px solid var(--bio-primary); background: white; color: var(--bio-primary); font-weight: 800; }
+        .drop-zone.filled .zone-img { width: 80%; height: 80%; object-fit: contain; }
+        .drop-zone.filled .zone-label { font-size: 10px; margin-top: 2px; }
         .drop-zone.wrong { background: #fee2e2; border-color: #ef4444; animation: shake 0.4s; }
 
         @keyframes shake {
@@ -219,15 +245,22 @@
         .btn-return:hover { background: #059669; }
 
         /* Specific Organelle Positions */
-        #zone-nucleus { width: 80px; height: 80px; top: 40%; left: 40%; border-radius: 50%; }
-        #zone-mitochondria { width: 60px; height: 40px; top: 20%; left: 20%; border-radius: 20px; }
-        #zone-vacuole { width: 70px; height: 70px; top: 60%; left: 70%; border-radius: 50%; }
-        #zone-membrane { width: 100%; height: 100%; top: 0; left: 0; border-radius: inherit; border-style: solid; color: transparent; }
-        #zone-cytoplasm { width: 80%; height: 80%; top: 10%; left: 10%; border-radius: inherit; opacity: 0.5; z-index: -1; }
+        #zone-nucleus { width: 100px; height: 100px; top: 35%; left: 35%; border-radius: 50%; }
+        #zone-mitochondria { width: 70px; height: 50px; top: 15%; left: 15%; border-radius: 20px; }
+        #zone-vacuole { width: 80px; height: 80px; top: 60%; left: 65%; border-radius: 50%; }
+        #zone-membrane { width: 100%; height: 100%; top: 0; left: 0; border-radius: inherit; border-style: solid; color: transparent; pointer-events: none; }
+        #zone-membrane.active, #zone-membrane.filled { pointer-events: auto; }
+        #zone-cytoplasm { width: 85%; height: 85%; top: 7.5%; left: 7.5%; border-radius: inherit; opacity: 0.3; z-index: -1; pointer-events: none; }
         
         /* Plant Exclusive */
-        #zone-chloroplast { width: 60px; height: 40px; top: 70%; left: 20%; border-radius: 20px; display: none; }
-        #zone-wall { width: 108%; height: 108%; top: -4%; left: -4%; border-radius: 25px; border-width: 4px; display: none; color: transparent; }
+        #zone-chloroplast { width: 70px; height: 50px; top: 70%; left: 20%; border-radius: 20px; display: none; }
+        #zone-wall { 
+            width: 108%; height: 108%; top: -4%; left: -4%; 
+            border-radius: 45px; border: 4px solid transparent; 
+            display: none; color: transparent; pointer-events: none;
+            z-index: 5;
+        }
+        #zone-wall.filled { border-color: #059669; }
 
     </style>
 </head>
@@ -294,13 +327,13 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         const organellesList = [
-            { name: "nucleus", plant: true, animal: true },
-            { name: "cell membrane", plant: true, animal: true },
-            { name: "cytoplasm", plant: true, animal: true },
-            { name: "mitochondria", plant: true, animal: true },
-            { name: "vacuole", plant: true, animal: true },
-            { name: "chloroplast", plant: true, animal: false },
-            { name: "cell wall", plant: true, animal: false }
+            { name: "nucleus", plant: true, animal: true, icon: "nucleus.png" },
+            { name: "cell membrane", plant: true, animal: true, icon: "membrane.png" },
+            { name: "cytoplasm", plant: true, animal: true, icon: "membrane.png" }, // Reusing icon for simplicity or hidden
+            { name: "mitochondria", plant: true, animal: true, icon: "mitochondria.png" },
+            { name: "vacuole", plant: true, animal: true, icon: "vacuole.png" },
+            { name: "chloroplast", plant: true, animal: false, icon: "chloroplast.png" },
+            { name: "cell wall", plant: true, animal: false, icon: "wall.png" }
         ];
 
         let currentMode = 'animal';
@@ -341,9 +374,20 @@
             shuffled.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'organelle-item';
-                div.innerText = item.name.charAt(0).toUpperCase() + item.name.slice(1);
                 div.draggable = true;
                 div.dataset.name = item.name;
+                
+                const img = document.createElement('img');
+                img.src = `/static/images/organelles/${item.icon}`;
+                img.className = 'organelle-icon';
+                img.onerror = () => { img.style.display = 'none'; }; // Fallback
+                
+                const label = document.createElement('span');
+                label.className = 'organelle-name';
+                label.innerText = item.name;
+
+                div.appendChild(img);
+                div.appendChild(label);
                 
                 div.addEventListener('dragstart', (e) => {
                     draggedItem = div;
@@ -363,11 +407,11 @@
             const zones = document.querySelectorAll('.drop-zone');
             zones.forEach(zone => {
                 zone.classList.remove('filled', 'wrong', 'active');
-                zone.innerText = zone.dataset.organelle.charAt(0).toUpperCase() + zone.dataset.organelle.slice(1);
+                zone.innerHTML = `<span class="zone-placeholder">${zone.dataset.organelle}</span>`;
                 
                 zone.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    zone.classList.add('active');
+                    if (!zone.classList.contains('filled')) zone.classList.add('active');
                 });
 
                 zone.addEventListener('dragleave', () => {
@@ -377,6 +421,8 @@
                 zone.addEventListener('drop', (e) => {
                     e.preventDefault();
                     zone.classList.remove('active');
+                    if (zone.classList.contains('filled')) return;
+
                     const droppedName = e.dataTransfer.getData('text/plain');
 
                     if (droppedName === zone.dataset.organelle) {
@@ -392,7 +438,12 @@
             if (zone.classList.contains('filled')) return;
             
             zone.classList.add('filled');
-            zone.innerText = zone.dataset.organelle.toUpperCase();
+            
+            const organelle = organellesList.find(o => o.name === zone.dataset.organelle);
+            zone.innerHTML = `
+                <img src="/static/images/organelles/${organelle.icon}" class="zone-img">
+                <span class="zone-label">${organelle.name.toUpperCase()}</span>
+            `;
             
             if (draggedItem) draggedItem.style.display = 'none';
             
