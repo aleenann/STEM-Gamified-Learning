@@ -3080,6 +3080,19 @@
                 </div>
             </div>
 
+            {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g9' and not chapter %}
+            <p class="text-muted mb-2">Select a Biology Chapter to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Biology&chapter=5'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
+                    <h3 style="color: #065f46; font-size: 1.5rem;">Chapter 5</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">The Fundamental Unit of Life</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5;">1 Game</span>
+                    </div>
+                </div>
+            </div>
+
             {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g9' and chapter == '9' %}
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #4c1d95; background: #ede9fe; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 9: Force and Laws of Motion</p>
@@ -3139,6 +3152,22 @@
                     </div>
                 </div>
                 {% endif %}
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g9' and chapter == '5' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #065f46; background: #ecfdf5; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 5: The Fundamental Unit of Life</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play/bio/g9/ch5_l1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-dna text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Cell Builder</h3>
+                    <p class="text-muted mt-1 text-sm">Organelle Drag & Drop</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #10b981;">Play Game</span>
+                    </div>
+                </div>
             </div>
 
             {% elif subject == 'Science' and sub_subject == 'Chemistry' and grade|lower == 'g8' %}
