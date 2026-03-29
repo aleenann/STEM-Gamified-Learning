@@ -53,8 +53,20 @@ GAME_REGISTRY = {
     },
     "G9": {
         "Science": {
+            3: ["G9_Chem_Ch3_L1", "G9_Chem_Ch3_L2", "G9_Chem_Ch3_L3"],
             5: ["G9_Bio_Ch5_L1"],
             9: ["G9_Phys_Ch9_L1", "G9_Phys_Ch9_L2", "G9_Phys_Ch9_L3"]
+        },
+        "Maths": {},
+        "Technology": {
+            1: ["G9_Tech_Ch1_L1"]
+        },
+
+        "Engineering": {}
+    },
+    "G10": {
+        "Science": {
+            1: ["G10_Chem_Ch1_L1", "G10_Chem_Ch1_L2"]
         },
         "Maths": {},
         "Technology": {},
@@ -929,11 +941,39 @@ def chemistry_game():
         return redirect("/")
     return render_template("chemistry_game.html")
 
-@app.route("/student/play/chemistry/g8")
-def chemistry_game_g8():
+# Grade 9 Chemistry (Atoms and Molecules)
+@app.route("/student/play/tech/g9/ch1_l1")
+def play_tech_g9_ch1_l1():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
-    return render_template("chemistry_game.html")
+    return render_template("binary_blast.html")
+
+@app.route("/student/play/chem/g9/ch3_l1")
+def play_g9_chem_ch3_l1():
+    if "name" not in session or session.get("role") != "student": return redirect("/")
+    return render_template("g9_chem_ch3_l1.html")
+
+@app.route("/student/play/chem/g9/ch3_l2")
+def play_g9_chem_ch3_l2():
+    if "name" not in session or session.get("role") != "student": return redirect("/")
+    return render_template("g9_chem_ch3_l2.html")
+
+@app.route("/student/play/chem/g9/ch3_l3")
+def play_g9_chem_ch3_l3():
+    if "name" not in session or session.get("role") != "student": return redirect("/")
+    return render_template("g9_chem_ch3_l3.html")
+
+# Grade 10 Chemistry (Chemical Reactions & Balancing)
+@app.route("/student/play/chem/g10/ch1_l1")
+def play_g10_chem_ch1_l1():
+    if "name" not in session or session.get("role") != "student": return redirect("/")
+    return render_template("g10_chem_ch1_l1.html")
+
+@app.route("/student/play/chem/g10/ch1_l2")
+def play_g10_chem_ch1_l2():
+    if "name" not in session or session.get("role") != "student": return redirect("/")
+    return render_template("g10_chem_ch1_l2.html")
+
 
 @app.route("/student/games/save_score", methods=["POST"])
 def save_game_score():

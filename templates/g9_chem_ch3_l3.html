@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 9 Chemistry: Level 3 ⚗️</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --bg:       #fff1f2;
+  --surface:  #ffffff;
+  --green:    #16a34a;
+  --green-l:  #dcfce7;
+  --green-b:  #86efac;
+  --teal:     #0d9488;
+  --blue:     #2563eb;
+  --blue-l:   #dbeafe;
+  --blue-b:   #93c5fd;
+  --indigo:   #4f46e5;
+  --yellow:   #d97706;
+  --yellow-l: #fef9c3;
+  --red:      #dc2626;
+  --red-l:    #fee2e2;
+  --orange:   #ea580c;
+  --purple:   #7c3aed;
+  --text:     #0f172a;
+  --muted:    #64748b;
+  --border:   #fecaca;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ══ TOPBAR ══ */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.97);
+  border-bottom: 2px solid var(--border);
+}
+.topbar-logo {
+  font-size: 17px; font-weight: 900;
+  background: linear-gradient(135deg, var(--red), var(--orange));
+  background-clip: text;
+  -webkit-background-clip: text; 
+  -webkit-text-fill-color: transparent;
+}
+.stats-row { display: flex; gap: 8px; }
+.stat-pill {
+  display: flex; align-items: center; gap: 5px;
+  background: white; border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 12px; font-weight: 800;
+}
+.btn-exit {
+  background: var(--red-l); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 5px 12px;
+  font-size: 12px; font-weight: 800; color: var(--red);
+  text-decoration: none; cursor: pointer;
+}
+
+/* ══ LEVEL BANNER ══ */
+.level-banner {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 7px 20px;
+  background: linear-gradient(135deg, var(--red), var(--orange));
+  color: white; font-size: 13px; font-weight: 800;
+}
+
+/* ══ MAIN LAYOUT ══ */
+.layout {
+  display: grid;
+  grid-template-columns: 172px 1fr 224px;
+  height: calc(100vh - 88px);
+}
+
+.shelf {
+  background: rgba(255,255,255,.92); border-right: 2px solid var(--border);
+  padding: 10px 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;
+}
+.shelf-title { font-size: 9px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.el-card {
+  background: white; border-radius: 10px; padding: 7px 6px; cursor: grab; text-align: center; border: 2px solid #fee2e2;
+}
+.el-num { font-size: 8px; position: absolute; top: 3px; left: 5px; opacity: .4; }
+.el-sym { font-size: 19px; font-weight: 900; }
+.el-name { font-size: 8px; font-weight: 700; opacity: .6; }
+
+.lab { display: flex; flex-direction: column; align-items: center; padding: 16px 18px; gap: 14px; overflow-y: auto; }
+.challenge-card {
+  width: 100%; max-width: 500px;
+  background: white; border-radius: 16px; border: 2px solid var(--red); padding: 14px 18px;
+}
+.ch-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.diff-badge { font-size: 10px; font-weight: 800; border-radius: 20px; padding: 2px 10px; background: var(--red-l); color: var(--red); }
+.ch-target { font-size: 21px; font-weight: 900; }
+.ch-hint { font-size: 12px; font-weight: 700; color: var(--muted); background: #f8fafc; padding: 5px 10px; border-radius: 8px; margin-top: 5px; display: none; }
+
+.mixing-zone {
+  width: 100%; min-height: 160px; border: 3px dashed var(--red); border-radius: 24px;
+  display: flex; align-items: center; justify-content: center; padding: 18px;
+}
+.atoms-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.atom-chip { display: flex; align-items: center; gap: 6px; border-radius: 12px; padding: 8px 12px; font-weight: 900; position: relative; }
+.chip-remove { position: absolute; top: -6px; right: -6px; background: var(--red); color: white; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+
+.mix-btn {
+  padding: 13px 40px; background: linear-gradient(135deg, var(--red), var(--orange));
+  color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 900; cursor: pointer;
+}
+.hint-btn { padding: 8px 15px; background: white; border: 2px solid var(--red); border-radius: 10px; color: var(--red); font-weight: 800; cursor: pointer; font-size: 12px; }
+
+.right-panel { background: rgba(255,255,255,.92); border-left: 2px solid var(--border); padding: 12px; overflow-y: auto; }
+.xp-fill { height: 100%; background: var(--red); transition: width .6s; }
+.ch-item { background: #fff1f2; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px; cursor: pointer; font-size: 11px; font-weight: 700; margin-bottom: 5px; }
+.ch-item.active { border-color: var(--red); background: var(--red-l); }
+.ch-item.done { opacity: 0.5; }
+
+/* Modal */
+.fb-overlay {
+  position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.45); backdrop-filter: blur(5px);
+  display: none; align-items: center; justify-content: center;
+  transition: opacity 0.3s;
+}
+.fb-modal { 
+  background: white; border-radius: 24px; padding: 35px; max-width: 420px; width: 92%;
+  text-align: center; border: 4px solid var(--red); 
+  transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+.fb-overlay.show { display: flex; animation: fadeIn 0.3s forwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.fb-emoji { font-size: 60px; display: block; margin-bottom: 10px; }
+.fb-title { font-size: 24px; font-weight: 900; margin: 10px 0; color: var(--text); }
+.fb-formula { font-size: 28px; font-weight: 900; color: var(--red); margin-bottom: 20px; }
+.fb-xp-pill { 
+  display: inline-block; background: var(--red-l); color: var(--red); 
+  padding: 8px 20px; border-radius: 20px; font-weight: 900; margin-bottom: 25px;
+}
+.fb-btn { 
+  width: 100%; padding: 14px; background: linear-gradient(135deg, var(--red), var(--orange)); 
+  color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; 
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+}
+.fb-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(220,38,38,0.3); }
+
+/* Toast Notification */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: #1e293b; color: white; padding: 12px 25px; border-radius: 12px;
+  font-weight: 700; font-size: 14px; z-index: 1000; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast i { color: #f87171; }
+
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">⚗️ Grade 9 Chemistry</div>
+  <div class="stats-row">
+    <div class="stat-pill">⭐ <span id="statXP">0</span> XP</div>
+  </div>
+  <button class="btn-exit" onclick="window.location.href='/student/play?subject=Science&sub_subject=Chemistry&chapter=3'">
+      <i class="fa-solid fa-person-running"></i> EXIT
+  </button>
+</div>
+
+<div class="level-banner">
+  <span>Level 3 — Medium</span>
+  <span class="lvl-chip">Valency Challenge</span>
+</div>
+
+<div class="layout">
+  <div class="shelf">
+    <div class="shelf-title">Elements</div>
+    <div id="shelfEl"></div>
+  </div>
+
+  <div class="lab">
+    <div class="challenge-card">
+      <div class="ch-row">
+        <span class="ch-label" id="chLabel">Challenge 1</span>
+        <span class="diff-badge">Medium</span>
+      </div>
+      <div class="ch-target" id="chTarget">Make Alumina</div>
+      <div id="chHint" class="ch-hint">Hint: Aluminum (2) + Oxygen (3)</div>
+    </div>
+
+    <div class="mixing-zone" id="mixingZone" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <div id="mzEmpty" style="color:var(--muted); font-weight:700;">Drop elements here!</div>
+        <div class="atoms-grid" id="atomsGrid" style="display:none"></div>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+        <button class="mix-btn" onclick="handleMix()">🧪 MIX!</button>
+        <button class="hint-btn" onclick="toggleHint()">💡 Hint</button>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div id="xpLbl">XP: 0</div>
+    <div style="background:#fee2e2; height:8px; border-radius:10px; overflow:hidden; margin:5px 0 15px 0;"><div id="xpFill" style="width:0%; height:100%; background:var(--red);"></div></div>
+    <div class="panel-section-title">Challenges</div>
+    <div id="chList"></div>
+  </div>
+</div>
+
+<div class="fb-overlay" id="fbOverlay">
+  <div class="fb-modal">
+    <div class="fb-emoji" id="fbEmoji">🏆</div>
+    <div class="fb-title" id="fbTitle">Excellent Mastery!</div>
+    <div class="fb-formula" id="fbFormulaModal">Al₂O₃</div>
+    <p id="fbExplain" style="margin-bottom:20px; font-size:13px; color:var(--muted); line-height:1.5;"></p>
+    <div class="fb-xp-pill" id="fbXP">+40 XP</div>
+    <button class="fb-btn" id="fbBtn" onclick="handleModalNext()">Continue →</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="errorToast" class="toast">
+  <i class="fa-solid fa-radiation"></i>
+  <span id="toastMsg">Incorrect stoichiometry! Try again.</span>
+</div>
+
+
+<script>
+const ELEMENTS = [
+  { s:'H',  n:'Hydrogen',  num:1,  c:'#dcfce7' },
+  { s:'O',  n:'Oxygen',    num:8,  c:'#dcfce7' },
+  { s:'Fe', n:'Iron',      num:26, c:'#dbeafe' },
+  { s:'Al', n:'Aluminum',  num:13, c:'#dbeafe' },
+  { s:'S',  n:'Sulfur',    num:16, c:'#fef9c3' },
+];
+
+const CHALLENGES = [
+  { id:0, name:'Make Alumina', target:{Al:2, O:3}, formula:'Al₂O₃', explain:'Aluminum Oxide (Alumina) is formed when aluminum and oxygen combine in a 2:3 ratio.' },
+  { id:1, name:'Make Rust', target:{Fe:2, O:3}, formula:'Fe₂O₃', explain:'Iron(III) oxide or rust is the reddish-brown substance formed on iron when it reacts with oxygen.' },
+  { id:2, name:'Make Sulfur Trioxide', target:{S:1, O:3}, formula:'SO₃', explain:'Sulfur Trioxide is formed by the reaction of sulfur dioxide and oxygen.' },
+  { id:3, name:'Make Hydrogen Sulfide', target:{H:2, S:1}, formula:'H₂S', explain:'Hydrogen Sulfide is a poisonous, colorless gas that smells like rotten eggs.' },
+];
+
+let currentXP = 0;
+let activeChallengeIdx = 0;
+let mixingAtoms = {};
+
+function init() {
+    const shelf = document.getElementById('shelfEl');
+    ELEMENTS.forEach(el => {
+        const div = document.createElement('div');
+        div.className = 'el-card';
+        div.style.background = el.c;
+        div.draggable = true;
+        div.innerHTML = `<div class="el-num">${el.num}</div><div class="el-sym">${el.s}</div><div class="el-name">${el.n}</div>`;
+        div.onclick = () => addAtom(el.s);
+        div.ondragstart = (e) => e.dataTransfer.setData('text', el.s);
+        shelf.appendChild(div);
+    });
+    updateChallenge();
+    renderChallenges();
+}
+
+function allowDrop(e) { e.preventDefault(); }
+function drop(e) {
+    e.preventDefault();
+    addAtom(e.dataTransfer.getData('text'));
+}
+
+function addAtom(sym) {
+    mixingAtoms[sym] = (mixingAtoms[sym] || 0) + 1;
+    renderMixingZone();
+}
+
+function removeAtom(sym) {
+    if (mixingAtoms[sym] > 1) mixingAtoms[sym]--;
+    else delete mixingAtoms[sym];
+    renderMixingZone();
+}
+
+function renderMixingZone() {
+    const grid = document.getElementById('atomsGrid');
+    const empty = document.getElementById('mzEmpty');
+    grid.innerHTML = '';
+    const keys = Object.keys(mixingAtoms);
+    if (keys.length > 0) {
+        grid.style.display = 'flex';
+        empty.style.display = 'none';
+        keys.forEach(sym => {
+            const chip = document.createElement('div');
+            chip.className = 'atom-chip';
+            chip.style.background = ELEMENTS.find(e => e.s === sym).c;
+            chip.innerHTML = `${sym} <span>${mixingAtoms[sym]}</span>`;
+            const del = document.createElement('div');
+            del.className = 'chip-remove';
+            del.innerHTML = '×';
+            del.onclick = (e) => { e.stopPropagation(); removeAtom(sym); };
+            chip.appendChild(del);
+            grid.appendChild(chip);
+        });
+    } else {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+    }
+}
+
+function handleMix() {
+    const target = CHALLENGES[activeChallengeIdx].target;
+    let match = true;
+    const tKeys = Object.keys(target);
+    const mKeys = Object.keys(mixingAtoms);
+    if (tKeys.length !== mKeys.length) match = false;
+    else { tKeys.forEach(k => { if (target[k] !== mixingAtoms[k]) match = false; }); }
+
+    if (match) {
+        showFeedback(CHALLENGES[activeChallengeIdx]);
+    } else {
+        showToast("Incorrect stoichiometry! Check your valency balance.");
+    }
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('errorToast');
+    document.getElementById('toastMsg').innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function showFeedback(ch) {
+    document.getElementById('fbEmoji').innerText = '🏆';
+    document.getElementById('fbTitle').innerText = 'Excellent Mastery!';
+    document.getElementById('fbFormulaModal').innerText = ch.formula;
+    document.getElementById('fbExplain').innerText = ch.explain;
+    document.getElementById('fbXP').innerText = '+40 XP';
+    
+    if (activeChallengeIdx >= CHALLENGES.length - 1) {
+        document.getElementById('fbEmoji').innerText = '🎓';
+        document.getElementById('fbTitle').innerText = 'Level 3 Completed!';
+        document.getElementById('fbExplain').innerText = 'You successfully navigated all the complex valency challenges.';
+        document.getElementById('fbXP').innerText = `Final XP: ${currentXP + 40}`;
+        document.getElementById('fbBtn').innerText = 'Back to Map';
+        saveScore(currentXP + 40);
+    } else {
+        document.getElementById('fbBtn').innerText = 'Next Challenge →';
+    }
+    
+    document.getElementById('fbOverlay').classList.add('show');
+    currentXP += 40;
+    updateXP();
+}
+
+function toggleHint() {
+    const h = document.getElementById('chHint');
+    h.style.display = h.style.display === 'block' ? 'none' : 'block';
+}
+
+function handleModalNext() {
+    if (activeChallengeIdx >= CHALLENGES.length - 1) {
+        window.location.href = '/student/play?subject=Science&sub_subject=Chemistry&chapter=3';
+    } else {
+        closeFeedback();
+    }
+}
+
+function closeFeedback() {
+    document.getElementById('fbOverlay').classList.remove('show');
+    document.getElementById('chHint').style.display = 'none';
+    mixingAtoms = {};
+    renderMixingZone();
+    activeChallengeIdx++;
+    updateChallenge();
+    renderChallenges();
+}
+
+
+function updateChallenge() {
+    const ch = CHALLENGES[activeChallengeIdx];
+    document.getElementById('chTarget').innerText = ch.name;
+    document.getElementById('chLabel').innerText = `Challenge ${activeChallengeIdx + 1}`;
+    document.getElementById('chHint').innerText = `Hint: ${Object.entries(ch.target).map(([s,c])=>`${s}(${c})`).join(' + ')}`;
+}
+
+function renderChallenges() {
+    const list = document.getElementById('chList');
+    list.innerHTML = '';
+    CHALLENGES.forEach((ch, idx) => {
+        const div = document.createElement('div');
+        div.className = `ch-item ${idx === activeChallengeIdx ? 'active' : ''} ${idx < activeChallengeIdx ? 'done' : ''}`;
+        div.innerText = ch.name;
+        list.appendChild(div);
+    });
+}
+
+function updateXP() {
+    document.getElementById('statXP').innerText = currentXP;
+    document.getElementById('xpLbl').innerText = `XP: ${currentXP}`;
+    document.getElementById('xpFill').style.width = (currentXP / 160 * 100) + '%';
+}
+
+function saveScore(score) {
+    fetch('/save_score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            username: "{{ session.get('username') }}",
+            score: score,
+            subject: 'Science',
+            game_name: 'G9_Chem_Ch3_L3'
+        })
+    });
+}
+
+init();
+</script>
+</body>
+</html>
