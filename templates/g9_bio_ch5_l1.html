@@ -10,21 +10,32 @@
     <style>
         :root {
             --bio-primary: #10b981;
-            --bio-bg: #ecfdf5;
+            --bio-primary-dark: #059669;
+            --bio-bg: #f0fdf9;
             --bio-surface: #ffffff;
             --accent-teal: #14b8a6;
+            --accent-amber: #f59e0b;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-lg: 24px;
+            --radius-md: 16px;
         }
 
         body {
             margin: 0;
             font-family: 'Outfit', sans-serif;
             background: var(--bio-bg);
-            color: #111827;
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            overflow-y: auto;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(20, 184, 166, 0.05) 0%, transparent 40%);
         }
 
         .game-header {
@@ -103,38 +114,55 @@
 
         .organelle-item {
             background: white;
-            padding: 0.75rem;
-            border-radius: 16px;
-            border: 2px solid #d1fae5;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            border: 2px solid #e5e7eb;
             cursor: grab;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .organelle-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .organelle-item:hover { 
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
             border-color: var(--bio-primary);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-lg), 0 0 20px rgba(16, 185, 129, 0.1);
         }
         
-        .organelle-item:active { cursor: grabbing; }
+        .organelle-item:active { cursor: grabbing; transform: scale(0.95); }
 
         .organelle-icon {
-            width: 50px;
-            height: 50px;
+            width: 64px;
+            height: 64px;
             object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .organelle-item:hover .organelle-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .organelle-name {
             font-size: 0.8rem;
-            font-weight: 700;
-            color: #374151;
-            text-transform: capitalize;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         /* Cell Diagram */
@@ -147,26 +175,42 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 2rem;
+            padding: 2.5rem;
             border: 4px solid #d1fae5;
+            overflow: hidden;
         }
 
         .cell-base {
             width: 90%;
             height: 90%;
             border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-            background: radial-gradient(circle, #f0fdf9 0%, #ccfbf1 100%);
+            background: radial-gradient(circle at 30% 30%, #f0fdf9 0%, #ccfbf1 100%);
             border: 8px solid var(--bio-primary);
             position: relative;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: inset 0 0 50px rgba(16, 185, 129, 0.1);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 
+                inset 0 0 60px rgba(16, 185, 129, 0.15),
+                0 20px 40px -10px rgba(0,0,0,0.1);
+        }
+
+        /* Cytoplasm Texture Overlay */
+        .cell-base::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
         }
 
         .mode-plant .cell-base {
-            border-radius: 40px;
-            background: radial-gradient(circle, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 45px;
+            background: radial-gradient(circle at 30% 30%, #f0fdf4 0%, #dcfce7 100%);
             border: 12px solid #059669;
-            box-shadow: inset 0 0 0 6px #dcfce7;
+            box-shadow: 
+                0 0 0 8px #dcfce7,
+                inset 0 0 80px rgba(5, 150, 105, 0.1);
         }
 
         /* Drop Zones */
@@ -178,18 +222,55 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: #9ca3af;
-            text-align: center;
+            text-transform: uppercase;
+            font-weight: 800;
             padding: 5px;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
+            z-index: 2;
         }
 
-        .drop-zone.active { border-color: var(--bio-primary); background: rgba(16, 185, 129, 0.1); transform: scale(1.1); }
-        .drop-zone.filled { border: 2px solid var(--bio-primary); background: white; color: var(--bio-primary); font-weight: 800; }
-        .drop-zone.filled .zone-img { width: 80%; height: 80%; object-fit: contain; }
-        .drop-zone.filled .zone-label { font-size: 10px; margin-top: 2px; }
+        .drop-zone.target-hint:not(.filled) {
+            border-color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.05);
+            z-index: 100 !important;
+        }
+
+        .drop-zone.correct-hover:not(.filled) {
+            border-color: var(--bio-primary);
+            background: rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+            transform: scale(1.1);
+            border-style: solid;
+        }
+
+        .drop-zone.active { 
+            border-color: var(--bio-primary); 
+            background: rgba(16, 185, 129, 0.1); 
+            transform: scale(1.05);
+        }
+
+        .drop-zone.filled { 
+            border: 3px solid var(--bio-primary); 
+            background: transparent; /* Keep structural layers transparent */
+            color: var(--bio-primary); 
+            box-shadow: var(--shadow-md);
+            animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Solid background for smaller internal organelles so they pop */
+        #zone-nucleus.filled, #zone-mitochondria.filled, #zone-vacuole.filled, #zone-chloroplast.filled {
+            background: white;
+        }
+
+        @keyframes pop-in {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .drop-zone.filled .zone-img { width: 90%; height: 90%; object-fit: contain; }
         .drop-zone.wrong { background: #fee2e2; border-color: #ef4444; animation: shake 0.4s; }
 
         @keyframes shake {
@@ -244,23 +325,80 @@
 
         .btn-return:hover { background: #059669; }
 
-        /* Specific Organelle Positions */
-        #zone-nucleus { width: 100px; height: 100px; top: 35%; left: 35%; border-radius: 50%; }
-        #zone-mitochondria { width: 70px; height: 50px; top: 15%; left: 15%; border-radius: 20px; }
-        #zone-vacuole { width: 80px; height: 80px; top: 60%; left: 65%; border-radius: 50%; }
-        #zone-membrane { width: 100%; height: 100%; top: 0; left: 0; border-radius: inherit; border-style: solid; color: transparent; pointer-events: none; }
-        #zone-membrane.active, #zone-membrane.filled { pointer-events: auto; }
-        #zone-cytoplasm { width: 85%; height: 85%; top: 7.5%; left: 7.5%; border-radius: inherit; opacity: 0.3; z-index: -1; pointer-events: none; }
+        /* Z-Index Hierarchy: Internal (50) > Membrane (30) > Cytoplasm (20) > Wall (10) */
+        #zone-nucleus { z-index: 50; }
+        #zone-mitochondria, #zone-vacuole, #zone-chloroplast { z-index: 40; }
+        #zone-membrane { z-index: 30; transition: border 1s, box-shadow 1s, color 1s; }
+        #zone-cytoplasm { z-index: 20; transition: background 1.2s ease-in-out, opacity 1.2s ease-in-out; }
+        #zone-wall { z-index: 10; transition: border 1.2s, box-shadow 1.2s, color 1.2s; }
+
+        /* Adjusted Positions for Zero Overlap and Better Flow */
+        #zone-nucleus { width: 110px; height: 110px; top: 35%; left: 35%; border-radius: 50%; opacity: 0.8; }
+        #zone-mitochondria { width: 75px; height: 50px; top: 18%; left: 22%; border-radius: 20px; }
+        #zone-vacuole { width: 90px; height: 90px; top: 58%; left: 62%; border-radius: 50%; }
+        
+        #zone-membrane { 
+            width: 100%; height: 100%; top: 0; left: 0; 
+            border-radius: inherit; border: 3px dashed rgba(16, 185, 129, 0.2); 
+            color: transparent; font-size: 0.5rem;
+        }
+        #zone-membrane.filled { 
+            border: 5px solid var(--bio-primary); 
+            border-style: solid; 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+
+        #zone-cytoplasm { 
+            width: 95%; height: 95%; top: 2.5%; left: 2.5%; 
+            border-radius: inherit; border: 2px dashed rgba(20, 184, 166, 0.1);
+            background: transparent;
+            color: transparent;
+        }
+        #zone-cytoplasm.filled { background: rgba(16, 185, 129, 0.12); border: none; }
         
         /* Plant Exclusive */
-        #zone-chloroplast { width: 70px; height: 50px; top: 70%; left: 20%; border-radius: 20px; display: none; }
+        #zone-chloroplast { width: 75px; height: 50px; top: 68%; left: 24%; border-radius: 20px; display: none; }
         #zone-wall { 
-            width: 108%; height: 108%; top: -4%; left: -4%; 
-            border-radius: 45px; border: 4px solid transparent; 
-            display: none; color: transparent; pointer-events: none;
-            z-index: 5;
+            width: 106%; height: 106%; top: -3%; left: -3%; 
+            border-radius: 48px; border: 4px dashed rgba(5, 150, 105, 0.2); 
+            display: none; color: transparent; font-size: 0.5rem;
         }
-        #zone-wall.filled { border-color: #059669; }
+        #zone-wall.filled { 
+            border: 8px solid #059669; 
+            border-style: solid; 
+            box-shadow: 0 0 20px rgba(5, 150, 105, 0.3);
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: drift 10s infinite alternate ease-in-out;
+            z-index: 2;
+        }
+
+        @keyframes drift {
+            from { transform: translate(0, 0) rotate(0deg); }
+            to { transform: translate(20px, 15px) rotate(180deg); }
+        }
+
+        .zone-placeholder { 
+            font-size: 0.5rem; 
+            letter-spacing: 0.1em; 
+            opacity: 0.6; 
+            text-align: center;
+        }
+
+        /* Animations */
+        .success-glow {
+            animation: success-glow 1s ease-out;
+        }
+
+        @keyframes success-glow {
+            0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 1); }
+            100% { box-shadow: 0 0 40px 20px rgba(16, 185, 129, 0); }
+        }
 
     </style>
 </head>
@@ -295,15 +433,15 @@
 
             <div class="cell-diagram" id="cell-container">
                 <div class="cell-base" id="cell-base">
-                    <div class="drop-zone" id="zone-nucleus" data-organelle="nucleus">Nucleus</div>
-                    <div class="drop-zone" id="zone-mitochondria" data-organelle="mitochondria">Mitochondria</div>
-                    <div class="drop-zone" id="zone-vacuole" data-organelle="vacuole">Vacuole</div>
-                    <div class="drop-zone" id="zone-membrane" data-organelle="cell membrane">Membrane</div>
-                    <div class="drop-zone" id="zone-cytoplasm" data-organelle="cytoplasm">Cytoplasm</div>
+                    <div class="drop-zone" id="zone-nucleus" data-organelle="nucleus"></div>
+                    <div class="drop-zone" id="zone-mitochondria" data-organelle="mitochondria"></div>
+                    <div class="drop-zone" id="zone-vacuole" data-organelle="vacuole"></div>
+                    <div class="drop-zone" id="zone-membrane" data-organelle="cell membrane"></div>
+                    <div class="drop-zone" id="zone-cytoplasm" data-organelle="cytoplasm"></div>
                     
                     <!-- Plant Only -->
-                    <div class="drop-zone" id="zone-chloroplast" data-organelle="chloroplast">Chloroplast</div>
-                    <div class="drop-zone" id="zone-wall" data-organelle="cell wall">Cell Wall</div>
+                    <div class="drop-zone" id="zone-chloroplast" data-organelle="chloroplast"></div>
+                    <div class="drop-zone" id="zone-wall" data-organelle="cell wall"></div>
                 </div>
             </div>
         </div>
@@ -329,7 +467,7 @@
         const organellesList = [
             { name: "nucleus", plant: true, animal: true, icon: "nucleus.png" },
             { name: "cell membrane", plant: true, animal: true, icon: "membrane.png" },
-            { name: "cytoplasm", plant: true, animal: true, icon: "membrane.png" }, // Reusing icon for simplicity or hidden
+            { name: "cytoplasm", plant: true, animal: true, icon: "cytoplasm.png" }, // Added unique icon placeholder
             { name: "mitochondria", plant: true, animal: true, icon: "mitochondria.png" },
             { name: "vacuole", plant: true, animal: true, icon: "vacuole.png" },
             { name: "chloroplast", plant: true, animal: false, icon: "chloroplast.png" },
@@ -393,10 +531,15 @@
                     draggedItem = div;
                     e.dataTransfer.setData('text/plain', item.name);
                     div.style.opacity = '0.5';
+                    
+                    // Targeted Highlight: Only pulse the correct zone
+                    const targetZone = [...document.querySelectorAll('.drop-zone')].find(z => z.dataset.organelle === item.name);
+                    if (targetZone) targetZone.classList.add('target-hint');
                 });
 
                 div.addEventListener('dragend', () => {
                     div.style.opacity = '1';
+                    document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('target-hint'));
                 });
 
                 shelf.appendChild(div);
@@ -405,22 +548,49 @@
 
         function initZones() {
             const zones = document.querySelectorAll('.drop-zone');
+            
+            // Inject Cytoplasm Particles
+            const cellBase = document.getElementById('cell-base');
+            [...cellBase.querySelectorAll('.particle')].forEach(p => p.remove());
+            for(let i=0; i<12; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.width = Math.random() * 10 + 5 + 'px';
+                p.style.height = p.style.width;
+                p.style.top = Math.random() * 80 + 10 + '%';
+                p.style.left = Math.random() * 80 + 10 + '%';
+                p.style.animationDelay = Math.random() * 5 + 's';
+                p.style.opacity = Math.random() * 0.2 + 0.1;
+                cellBase.appendChild(p);
+            }
+
             zones.forEach(zone => {
-                zone.classList.remove('filled', 'wrong', 'active');
-                zone.innerHTML = `<span class="zone-placeholder">${zone.dataset.organelle}</span>`;
+                zone.classList.remove('filled', 'wrong', 'active', 'target-hint', 'correct-hover');
+                zone.innerHTML = ``;
                 
+                // Cytoplasm is now a task for the student to build
+                if (zone.dataset.organelle === 'cytoplasm') {
+                    zone.style.display = 'flex'; // Ensure it's hit-table
+                }
+
                 zone.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    if (!zone.classList.contains('filled')) zone.classList.add('active');
+                    if (zone.classList.contains('filled')) return;
+                    
+                    zone.classList.add('active');
+                    const draggedName = e.dataTransfer.getData('text/plain') || (draggedItem ? draggedItem.dataset.name : '');
+                    if (draggedName === zone.dataset.organelle) {
+                        zone.classList.add('correct-hover');
+                    }
                 });
 
                 zone.addEventListener('dragleave', () => {
-                    zone.classList.remove('active');
+                    zone.classList.remove('active', 'correct-hover');
                 });
 
                 zone.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    zone.classList.remove('active');
+                    zone.classList.remove('active', 'correct-hover');
                     if (zone.classList.contains('filled')) return;
 
                     const droppedName = e.dataTransfer.getData('text/plain');
@@ -440,12 +610,24 @@
             zone.classList.add('filled');
             
             const organelle = organellesList.find(o => o.name === zone.dataset.organelle);
-            zone.innerHTML = `
-                <img src="/static/images/organelles/${organelle.icon}" class="zone-img">
-                <span class="zone-label">${organelle.name.toUpperCase()}</span>
-            `;
             
-            if (draggedItem) draggedItem.style.display = 'none';
+            if (organelle.name === 'cytoplasm') {
+                zone.innerHTML = ``; // Keep it as a clean background fill
+                zone.style.boxShadow = 'inset 0 0 50px rgba(16, 185, 129, 0.2)';
+            } else if (organelle.name === 'cell membrane' || organelle.name === 'cell wall') {
+                zone.innerHTML = ``; // Structural architectural elements don't show icons/labels
+            } else {
+                zone.innerHTML = `
+                    <img src="/static/images/organelles/${organelle.icon}" class="zone-img" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-circle-nodes\' style=\'font-size: 2rem; color: var(--bio-primary);\'></i>'">
+                `;
+            }
+            
+            if (draggedItem) {
+                draggedItem.style.display = 'none';
+                // Success Bloom
+                zone.classList.add('success-glow');
+                setTimeout(() => zone.classList.remove('success-glow'), 1000);
+            }
             
             const msg = document.getElementById('status-msg');
             msg.innerText = "Correct! 🌿";
@@ -455,8 +637,8 @@
             matchedCount++;
             document.getElementById('xp-display').innerText = xp + " XP";
 
-            const totalNeeded = currentMode === 'plant' ? 7 : 5;
-            if (matchedCount === totalNeeded) {
+            const shelfItems = organellesList.filter(o => currentMode === 'plant' ? o.plant : o.animal).length;
+            if (matchedCount === shelfItems) {
                 finishLevel();
             }
         }
