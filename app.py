@@ -46,7 +46,7 @@ GAME_REGISTRY = {
             1: ["G8_Maths_Ch1_L1", "G8_Maths_Ch1_L2"]
         },
         "Science": {
-            1: ["G8_Phys_Ch1_L1", "G8_Phys_Ch1_L2", "G8_Phys_Ch1_L3", "G8_Phys_Ch1_L4"]
+            1: ["G8_Phys_Ch1_L1", "G8_Phys_Ch1_L2", "G8_Phys_Ch1_L3", "G8_Phys_Ch1_L4", "G8_Chem_Ch1_L1", "G8_Chem_Ch1_L2", "G8_Chem_Ch1_L3"]
         },
         "Technology": {},
         "Engineering": {}
@@ -1014,6 +1014,23 @@ def g8_maths_ch1_l1():
 def g8_maths_ch1_l2():
     if "username" not in session: return redirect("/login/student")
     return render_template("g8_maths_ch1_l2.html")
+
+
+# Grade 8 Chemistry (Combustion and Flame)
+@app.route("/student/play/chem/g8/ch1_l1")
+def play_g8_chem_ch1_l1():
+    if "name" not in session or session.get("role") != "student": return redirect("/")
+    return render_template("g8_chem_ch1_l1.html")
+
+@app.route("/student/play/chem/g8/ch1_l2")
+def play_g8_chem_ch1_l2():
+    if "name" not in session or session.get("role") != "student": return redirect("/")
+    return render_template("g8_chem_ch1_l2.html")
+
+@app.route("/student/play/chem/g8/ch1_l3")
+def play_g8_chem_ch1_l3():
+    if "name" not in session or session.get("role") != "student": return redirect("/")
+    return render_template("g8_chem_ch1_l3.html")
 
 
 if __name__ == "__main__":

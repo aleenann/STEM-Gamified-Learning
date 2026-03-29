@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Safety Hero - Grade 8 Chemistry</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fire-bg: #fffcf5;
+            --accent-orange: #f97316;
+            --text-main: #431407;
+            --danger-red: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--fire-bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .game-header {
+            background: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #fed7aa;
+        }
+
+        .btn-exit { background: #fff7ed; color: #9a3412; border: 1px solid #fdba74; padding: 0.6rem 1.2rem; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-exit:hover { background: #ffedd5; }
+
+        .game-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; text-align: center; }
+
+        .mission-box { background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid #fed7aa; margin-bottom: 2.5rem; }
+
+        .scenario-area { position: relative; height: 350px; display: flex; justify-content: center; align-items: center; margin-bottom: 3rem; }
+
+        .fire-card {
+            background: white; width: 320px; padding: 2.5rem; border-radius: 24px; border: 3px solid #ef4444; box-shadow: 0 20px 25px -5px rgba(239, 68, 68, 0.1);
+            position: relative; overflow: hidden; animation: cardShake 0.5s infinite alternate;
+        }
+        @keyframes cardShake {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+
+        .fire-icon { font-size: 5rem; margin-bottom: 1.5rem; display: block; filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.4)); }
+
+        .extinguisher-bank { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+
+        .extinguisher-btn {
+            background: white; width: 150px; padding: 1.5rem; border-radius: 20px; border: 2px solid #e2e8f0; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+        }
+        .extinguisher-btn:hover { border-color: var(--accent-orange); background: #fff7ed; transform: translateY(-5px); }
+        .extinguisher-btn i { font-size: 2.5rem; color: #ef4444; }
+        .extinguisher-btn span { font-weight: 800; font-size: 1rem; color: #7c2d12; }
+
+        .feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 22px; display: none; align-items: center; justify-content: center; font-size: 6rem; z-index: 10; font-weight: 900; }
+        .feedback-overlay.correct { display: flex; background: rgba(34, 197, 94, 0.9); color: white; }
+        .feedback-overlay.wrong { display: flex; background: rgba(239, 68, 68, 0.9); color: white; }
+
+        /* Modal */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(67, 20, 7, 0.8); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); }
+        .modal-content { background: white; padding: 3rem; border-radius: 32px; text-align: center; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <button class="btn-exit" onclick="window.location.href='/student/play?subject=Science&sub_subject=Chemistry&chapter=1'"><i class="fa-solid fa-arrow-left"></i> EXIT</button>
+        <div style="text-align: center;">
+            <h2 style="margin: 0; font-weight: 900; color: #7c2d12;">FIRE SAFETY HERO</h2>
+            <div style="font-size: 0.8rem; color: #9a3412; font-weight: 600;">MISSION 3 • EXTINGUISHING FIRES</div>
+        </div>
+        <div style="background: #fff7ed; color: #9a3412; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 800; border: 1px solid #fed7aa;">
+            XP: <span id="xp-val">0</span>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="mission-box">
+            <h3 style="margin: 0; color: #7c2d12;">Emergency! 🚒</h3>
+            <p id="scenario-msg" style="color: #9a3412; margin-top: 0.5rem;">A fire has broken out! Select the correct extinguisher below.</p>
+        </div>
+
+        <div class="scenario-area">
+            <div class="fire-card" id="main-card">
+                <i id="fire-icon" class="fa-solid fa-plug-circle-bolt fire-icon" style="color: #ef4444;"></i>
+                <h3 id="fire-type" style="margin: 0; color: #7c2d12; text-transform: uppercase; font-size: 1.4rem;">Electrical Fire</h3>
+                <p id="fire-desc" style="font-size: 0.9rem; color: #9a3412; margin-top: 1rem;">The server room is sparking and flames are rising!</p>
+                
+                <div id="feedback" class="feedback-overlay">✅</div>
+            </div>
+        </div>
+
+        <div class="extinguisher-bank">
+            <button class="extinguisher-btn" onclick="handleSelect('water')">
+                <i class="fa-solid fa-faucet-drip" style="color: #3b82f6;"></i>
+                <span>WATER</span>
+            </button>
+            <button class="extinguisher-btn" onclick="handleSelect('co2')">
+                <i class="fa-solid fa-fire-extinguisher" style="color: #ef4444;"></i>
+                <span>CO₂ GAS</span>
+            </button>
+            <button class="extinguisher-btn" onclick="handleSelect('foam')">
+                <i class="fa-solid fa-soap" style="color: #fbbf24;"></i>
+                <span>FOAM</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🧯</div>
+            <h1 style="color: #7c2d12; margin-bottom: 0.5rem;">Safety Hero!</h1>
+            <p style="color: #9a3412;">You've extinguished all the fires safely. You know your extinguishers well!</p>
+            
+            <div style="background: #fff7ed; padding: 0.5rem 1.5rem; border-radius: 12px; font-weight: 800; font-size: 1.2rem; display: inline-block; margin: 1rem 0; border: 1px solid #fed7aa;">
+                <i class="fa-solid fa-star"></i> 100 XP Earned
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+                <button onclick="window.location.href='/student/play?subject=Science&sub_subject=Chemistry&chapter=1'" style="background: var(--accent-orange); color: white; border: none; padding: 1.2rem; border-radius: 16px; font-weight: 900; cursor: pointer; font-size: 1.1rem;">Chapter Complete! <i class="fa-solid fa-check ml-1"></i></button>
+                <button onclick="window.location.reload()" style="background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; padding: 1rem; border-radius: 12px; font-weight: 700; cursor: pointer;">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const scenarios = [
+            { type: 'Electrical', icon: 'fa-plug-circle-bolt', desc: "The server room is sparking and flames are rising!", correct: 'co2' },
+            { type: 'Oil/Petrol', icon: 'fa-gas-pump', desc: "A pan of cooking oil has caught fire in the kitchen!", correct: 'foam' },
+            { type: 'Wood/Paper', icon: 'fa-tree', desc: "A pile of dry wood is burning in the backyard!", correct: 'water' }
+        ];
+
+        let currentScenario = 0;
+        let canClick = true;
+
+        function initScenario() {
+            canClick = true;
+            const s = scenarios[currentScenario];
+            document.getElementById('fire-type').innerText = s.type + " Fire";
+            document.getElementById('fire-icon').className = `fa-solid ${s.icon} fire-icon`;
+            document.getElementById('fire-desc').innerText = s.desc;
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('main-card').style.animation = 'cardShake 0.5s infinite alternate';
+        }
+
+        function handleSelect(choice) {
+            if (!canClick) return;
+            canClick = false;
+
+            const feedback = document.getElementById('feedback');
+            const isCorrect = choice === scenarios[currentScenario].correct;
+
+            if (isCorrect) {
+                feedback.innerText = "✅";
+                feedback.className = "feedback-overlay correct";
+                feedback.style.display = "flex";
+                document.getElementById('main-card').style.animation = 'none';
+                
+                setTimeout(() => {
+                    currentScenario++;
+                    if (currentScenario < scenarios.length) {
+                        initScenario();
+                    } else {
+                        completeGame();
+                    }
+                }, 1500);
+            } else {
+                feedback.innerText = "❌";
+                feedback.className = "feedback-overlay wrong";
+                feedback.style.display = "flex";
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                    canClick = true;
+                }, 1000);
+            }
+        }
+
+        function completeGame() {
+            document.getElementById('xp-val').innerText = '100';
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            saveScore();
+            setTimeout(() => {
+                document.getElementById('result-modal').style.display = 'flex';
+            }, 1000);
+        }
+
+        function saveScore() {
+            const username = "{{ session.get('username') }}";
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(username)}&score=100&subject=Science&game_name=G8_Chem_Ch1_L3`
+            });
+        }
+
+        initScenario();
+    </script>
+</body>
+</html>
