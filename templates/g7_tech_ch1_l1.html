@@ -3,227 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Creator Challenge - Grade 7 Technology</title>
+    <title>Binary Decoder - Grade 7 Technology</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --builder-bg: #f1f5f9;
-            --phone-bg: #ffffff;
-            --phone-border: #1e293b;
-            --toolbox-bg: #ffffff;
-            --accent-blue: #3b82f6;
-            --accent-purple: #8b5cf6;
-            --success-green: #10b981;
+            --neon-green: #22c55e;
+            --neon-blue: #0ea5e9;
+            --terminal-bg: #020617;
+            --card-glass: rgba(15, 23, 42, 0.8);
         }
 
         body {
             margin: 0;
             font-family: 'Outfit', sans-serif;
-            background: var(--builder-bg);
-            color: #1e293b;
+            background: var(--terminal-bg);
+            color: #e2e8f0;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        .builder-header {
-            background: #ffffff;
+        .share-tech { font-family: 'Share Tech Mono', monospace; }
+
+        /* Hacker Background Effect */
+        #matrix-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .game-header {
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
             z-index: 100;
         }
 
-        .main-container {
+        /* Home Screen */
+        .screen {
             flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* Sidebar Toolbox */
-        .toolbox {
-            width: 300px;
-            background: var(--toolbox-bg);
-            border-right: 2px solid #e2e8f0;
-            display: flex;
+            display: none;
             flex-direction: column;
-            padding: 1.5rem;
-            gap: 1.5rem;
-            overflow-y: auto;
-        }
-
-        .tool-category {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .tool-item {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            padding: 1rem;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.2s;
-            user-select: none;
-            margin-bottom: 0.8rem;
-        }
-
-        .tool-item:hover {
-            border-color: var(--accent-blue);
-            background: #eff6ff;
-            transform: translateX(5px);
-        }
-
-        .tool-icon {
-            width: 40px;
-            height: 40px;
-            background: white;
-            border-radius: 8px;
-            display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent-blue);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        /* Canvas Area */
-        .canvas-area {
-            flex: 1;
-            background: #cbd5e1;
-            background-image: radial-gradient(#94a3b8 1px, transparent 1px);
-            background-size: 20px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .phone-mockup {
-            width: 320px;
-            height: 600px;
-            background: var(--phone-border);
-            border-radius: 40px;
-            padding: 12px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        .phone-screen {
-            width: 100%;
-            height: 100%;
-            background: white;
-            border-radius: 30px;
+            padding: 2.5rem;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
             overflow-y: auto;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            gap: 12px;
-        }
-
-        .phone-notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 25px;
-            background: var(--phone-border);
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
             z-index: 10;
         }
 
-        /* Widget Styles */
-        .widget {
-            position: relative;
-            padding: 12px;
-            border-radius: 8px;
+        .screen.active { display: flex; }
+
+        .title-glow {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--neon-green);
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+            margin-bottom: 1rem;
+            letter-spacing: 5px;
+        }
+
+        .btn-cyber {
+            background: transparent;
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 1rem 2.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-radius: 4px;
             cursor: pointer;
-            border: 2px solid transparent;
-        }
-        .widget:hover { border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.05); }
-        .widget-delete {
-            position: absolute;
-            top: -8px; right: -8px;
-            background: #ef4444;
-            color: white;
-            width: 20px; height: 20px;
-            border-radius: 50%;
-            display: none;
-            align-items: center; justify-content: center;
-            font-size: 10px;
-            z-index: 20;
-        }
-        .widget:hover .widget-delete { display: flex; }
-
-        .w-header { font-size: 1.5rem; font-weight: 800; color: #1e293b; border-bottom: 2px solid #e2e8f0; }
-        .w-text { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
-        .w-button { background: var(--accent-blue); color: white; text-align: center; border-radius: 99px; font-weight: 700; padding: 12px; }
-        .w-image { height: 120px; background: #e2e8f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; }
-        .w-icon { font-size: 2rem; color: var(--accent-blue); text-align: center; }
-
-        /* Goal Panel */
-        .mission-panel {
-            width: 350px;
-            background: #1e293b;
-            color: white;
-            padding: 1.5rem;
-            border-left: 2px solid #334155;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .mission-card {
-            background: #334155;
-            padding: 1.2rem;
-            border-radius: 16px;
-            border-left: 4px solid var(--accent-blue);
-        }
-
-        .req-item {
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            margin-top: 0.8rem;
-            font-size: 0.9rem;
-            color: #94a3b8;
+            gap: 1rem;
         }
-        .req-met { color: var(--success-green); }
 
-        .btn-finish {
-            background: var(--success-green);
+        .btn-cyber:hover {
+            background: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .btn-cyber.blue {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+        }
+        .btn-cyber.blue:hover {
+            background: var(--neon-blue);
             color: white;
-            border: none;
-            padding: 1rem;
+            box-shadow: 0 0 30px rgba(14, 165, 233, 0.6);
+        }
+
+        /* Game Interface */
+        .main-decoder {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-glass);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .mission-text {
+            border-left: 4px solid var(--neon-green);
+            padding-left: 1.5rem;
+            text-align: left;
+            margin-bottom: 3rem;
+        }
+
+        .binary-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .bit-well {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bit-switch {
+            width: 60px;
+            height: 90px;
+            background: #1e293b;
+            border: 3px solid #334155;
             border-radius: 12px;
-            font-weight: 800;
             cursor: pointer;
-            margin-top: auto;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .bit-switch::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: #475569;
+            border-radius: 8px;
+            top: 40px;
             transition: all 0.2s;
         }
-        .btn-finish:hover { transform: scale(1.02); filter: brightness(1.1); }
 
-        /* Modal */
+        .bit-switch.on {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .bit-switch.on::after {
+            top: 10px;
+            background: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .bit-val { font-family: 'Share Tech Mono', monospace; font-size: 1.5rem; }
+
+        .result-panel {
+            background: rgba(0,0,0,0.4);
+            padding: 2rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .data-label { font-size: 0.9rem; color: #94a3b8; margin-bottom: 0.5rem; }
+        .data-val { font-size: 2.5rem; font-weight: 800; color: var(--neon-blue); }
+
+        /* Modals */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(0,0,0,0.9);
             display: none;
             align-items: center;
             justify-content: center;
@@ -231,250 +201,329 @@
         }
 
         .modal-content {
-            background: white;
+            background: #1e293b;
             padding: 3rem;
-            border-radius: 32px;
+            border-radius: 24px;
             text-align: center;
+            border: 2px solid var(--neon-green);
             max-width: 500px;
         }
 
-        .text-xs { font-size: 0.75rem; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Instructions list */
+        .instr-list {
+            text-align: left;
+            display: inline-block;
+            margin-top: 1rem;
+            line-height: 1.8;
+        }
     </style>
 </head>
 <body>
 
-    <div class="builder-header">
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="game-header">
         <button class="btn-exit" onclick="history.back()">
             <i class="fa-solid fa-person-running"></i> EXIT
         </button>
-        <h2 style="margin: 0;">APP CREATOR CHALLENGE</h2>
-        <div style="background: #eff6ff; padding: 0.5rem 1rem; border-radius: 8px; color: var(--accent-blue); font-weight: 800;">
-            <i class="fa-solid fa-star"></i> <span id="xp-val">0</span> XP
+        <div class="share-tech" style="font-size: 1.2rem; color: var(--neon-green);">
+            SESSION: <span id="session-id">G7_TECH_B_DECODER</span>
+        </div>
+        <div style="background: rgba(14, 165, 233, 0.1); padding: 0.5rem 1rem; border-radius: 8px; color: var(--neon-blue); font-weight: 800; border: 1px solid var(--neon-blue); display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-skull"></i> <span>DIFFICULTY: CIPHER-BREAKER</span>
+            <div style="width: 2px; height: 20px; background: rgba(14, 165, 233, 0.3); margin: 0 0.5rem;"></div>
+            <i class="fa-solid fa-microchip"></i> PROGRESS: <span id="level-num">1</span>/6
         </div>
     </div>
 
-    <div class="main-container">
-        <!-- Toolbox -->
-        <div class="toolbox">
-            <div>
-                <div class="tool-category">Text Elements</div>
-                <div class="tool-item" onclick="addWidget('header')">
-                    <div class="tool-icon"><i class="fa-solid fa-heading"></i></div>
-                    <div><b>Header</b><div class="text-xs text-muted">Big Title</div></div>
-                </div>
-                <div class="tool-item" onclick="addWidget('text')">
-                    <div class="tool-icon"><i class="fa-solid fa-align-left"></i></div>
-                    <div><b>Paragraph</b><div class="text-xs text-muted">Body text</div></div>
-                </div>
-            </div>
-
-            <div>
-                <div class="tool-category">Interactive</div>
-                <div class="tool-item" onclick="addWidget('button')">
-                    <div class="tool-icon"><i class="fa-solid fa-square"></i></div>
-                    <div><b>Button</b><div class="text-xs text-muted">Action trigger</div></div>
-                </div>
-            </div>
-
-            <div>
-                <div class="tool-category">Media & Icons</div>
-                <div class="tool-item" onclick="addWidget('image')">
-                    <div class="tool-icon"><i class="fa-solid fa-image"></i></div>
-                    <div><b>Image</b><div class="text-xs text-muted">A lovely picture</div></div>
-                </div>
-                <div class="tool-item" onclick="addWidget('icon')">
-                    <div class="tool-icon"><i class="fa-solid fa-heart"></i></div>
-                    <div><b>Icon</b><div class="text-xs text-muted">Symbol / Logo</div></div>
-                </div>
-            </div>
+    <!-- Home Screen -->
+    <div id="screen-home" class="screen active">
+        <h1 class="title-glow share-tech">BINARY DECODER</h1>
+        <div style="background: rgba(34, 197, 94, 0.1); padding: 0.5rem 1.5rem; border-radius: 99px; color: var(--neon-green); font-weight: 800; margin-bottom: 1.5rem; border: 1px solid var(--neon-green); font-size: 0.9rem;">
+            LEVEL: CIPHER-BREAKER 🏆
         </div>
-
-        <!-- Canvas -->
-        <div class="canvas-area">
-            <div class="phone-mockup">
-                <div class="phone-notch"></div>
-                <div class="phone-screen" id="app-canvas">
-                    <p style="text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 100px;" id="empty-msg">
-                        Pick a tool to start designing!
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mission -->
-        <div class="mission-panel">
-            <h3 style="margin: 0; color: var(--accent-blue);">DESIGN MISSION</h3>
-            <div class="mission-card" id="mission-card">
-                <h4 id="mission-title" style="margin-top: 0;">Pet Care App</h4>
-                <p id="mission-desc" style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.4;">
-                    Sarah wants an app to track her dog's food. Design a screen that shows a title, a picture of a dog, and a 'Feeding Log' button.
-                </p>
-                
-                <div id="check-list">
-                    <div class="req-item" id="req-header"><i class="fa-solid fa-circle-notch"></i> 1 Header</div>
-                    <div class="req-item" id="req-image"><i class="fa-solid fa-circle-notch"></i> 1 Image</div>
-                    <div class="req-item" id="req-button"><i class="fa-solid fa-circle-notch"></i> 1 Button</div>
-                </div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; font-size: 0.85rem;">
-                <b style="color: var(--accent-purple);">Design Tip:</b> Alignment and visual hierarchy help users understand your app faster!
-            </div>
-
-            <button class="btn-finish" onclick="submitDesign()">FINISH DESIGN</button>
+        <p style="font-size: 1.2rem; margin-bottom: 3rem; color: #94a3b8; max-width: 600px;">
+            The mainframe is protected by shifting entropy. As a <strong>Cipher-Breaker</strong>, you must decode 6 randomized security layers.
+        </p>
+        <div style="display: flex;">
+            <button class="btn-cyber" onclick="startGame()">
+                <i class="fa-solid fa-play"></i> START MISSION
+            </button>
+            <button class="btn-cyber blue" onclick="showScreen('screen-instr')">
+                <i class="fa-solid fa-info-circle"></i> INSTRUCTIONS
+            </button>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="result-modal" class="modal">
+    <!-- Instructions Screen -->
+    <div id="screen-instr" class="screen">
+        <h1 class="share-tech neon-text" style="color: var(--neon-blue);">COMMUNICATION PROTOCOL</h1>
+        <div class="instr-list">
+            <p>1. Computers represent everything using <strong style="color: var(--neon-green);">0s and 1s</strong>.</p>
+            <p>2. Each switch (Bit) represents a value in base 2: <strong style="color: var(--neon-blue);">8, 4, 2, 1</strong> or more.</p>
+            <p>3. Toggle the switches to add up to the character's numeric code.</p>
+            <p>4. Example: <strong style="color: var(--neon-green);">0101</strong> = 4 + 1 = <strong style="color: var(--neon-blue);">5</strong>.</p>
+            <p>5. Each mission level requires you to decode a letter or a word.</p>
+            <p>6. <strong style="color: var(--neon-blue);">Cipher-Breaker Rule:</strong> You must crack 6 randomized layers to win.</p>
+        </div>
+        <button class="btn-cyber blue" style="margin-top: 3rem;" onclick="showScreen('screen-home')">
+            GOT IT, SEND ME IN <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- Game Play Screen -->
+    <div id="screen-game" class="screen">
+        <div class="main-decoder">
+            <div class="mission-text">
+                <h3 class="share-tech" style="color: var(--neon-green); margin: 0;">TERMINAL MISSION</h3>
+                <p id="mission-prompt" style="font-size: 1.2rem; margin: 0.5rem 0 0;">ACCESS GRANTED. DECODE KEY: <strong id="target-char" style="color: var(--neon-blue);">...</strong></p>
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.2rem;">HINT (DECIMAL): <span id="target-val" style="color: var(--neon-blue); font-weight: bold;">...</span></div>
+            </div>
+
+            <div class="binary-grid" id="binary-grid">
+                <!-- bits are generated via JS ... -->
+            </div>
+
+            <div class="result-panel">
+                <div>
+                    <div class="data-label">DECIMAL VALUE</div>
+                    <div id="current-dec" class="data-val share-tech">0</div>
+                </div>
+                <div style="width: 2px; height: 50px; background: rgba(14, 165, 233, 0.2);"></div>
+                <div>
+                    <div class="data-label">CHARACTER OUTPUT</div>
+                    <div id="current-char" class="data-val share-tech" style="color: var(--neon-green);">?</div>
+                </div>
+            </div>
+
+            <button class="btn-cyber" style="width: 100%; margin: 2rem 0 0; justify-content: center;" onclick="checkAnswer()">
+                <i class="fa-solid fa-key"></i> OVERRIDE SYSTEM
+            </button>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
         <div class="modal-content">
-            <h1 id="res-title">Awesome UI! 🎨</h1>
-            <p id="res-msg" style="color: #64748b; font-size: 1.1rem; line-height: 1.6;"></p>
-            <div style="background: #f0fdf4; padding: 2rem; border-radius: 20px; margin: 1.5rem 0;">
-                <div style="font-size: 0.9rem; color: #10b981; font-weight: 800; text-transform: uppercase;">Creativity Score</div>
-                <div style="font-size: 3rem; font-weight: 900; color: #065f46;" id="creativity-score">92%</div>
+            <h1 class="share-tech" style="color: var(--neon-green); font-size: 2.5rem;">ACCESS GRANTED!</h1>
+            <p id="modal-msg" style="margin: 1.5rem 0; font-size: 1.1rem;"></p>
+            <div style="background: rgba(34, 197, 94, 0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+                <span id="xp-gain" style="font-size: 2rem; font-weight: 900; color: var(--neon-green);">+100 XP</span>
             </div>
-            <button class="menu-btn" style="width: 100%; border: none; background: var(--accent-blue);" onclick="nextMission()">CONTINUE QUEST</button>
+            <button class="btn-cyber" id="modal-btn" onclick="nextLevel()" style="width: 100%; justify-content: center; margin: 0;">CONTINUE MISSION</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="screen-over" class="screen">
+        <div class="main-decoder" style="border-color: #fbbf24; text-align: center; padding: 2.5rem;">
+            <i class="fa-solid fa-trophy" style="font-size: 3.5rem; color: #fbbf24; margin-bottom: 1rem;"></i>
+            <h1 class="share-tech" style="color: #fbbf24; font-size: 2.8rem; margin: 0 0 0.5rem 0;">MISSION ACCOMPLISHED</h1>
+            <p style="font-size: 1.2rem; color: #94a3b8; margin-bottom: 2rem;">All security layers have been bypassed. Mainframe restored.</p>
+            
+            <div style="background: rgba(251, 191, 36, 0.1); padding: 2rem 3rem; border-radius: 20px; border: 2px solid #fbbf24; margin-bottom: 2rem; display: inline-block; min-width: 250px;">
+                <div style="font-size: 0.9rem; color: #fbbf24; text-transform: uppercase; letter-spacing: 2px; font-weight: 800;">Total Score</div>
+                <div id="final-xp" style="font-size: 4rem; font-weight: 950; color: #fbbf24; text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);">0 XP</div>
+            </div>
+
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-cyber" onclick="startGame()" style="margin: 0.5rem; font-size: 1.2rem;">
+                    <i class="fa-solid fa-rotate-right"></i> REBOOT SYSTEM
+                </button>
+                <button class="btn-cyber blue" onclick="location.href='/student/play'" style="margin: 0.5rem; font-size: 1.2rem;">
+                    <i class="fa-solid fa-terminal"></i> EXIT TO TERMINAL
+                </button>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         const state = {
+            level: 1,
+            totalLevels: 6,
             xp: 0,
-            mission: 0,
-            widgets: [],
+            currentValue: 0,
+            targetValue: 0,
+            targetChar: '',
+            isWordMission: false,
+            wordProgress: 0,
+            targetWord: '',
+            currentLevelSet: [],
             username: "{{ session.get('username') }}"
         };
 
-        const missions = [
-            {
-                title: "Pet Care App",
-                desc: "Design a screen that shows a title, a picture of a dog, and a 'Feeding Log' button.",
-                reqs: { header: 1, image: 1, button: 1 }
-            },
-            {
-                title: "Coffee Shop",
-                desc: "An app for Sarah's Cafe. Needs a Header, an Icon, and a Button for 'Order Now'.",
-                reqs: { header: 1, icon: 1, button: 1 }
-            },
-            {
-                title: "Music Player",
-                desc: "Design a player screen. Needs an Image for cover art, a Header, and 2 Buttons (Play/Skip).",
-                reqs: { header: 1, image: 1, button: 2 }
-            }
+        const questionPool = [
+            { t: 'A', v: 1, bits: 4 },
+            { t: 'B', v: 2, bits: 4 },
+            { t: 'C', v: 3, bits: 4 },
+            { t: 'D', v: 4, bits: 4 },
+            { t: 'E', v: 5, bits: 4 },
+            { t: 'F', v: 6, bits: 4 },
+            { t: 'G', v: 7, bits: 4 },
+            { t: 'H', v: 8, bits: 4 },
+            { t: 'HI', bits: 4 },
+            { t: 'CAT', bits: 4 },
+            { t: 'BOY', bits: 4 },
+            { t: 'ACE', bits: 4 },
+            { t: '!', v: 33, bits: 8 },
+            { t: '?', v: 63, bits: 8 },
+            { t: '@', v: 64, bits: 8 },
+            { t: '#', v: 35, bits: 8 },
+            { t: '$', v: 36, bits: 8 },
+            { t: '*', v: 42, bits: 8 },
+            { t: 'BIT', bits: 8 },
+            { t: 'CPU', bits: 8 },
+            { t: 'DATA', bits: 8 },
+            { t: 'CORE', bits: 8 },
+            { t: 'NET', bits: 8 },
+            { t: 'BIN', bits: 8 },
+            { t: 'CODE', bits: 8 }
         ];
 
-        function addWidget(type) {
-            document.getElementById('empty-msg').style.display = 'none';
-            const canvas = document.getElementById('app-canvas');
-            const widget = document.createElement('div');
-            widget.className = `widget w-${type}`;
-            widget.id = 'w-' + Date.now();
+        function shuffleLevels() {
+            let shuffled = [...questionPool].sort(() => 0.5 - Math.random());
+            state.currentLevelSet = shuffled.slice(0, state.totalLevels);
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function startGame() {
+            shuffleLevels();
+            state.level = 1;
+            state.xp = 0;
+            showScreen('screen-game');
+            initLevel();
+        }
+
+        function initLevel() {
+            const config = state.currentLevelSet[state.level - 1];
+            state.currentValue = 0;
+            updateDisplay();
+
+            if (typeof config.t === 'string' && config.t.length > 1) {
+                state.isWordMission = true;
+                state.targetWord = config.t;
+                state.wordProgress = 0;
+                setWordTarget();
+            } else {
+                state.isWordMission = false;
+                state.targetChar = config.t;
+                state.targetValue = config.v;
+                document.getElementById('target-char').innerText = state.targetChar;
+                document.getElementById('target-val').innerText = state.targetValue;
+            }
+
+            renderGrid(config.bits);
+            document.getElementById('level-num').innerText = state.level;
+        }
+
+        function setWordTarget() {
+            const char = state.targetWord[state.wordProgress];
+            state.targetChar = char;
+            state.targetValue = char === ' ' ? 0 : char.charCodeAt(0);
             
-            let content = '';
-            if(type === 'header') content = 'My App Title';
-            if(type === 'text') content = 'Click here to add some body text to your design.';
-            if(type === 'button') content = 'ACTION BUTTON';
-            if(type === 'image') content = '<i class="fa-solid fa-camera"></i> Image Box';
-            if(type === 'icon') content = '<i class="fa-solid fa-star"></i>';
+            // Standardize for game: A=1, B=2 logic for simple letters if below 32
+            const config = state.currentLevelSet[state.level - 1];
+            if(state.targetValue > 64 && state.targetValue < 91 && config.bits === 4) {
+                state.targetValue -= 64;
+            }
 
-            widget.innerHTML = `<span class="widget-content">${content}</span> <div class="widget-delete" onclick="event.stopPropagation(); removeWidget('${widget.id}')">✕</div>`;
-            widget.onclick = (e) => {
-                if(!e.target.classList.contains('widget-delete')) editWidget(widget);
-            };
-
-            canvas.appendChild(widget);
-            state.widgets.push({ id: widget.id, type: type });
-            updateChecklist();
+            document.getElementById('target-char').innerText = `${state.targetWord} (Decoding: ${char})`;
+            document.getElementById('target-val').innerText = state.targetValue;
         }
 
-        function removeWidget(id) {
-            const el = document.getElementById(id);
-            if(el) el.remove();
-            state.widgets = state.widgets.filter(w => w.id !== id);
-            updateChecklist();
+        function renderGrid(count) {
+            const grid = document.getElementById('binary-grid');
+            grid.innerHTML = '';
+            for (let i = count - 1; i >= 0; i--) {
+                const val = Math.pow(2, i);
+                const well = document.createElement('div');
+                well.className = 'bit-well';
+                well.innerHTML = `
+                    <div class="bit-switch" onclick="toggleBit(this, ${val})" data-bitval="${val}"></div>
+                    <div class="bit-val share-tech">${val}</div>
+                `;
+                grid.appendChild(well);
+            }
         }
 
-        function editWidget(el) {
-            const contentSpan = el.querySelector('.widget-content');
-            const current = contentSpan.innerText.trim();
-            const newVal = prompt("Edit label:", current);
-            if(newVal !== null) {
-                const icon = contentSpan.querySelector('i');
-                if(icon) {
-                    contentSpan.innerHTML = `${icon.outerHTML} ${newVal}`;
+        function toggleBit(el, val) {
+            el.classList.toggle('on');
+            if (el.classList.contains('on')) {
+                state.currentValue += val;
+            } else {
+                state.currentValue -= val;
+            }
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('current-dec').innerText = state.currentValue;
+            let char = '?';
+            if (state.currentValue > 0) {
+                const config = state.currentLevelSet[state.level - 1];
+                if (config.bits === 4) {
+                    char = String.fromCharCode(state.currentValue + 64);
                 } else {
-                    contentSpan.innerText = newVal;
+                    char = String.fromCharCode(state.currentValue);
                 }
+            }
+            document.getElementById('current-char').innerText = char;
+        }
+
+        function checkAnswer() {
+            if (state.currentValue === state.targetValue) {
+                if (state.isWordMission) {
+                    state.wordProgress++;
+                    if (state.wordProgress < state.targetWord.length) {
+                        document.querySelectorAll('.bit-switch').forEach(s => s.classList.remove('on'));
+                        state.currentValue = 0;
+                        updateDisplay();
+                        setWordTarget();
+                        return;
+                    }
+                }
+                
+                // Mission Complete
+                const modal = document.getElementById('success-modal');
+                const msg = document.getElementById('modal-msg');
+                msg.innerText = `You successfully cracked the level ${state.level} code! The security layer has been bypassed.`;
+                
+                state.xp += 100;
+                confetti();
+                modal.style.display = 'flex';
+                saveScore();
+            } else {
+                // Error effect
+                const decoder = document.querySelector('.main-decoder');
+                decoder.style.borderColor = '#ef4444';
+                setTimeout(() => decoder.style.borderColor = 'rgba(34, 197, 94, 0.3)', 300);
             }
         }
 
-        function updateChecklist() {
-            const currentMission = missions[state.mission % missions.length];
-            const counts = {};
-            state.widgets.forEach(w => counts[w.type] = (counts[w.type] || 0) + 1);
-
-            Object.keys(currentMission.reqs).forEach(type => {
-                const el = document.getElementById(`req-${type}`);
-                if(el) {
-                    const met = (counts[type] || 0) >= currentMission.reqs[type];
-                    el.className = 'req-item' + (met ? ' req-met' : '');
-                    el.innerHTML = `<i class="fa-solid fa-${met ? 'check-circle' : 'circle-notch'}"></i> ${currentMission.reqs[type]} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
-                }
-            });
-        }
-
-        function submitDesign() {
-            const currentMission = missions[state.mission % missions.length];
-            const counts = {};
-            state.widgets.forEach(w => counts[w.type] = (counts[w.type] || 0) + 1);
-
-            let allMet = true;
-            Object.keys(currentMission.reqs).forEach(type => {
-                if((counts[type] || 0) < currentMission.reqs[type]) allMet = false;
-            });
-
-            if(!allMet) {
-                alert("The design doesn't meet Sarah's needs yet! Check the requirements.");
-                return;
+        function nextLevel() {
+            document.getElementById('success-modal').style.display = 'none';
+            if (state.level < state.totalLevels) {
+                state.level++;
+                initLevel();
+            } else {
+                showGameOver();
             }
-
-            const modal = document.getElementById('result-modal');
-            const scoreEl = document.getElementById('creativity-score');
-            const msgEl = document.getElementById('res-msg');
-
-            const variety = new Set(state.widgets.map(w => w.type)).size;
-            const score = 80 + (variety * 3) + (state.widgets.length > 4 ? 5 : 0);
-            
-            scoreEl.innerText = Math.min(score, 100) + '%';
-            msgEl.innerText = `Great job solving the user problem for "${currentMission.title}"! Your UI was clean and functional.`;
-            
-            state.xp += 100;
-            document.getElementById('xp-val').innerText = state.xp;
-            modal.style.display = 'flex';
-            confetti();
-            saveScore();
         }
 
-        function nextMission() {
-            document.getElementById('result-modal').style.display = 'none';
-            document.getElementById('app-canvas').innerHTML = '<p style="text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 100px;" id="empty-msg">Pick a tool to start designing!</p>';
-            state.widgets = [];
-            state.mission++;
-            
-            const next = missions[state.mission % missions.length];
-            document.getElementById('mission-title').innerText = next.title;
-            document.getElementById('mission-desc').innerText = next.desc;
-            
-            const list = document.getElementById('check-list');
-            list.innerHTML = '';
-            Object.keys(next.reqs).forEach(type => {
-                const req = document.createElement('div');
-                req.className = 'req-item';
-                req.id = `req-${type}`;
-                req.innerHTML = `<i class="fa-solid fa-circle-notch"></i> ${next.reqs[type]} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
-                list.appendChild(req);
+        function showGameOver() {
+            document.getElementById('final-xp').innerText = state.xp + " XP";
+            showScreen('screen-over');
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
             });
         }
 
@@ -485,6 +534,31 @@
                 body: `username=${encodeURIComponent(state.username)}&score=${state.xp}&subject=Technology&game_name=G7_Tech_Ch1_L1`
             });
         }
+
+        /* Matrix Canvas Anim */
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const alphabet = "01";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for (let x = 0; x < columns; x++) drops[x] = 1;
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#22c55e";
+            ctx.font = fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
     </script>
 </body>
 </html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Device Selector - Grade 6 Technology</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --accent: #22d3ee;
+            --bg: #020617;
+            --card-bg: rgba(15, 23, 42, 0.9);
+            --text: #ffffff;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .game-header {
+            background: rgba(0,0,0,0.5);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            padding: 0.5rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-weight: 700;
+        }
+
+        .game-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .level-indicator {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            border-radius: 30px;
+            padding: 3rem;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-text {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .option-btn {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-5px);
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .option-btn i {
+            font-size: 3.5rem;
+            color: var(--primary);
+        }
+
+        .option-btn span {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .option-btn.correct {
+            background: var(--success) !important;
+            border-color: var(--success) !important;
+            color: white !important;
+        }
+
+        .option-btn.wrong {
+            background: var(--danger) !important;
+            border-color: var(--danger) !important;
+            color: white !important;
+        }
+
+        .feedback-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .feedback-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timer-bar {
+            position: absolute;
+            bottom: 0; left: 0;
+            height: 6px;
+            background: var(--accent);
+            width: 100%;
+            transition: width linear;
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .xp-badge {
+            font-size: 4rem;
+            color: #fbbf24;
+            text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+            margin: 2rem 0;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+        }
+
+        .btn-action {
+            padding: 1rem 3rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            margin: 0.5rem;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: transparent; border: 2px solid #334155; color: #94a3b8; }
+
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+
+        /* Levels Visualizers */
+        .level-dots {
+            display: flex;
+            gap: 10px;
+            margin-top: 2rem;
+        }
+
+        .dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: #1e2937;
+            transition: 0.3s;
+        }
+
+        .dot.active { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .dot.complete { background: var(--success); }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating { animation: float 3s ease-in-out infinite; }
+    </style>
+</head>
+<body>
+
+    <header class="game-header">
+        <div class="logo"><i class="fa-solid fa-microchip"></i> SMART DEVICE SELECTOR</div>
+        <div class="stats-container">
+            <div class="stat-box">XP: <span id="xp-count">0</span></div>
+            <div class="stat-box" id="timer-box" style="display:none; color: var(--danger);">⏱️ <span id="time-left">15</span>s</div>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <!-- Game Play Area -->
+        <div id="game-view">
+            <div style="text-align: center;">
+                <div class="level-indicator" id="level-title">Level 1: Daily Use</div>
+            </div>
+
+            <div class="question-card" id="q-card">
+                <div class="question-text" id="q-text">Which device is best for talking to someone far away?</div>
+                
+                <div class="options-grid" id="options-container">
+                    <!-- Options injected here -->
+                </div>
+
+                <div class="feedback-overlay" id="feedback">
+                    <i class="feedback-icon" id="f-icon"></i>
+                    <h2 id="f-text" style="font-size: 2rem; margin: 0;"></h2>
+                    <p id="f-desc" style="color: #94a3b8; margin-top: 1rem;"></p>
+                </div>
+
+                <div class="timer-bar" id="t-bar" style="display: none;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: center;">
+                <div class="level-dots" id="dot-container">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Area -->
+        <div class="result-screen" id="result-view">
+            <div class="floating">
+                <i class="fa-solid fa-trophy" style="font-size: 6rem; color: #fbbf24;"></i>
+            </div>
+            <h1 style="font-size: 3rem; font-family: 'Orbitron'; margin-top: 1.5rem;">MISSION COMPLETE</h1>
+            <p style="font-size: 1.5rem; color: #94a3b8;">You've mastered the world of modern technology!</p>
+            
+            <div class="xp-badge">+100 XP</div>
+            
+            <div style="margin-top: 3rem;">
+                <button class="btn-action btn-primary" onclick="location.reload()">Play Again</button>
+                <button class="btn-action btn-outline" onclick="window.history.back()">Exit Game</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const questionPool = {
+            1: [ // Level 1: Common devices
+                { q: "Talk to someone far away", correct: "Smartphone", options: ["Smartphone", "Printer", "Washing Machine"], icon: "fa-mobile-screen-button" },
+                { q: "Watch your favorite YouTube videos", correct: "Smart TV", options: ["Smart TV", "Camera", "Microwave"], icon: "fa-tv" },
+                { q: "Type a school document or letter", correct: "Computer", options: ["Computer", "Radio", "Smart Speaker"], icon: "fa-computer" },
+                { q: "Play high-graphics video games", correct: "Game Console", options: ["Game Console", "Calculator", "Iron"], icon: "fa-gamepad" }
+            ],
+            2: [ // Level 2: Purpose
+                { q: "Print your homework project on paper", correct: "Printer", options: ["Printer", "Scanner", "Tablet"], icon: "fa-print" },
+                { q: "Store your school files and photos safely", correct: "Pen Drive", options: ["Pen Drive", "Watch", "Smart Bulb"], icon: "fa-usb-drive" },
+                { q: "Click high-quality photos on the go", correct: "Camera / Phone", options: ["Camera / Phone", "Smart TV", "Monitor"], icon: "fa-camera" },
+                { q: "Listen to music privately without disturbing others", correct: "Headphones", options: ["Headphones", "Speaker", "Projector"], icon: "fa-headphones" }
+            ],
+            3: [ // Level 3: Smart Thinking
+                { q: "Which is best for attending a long online class?", correct: "Laptop", options: ["Laptop", "Smart Watch", "Smart Speaker"], icon: "fa-laptop" },
+                { q: "Uses the internet to answer your questions by voice", correct: "Smart Speaker", options: ["Smart Speaker", "Iron", "Radio"], icon: "fa-microphone-lines" },
+                { q: "Which device cleans your floor automatically?", correct: "Robot Vacuum", options: ["Robot Vacuum", "Laptop", "Smart TV"], icon: "fa-robot" },
+                { q: "See your messages directly on your wrist", correct: "Smart Watch", options: ["Smart Watch", "Tablet", "Pen Drive"], icon: "fa-stopwatch" }
+            ],
+            4: [ // Level 4: Tricky / Challenge (Timer)
+                { q: "Which device helps you send emails?", correct: "Phone / Computer", options: ["Phone / Computer", "Microwave", "Scanner"], icon: "fa-envelope" },
+                { q: "Can be used to search for information on Google", correct: "Tablet", options: ["Tablet", "Pen Drive", "Printer"], icon: "fa-tablet-screen-button" },
+                { q: "Finds your location using GPS", correct: "Smartphone", options: ["Smartphone", "Smart TV", "Game Console"], icon: "fa-location-dot" },
+                { q: "Connects your house to the internet", correct: "Router", options: ["Router", "Adapter", "USB Cable"], icon: "fa-wifi" }
+            ]
+        };
+
+        const icons = {
+            "Smartphone": "fa-mobile-screen-button",
+            "Smart TV": "fa-tv",
+            "Computer": "fa-computer",
+            "Game Console": "fa-gamepad",
+            "Printer": "fa-print",
+            "Pen Drive": "fa-usb-drive",
+            "Camera / Phone": "fa-camera",
+            "Headphones": "fa-headphones",
+            "Laptop": "fa-laptop",
+            "Smart Speaker": "fa-microphone-lines",
+            "Robot Vacuum": "fa-robot",
+            "Smart Watch": "fa-stopwatch",
+            "Phone / Computer": "fa-envelope",
+            "Tablet": "fa-tablet-screen-button",
+            "Router": "fa-wifi",
+            "Radio": "fa-radio",
+            "Calculator": "fa-calculator",
+            "Washing Machine": "fa-soap",
+            "Iron": "fa-plug",
+            "Microwave": "fa-fire",
+            "Scanner": "fa-id-card",
+            "Watch": "fa-clock",
+            "Smart Bulb": "fa-lightbulb",
+            "Monitor": "fa-desktop",
+            "Speaker": "fa-volume-high",
+            "Projector": "fa-video",
+            "Adapter": "fa-plug-circle-bolt",
+            "USB Cable": "fa-link"
+        };
+
+        let currentLevel = 1;
+        let questionsInLevel = 0;
+        let totalQuestionsDone = 0;
+        let sessionQuestions = [];
+        let xp = 0;
+        let timer = null;
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function initGame() {
+            // Pick 2 questions per level
+            for(let l=1; l<=4; l++) {
+                const picked = shuffle([...questionPool[l]]).slice(0, 2);
+                sessionQuestions.push(...picked);
+            }
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const currentQ = sessionQuestions[totalQuestionsDone];
+            
+            // UI Updates
+            const levelTitles = ["Daily Use", "Purpose-Driven", "Smart Thinking", "CHALLENGE MODE"];
+            document.getElementById('level-title').innerText = `Level ${currentLevel}: ${levelTitles[currentLevel-1]}`;
+            document.getElementById('q-text').innerText = currentQ.q;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            shuffle([...currentQ.options]).forEach(opt => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.innerHTML = `
+                    <i class="fa-solid ${icons[opt] || 'fa-microchip'}"></i>
+                    <span>${opt}</span>
+                `;
+                btn.onclick = () => checkAnswer(opt, currentQ.correct);
+                container.appendChild(btn);
+            });
+
+            // Level 4 Timer
+            if(currentLevel === 4) {
+                startTimer();
+            } else {
+                document.getElementById('timer-box').style.display = 'none';
+                document.getElementById('t-bar').style.display = 'none';
+            }
+
+            updateDots();
+        }
+
+        function startTimer() {
+            document.getElementById('timer-box').style.display = 'block';
+            document.getElementById('t-bar').style.display = 'block';
+            let timeLeft = 15;
+            document.getElementById('time-left').innerText = timeLeft;
+            const bar = document.getElementById('t-bar');
+            bar.style.transition = 'none';
+            bar.style.width = '100%';
+            
+            setTimeout(() => {
+                bar.style.transition = 'width 15s linear';
+                bar.style.width = '0%';
+            }, 50);
+
+            if(timer) clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time-left').innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    showFeedback(false, "Time's up! Think faster next time!");
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(selected, correct) {
+            if(timer) clearInterval(timer);
+            const isCorrect = selected === correct;
+            showFeedback(isCorrect, isCorrect ? "Correct! Great job!" : "Try again! Think carefully");
+        }
+
+        function showFeedback(success, text) {
+            const overlay = document.getElementById('feedback');
+            const icon = document.getElementById('f-icon');
+            const fText = document.getElementById('f-text');
+            const fDesc = document.getElementById('f-desc');
+
+            overlay.style.display = 'flex';
+            icon.className = `feedback-icon fa-solid ${success ? 'fa-circle-check text-success' : 'fa-circle-xmark text-danger'}`;
+            fText.innerText = success ? "MISSION ACCOMPLISHED" : "SYSTEM ERROR";
+            fText.style.color = success ? 'var(--success)' : 'var(--danger)';
+            fDesc.innerText = text;
+
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                if(success) {
+                    totalQuestionsDone++;
+                    questionsInLevel++;
+                    xp += 10;
+                    document.getElementById('xp-count').innerText = xp;
+                    
+                    if(questionsInLevel === 2) {
+                        currentLevel++;
+                        questionsInLevel = 0;
+                    }
+
+                    if(totalQuestionsDone === 8) {
+                        endGame();
+                    } else {
+                        loadQuestion();
+                    }
+                }
+            }, 1800);
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, idx) => {
+                if(idx < totalQuestionsDone) {
+                    dot.className = 'dot complete';
+                } else if(idx === totalQuestionsDone) {
+                    dot.className = 'dot active';
+                } else {
+                    dot.className = 'dot';
+                }
+            });
+        }
+
+        function endGame() {
+            document.getElementById('game-view').style.display = 'none';
+            document.getElementById('result-view').style.display = 'block';
+            saveScore();
+        }
+
+        function saveScore() {
+            const formData = new FormData();
+            formData.append('username', "{{ session.get('username') }}");
+            formData.append('score', 100);
+            formData.append('subject', 'Technology');
+            formData.append('game_name', 'G6_Tech_Ch1_L1');
+
+            fetch('/save_score', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.text())
+              .then(data => console.log('Score saved:', data));
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

@@ -1,6 +1,43 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, jsonify
 import sqlite3
 from datetime import datetime
+import os
+import random
+
+# Centralized Game Registry for Automated Progress Tracking
+# Format: Grade -> Subject -> Chapter -> [Game IDs as stored in 'scores' table]
+GAME_REGISTRY = {
+    "G6": {
+        "Maths": {1: ["G6_Maths_Ch1", "G6_Maths_Ch1_L2", "G6_Maths_Ch1_L3"]},
+        "Science": {
+            1: ["G6_Bio_Ch1_L1", "G6_Bio_Ch1_L2", "G6_Chem_Ch1_L1"]
+        },
+        "Technology": {1: ["G6_Tech_Ch1_L1"]},
+        "Engineering": {1: ["G6_Eng_Ch1_L1"]}
+    },
+    "G7": {
+        "Maths": {
+            1: ["G7_Maths_Ch1_L1"],
+            2: ["G7_Maths_Ch2_L1"]
+        },
+        "Science": {
+            1: [
+                "G7_Chem_Ch1_L1", "G7_Chem_Ch1_L2", 
+                "G7_Phys_Ch1_L1", "G7_Phys_Ch1_L2", "G7_Phys_Ch1_L3", "G7_Phys_Ch1_L4",
+                "G7_Bio_Ch1_L1"
+            ],
+            2: ["G7_Bio_Ch2_L1"]
+        },
+        "Technology": {1: ["G7_Tech_Ch1_L1"]},
+        "Engineering": {1: ["G7_Eng_Ch1_L1"]}
+    },
+    "G9": {
+        "Science": {
+            5: ["G9_Bio_Ch5_L1"],
+            9: ["G9_Phys_Ch9_L1", "G9_Phys_Ch9_L2", "G9_Phys_Ch9_L3"]
+        }
+    }
+}
 
 app = Flask(__name__)
 app.secret_key = "super_secret_stem_key_123"
@@ -246,91 +283,89 @@ def student_progress():
         return redirect("/")
         
     username = session.get("username")
+    # Identify grade from username (e.g., G7-01 -> G7)
+    grade = username.split('-')[0] if '-' in username else "G6"
     student_name = session.get("name")
-    subject = request.args.get("subject")
     
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     
-    # Fetch teachers assigned to the student
+    # 1. Fetch Teachers
     cursor.execute("SELECT subject, teacher_name FROM student_teacher_assignments WHERE student_name = ?", (student_name,))
     assigned_teachers = {row[0]: row[1] for row in cursor.fetchall()}
     
-    chapter_progress = []
-    if subject:
-        if subject == "Maths":
-            cursor.execute("""
-                SELECT game_name, score 
-                FROM scores 
-                WHERE username = ? AND subject = ? AND game_name LIKE 'G6_Maths_Ch1%'
-            """, (username, subject))
-            ch1_scores = cursor.fetchall()
+    # 2. Fetch All Student Scores
+    cursor.execute("SELECT game_name, score, subject FROM scores WHERE username = ?", (username,))
+    raw_scores = cursor.fetchall()
+    score_map = {row[0]: row[1] for row in raw_scores}
+    completed_game_ids = set(score_map.keys())
+    
+    # 3. Calculate Mastery & Progress
+    subject_stats = []
+    total_xp = sum(score_map.values())
+    total_completed = len(completed_game_ids)
+    
+    grade_registry = GAME_REGISTRY.get(grade, {})
+    total_possible_in_grade = 0
+    
+    for subj, chapters in grade_registry.items():
+        subj_total = 0
+        subj_completed = 0
+        subj_xp = 0
+        chap_details = []
+        
+        for chap_num, game_ids in chapters.items():
+            chap_total = len(game_ids)
+            chap_completed = sum(1 for gid in game_ids if gid in completed_game_ids)
+            chap_xp = sum(score_map.get(gid, 0) for gid in game_ids if gid in completed_game_ids)
             
-            completed_topics = 0
-            total_xp = 0
-            for row in ch1_scores:
-                game_name = row[0]
-                xp = row[1]
-                total_xp += xp
-                if game_name == 'G6_Maths_Ch1':
-                    completed_topics += 1
-                elif game_name == 'G6_Maths_Ch1_L2':
-                    completed_topics += 1
-                elif game_name == 'G6_Maths_Ch1_L3':
-                    completed_topics += 2
+            subj_total += chap_total
+            subj_completed += chap_completed
+            subj_xp += chap_xp
+            total_possible_in_grade += chap_total
             
-            chapter_progress.append({
-                "chapter_num": 1,
-                "chapter_name": "Knowing Our Numbers",
-                "completed": completed_topics,
-                "total": 4, # 4 topics across 3 levels
-                "xp": total_xp
+            chap_details.append({
+                "num": chap_num,
+                "completed": chap_completed,
+                "total": chap_total,
+                "xp": chap_xp,
+                "is_done": (chap_completed == chap_total)
             })
             
-        elif subject == "Science":
-            # Fetch ALL Science scores to handle Bio, Chem, Physics
-            cursor.execute("""
-                SELECT game_name, score 
-                FROM scores 
-                WHERE username = ? AND subject = ?
-            """, (username, subject))
-            all_sci_scores = cursor.fetchall()
-            
-            # Categorize scores
-            bio_scores = []
-            chem_scores = []
-            
-            for row in all_sci_scores:
-                game_name = row[0]
-                xp = row[1]
-                if game_name.startswith("G6_Bio_Ch1"):
-                    bio_scores.append(xp)
-                elif game_name.startswith("G6_Chem_Ch1"):
-                    chem_scores.append(xp)
-            
-            # Prepare chapters for display
-            sci_chapters = [
-                {"name": "Mindful Eating", "scores": bio_scores, "total": 2, "num": 1},
-                {"name": "Matter and Its States", "scores": chem_scores, "total": 1, "num": 1}
-            ]
-            
-            for chap in sci_chapters:
-                scores_list = chap["scores"]
-                # Explicit check to satisfy linter type inference
-                if isinstance(scores_list, list):
-                    completed = len(scores_list)
-                    total_xp = sum(scores_list)
-                    chapter_progress.append({
-                        "chapter_num": chap["num"],
-                        "chapter_name": chap["name"],
-                        "completed": completed,
-                        "total": chap["total"],
-                        "xp": total_xp
-                    })
+        subject_stats.append({
+            "name": subj,
+            "total": subj_total,
+            "completed": subj_completed,
+            "xp": subj_xp,
+            "percentage": int((subj_completed / subj_total * 100)) if subj_total > 0 else 0,
+            "chapters": chap_details
+        })
+
+    # 4. Mastery Level Calculation
+    # Level 1: 0, Level 2: 250, Level 3: 500, Level 4: 1000, Level 5: 2000...
+    mastery_ranks = [
+        (0, "Novice Explorer", "#94a3b8", "148, 163, 184"),
+        (250, "STEM Apprentice", "#10b981", "16, 185, 129"),
+        (500, "Brainiac Scholar", "#3b82f6", "59, 130, 246"),
+        (1000, "Master Strategist", "#8b5cf6", "139, 92, 246"),
+        (2000, "Grand Master of STEM", "#f59e0b", "245, 158, 11")
+    ]
+    
+    current_rank = {"name": mastery_ranks[0][1], "color": mastery_ranks[0][2], "rgb": mastery_ranks[0][3]}
+    for m_xp, m_name, m_color, m_rgb in mastery_ranks:
+        if total_xp >= m_xp:
+            current_rank = {"name": m_name, "color": m_color, "rgb": m_rgb}
             
     conn.close()
     
-    return render_template("student_dashboard.html", active_tab="progress", subject=subject, chapter_progress=chapter_progress, assigned_teachers=assigned_teachers)
+    return render_template("student_dashboard.html", 
+                           active_tab="progress", 
+                           subject_stats=subject_stats, 
+                           total_xp=total_xp,
+                           total_completed=total_completed,
+                           total_possible=total_possible_in_grade,
+                           mastery_rank=current_rank,
+                           assigned_teachers=assigned_teachers)
 
 # Student Leaderboard
 @app.route("/leaderboard")
@@ -737,6 +772,13 @@ def play_g6_eng_ch1_l1():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
     return render_template("g6_eng_ch1_l1.html")
+
+# Grade 6 Technology Game 1 Route (Smart Device Selector)
+@app.route("/student/play/tech/g6/ch1_l1")
+def play_g6_tech_ch1_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g6_tech_ch1_l1.html")
 
 
 # Save game score
