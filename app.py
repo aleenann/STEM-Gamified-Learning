@@ -678,6 +678,13 @@ def play_g9_phys_ch9_l3():
     return render_template("g9_phys_ch9_l3.html")
 
 
+@app.route("/student/play/bio/g9/ch5_l1")
+def play_g9_bio_ch5_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g9_bio_ch5_l1.html")
+
+
 @app.route("/student/play/tech/g7/ch1_l1")
 def play_g7_tech_ch1_l1():
     if "name" not in session or session.get("role") != "student":
