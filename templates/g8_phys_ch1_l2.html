@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constellation Connect - Grade 8 Physics</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-bg: #f8fafc;
+            --accent-blue: #3b82f6;
+            --star-gold: #fde047;
+            --text-main: #1e293b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--sky-bg);
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        .game-header {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            position: relative;
+            z-index: 100;
+        }
+
+        .btn-exit {
+            background: #f1f5f9;
+            color: #64748b;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-exit:hover { background: #e2e8f0; color: #1e293b; }
+
+        .sky-canvas-container {
+            width: 100vw;
+            height: calc(100vh - 80px);
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            position: relative;
+            cursor: crosshair;
+        }
+
+        #constellation-svg { width: 100%; height: 100%; }
+
+        .star {
+            fill: #fff;
+            stroke: #3b82f6;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .star.connected { fill: #f59e0b; r: 8; stroke: #f59e0b; }
+        .star.target { r: 10; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0% { r: 6; stroke-opacity: 1; }
+            50% { r: 12; stroke-opacity: 0.4; }
+            100% { r: 6; stroke-opacity: 1; }
+        }
+
+        .constellation-line {
+            stroke: #3b82f6;
+            stroke-width: 3;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 0.8s ease-out forwards;
+        }
+
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+        .game-overlay {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(255,255,255,0.9);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            max-width: 300px;
+            z-index: 50;
+        }
+
+        .check-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .points-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            border: 1px solid #fde68a;
+        }
+
+        .modal-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-header">
+        <button class="btn-exit" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=1'"><i class="fa-solid fa-arrow-left"></i> EXIT</button>
+        <div style="text-align: center;">
+            <h2 id="quest-title" style="margin: 0; font-weight: 900; color: #1e3a8a;">URSA MAJOR</h2>
+            <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;">CLASS 8 PHYSICS • LEVEL 2</div>
+        </div>
+        <div style="background: #fef3c7; color: #92400e; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 800;">
+            MISSION: CONNECT
+        </div>
+    </div>
+
+    <div class="sky-canvas-container">
+        <div class="game-overlay">
+            <h3 style="margin: 0.5rem 0 0.2rem 0; color: #1e3a8a;" id="instr-title">Assemble Ursa Major</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.5rem;">Connect the stars in sequence to form the constellation. Don't skip any stars!</p>
+            <div id="progress-bar" style="height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 1rem; overflow: hidden;">
+                <div id="progress-fill" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.3s;"></div>
+            </div>
+        </div>
+        <svg id="constellation-svg" viewbox="0 0 1000 700"></svg>
+    </div>
+
+    <!-- Modal -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">✨</div>
+            <h1 style="color: #1e3a8a;" id="res-title">Constellation Master!</h1>
+            <p id="res-msg" style="color: #64748b; line-height: 1.6;"></p>
+            
+            <div class="points-badge">
+                <i class="fa-solid fa-star"></i> 100 XP Earned
+            </div>
+
+            <div class="modal-btn-group">
+                <button class="check-btn" id="modal-btn" onclick="nextConstellation()">CONTINUE MISSION <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                <button class="btn-secondary" onclick="window.location.reload()" style="background: #f1f5f9; padding: 1rem; border-radius: 12px; font-weight: 700; border: none; cursor: pointer;">Play Again <i class="fa-solid fa-rotate-right ml-1"></i></button>
+                <button class="btn-exit" style="padding: 1rem; width: 100%;" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=1'">Exit to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const constellations = [
+            {
+                name: "Ursa Major",
+                objective: "The 'Big Dipper'",
+                fact: "Also called the Great Bear, these stars help navigators locate the Pole Star.",
+                stars: [
+                    { id: 1, x: 200, y: 150 }, { id: 2, x: 350, y: 180 }, { id: 3, x: 450, y: 250 },
+                    { id: 4, x: 500, y: 380 }, { id: 5, x: 650, y: 400 }, { id: 6, x: 680, y: 280 },
+                    { id: 7, x: 530, y: 260 }, { id: 8, x: 500, y: 380 }
+                ]
+            },
+            {
+                name: "Orion",
+                objective: "The 'Hunter'",
+                fact: "Famous for the three bright stars that form 'Orion's Belt'. Visible in winter.",
+                stars: [
+                    { id: 1, x: 450, y: 100 }, { id: 2, x: 380, y: 200 }, { id: 3, x: 520, y: 200 },
+                    { id: 4, x: 430, y: 300 }, { id: 5, x: 450, y: 300 }, { id: 6, x: 470, y: 300 },
+                    { id: 7, x: 400, y: 450 }, { id: 8, x: 500, y: 450 }
+                ]
+            }
+        ];
+
+        let currentConstIdx = 0;
+        let connectedStars = [];
+        const svg = document.getElementById('constellation-svg');
+
+        function loadConstellation() {
+            const data = constellations[currentConstIdx];
+            document.getElementById('quest-title').innerText = data.name.toUpperCase();
+            document.getElementById('instr-title').innerText = `Assemble ${data.name}`;
+            document.getElementById('progress-fill').style.width = '0%';
+            connectedStars = [];
+            svg.innerHTML = '';
+            
+            data.stars.forEach((s, index) => {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", s.x);
+                circle.setAttribute("cy", s.y);
+                circle.setAttribute("r", index === 0 ? "10" : "6");
+                circle.setAttribute("class", index === 0 ? "star target" : "star");
+                circle.setAttribute("id", `star-${index}`);
+                circle.onclick = () => handleStarClick(index);
+                svg.appendChild(circle);
+            });
+        }
+
+        function handleStarClick(idx) {
+            const data = constellations[currentConstIdx];
+            if (idx === connectedStars.length) {
+                const starEl = document.getElementById(`star-${idx}`);
+                starEl.classList.remove('target');
+                starEl.classList.add('connected');
+                if (connectedStars.length > 0) {
+                    const prevIdx = connectedStars[connectedStars.length - 1];
+                    drawLine(data.stars[prevIdx], data.stars[idx]);
+                }
+                connectedStars.push(idx);
+                if (idx < data.stars.length - 1) {
+                    document.getElementById(`star-${idx + 1}`).classList.add('target');
+                }
+                const progress = (connectedStars.length / data.stars.length) * 100;
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+                if (connectedStars.length === data.stars.length) showResult();
+            } else {
+                const starEl = document.getElementById(`star-${idx}`);
+                starEl.style.fill = '#ef4444';
+                setTimeout(() => starEl.style.fill = '', 300);
+            }
+        }
+
+        function drawLine(s1, s2) {
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", s1.x); line.setAttribute("y1", s1.y);
+            line.setAttribute("x2", s2.x); line.setAttribute("y2", s2.y);
+            line.setAttribute("class", "constellation-line");
+            svg.insertBefore(line, svg.firstChild);
+        }
+
+        function showResult() {
+            const data = constellations[currentConstIdx];
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            document.getElementById('res-msg').innerText = data.fact;
+            if (currentConstIdx < constellations.length - 1) {
+                document.getElementById('modal-btn').innerText = "Next Constellation";
+            } else {
+                document.getElementById('modal-btn').innerText = "Mission Complete: See Result";
+                document.getElementById('modal-btn').onclick = () => {
+                   saveScore();
+                   document.getElementById('modal-btn').style.display = 'none';
+                };
+            }
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        function nextConstellation() {
+            document.getElementById('result-modal').style.display = 'none';
+            currentConstIdx++;
+            loadConstellation();
+        }
+
+        function saveScore() {
+            const username = "{{ session.get('username') }}";
+            fetch('/save_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `username=${encodeURIComponent(username)}&score=100&subject=Science&game_name=G8_Phys_Ch1_L2`
+            });
+        }
+
+        loadConstellation();
+    </script>
+</body>
+</html>

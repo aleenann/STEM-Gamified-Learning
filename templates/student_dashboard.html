@@ -256,6 +256,16 @@
                 </div>
             </div>
 
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g8' and not chapter %}
+            <p class="text-muted mb-2">Grade 8 Physics Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Physics&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-sun text-warning" style="font-size: 2.5rem; margin-bottom: 1rem; color: #f59e0b;"></i>
+                    <h3 style="color: #1e3a8a; font-size: 1.3rem;">Chapter 1: Stars and the Solar System</h3>
+                    <button class="menu-btn mt-2" style="width: 100%; background: #3b82f6; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
             {% elif subject == 'Maths' and grade|lower == 'g8' and not chapter %}
             <p class="text-muted mb-2">Grade 8 Mathematics Chapters</p>
             <div class="card-grid">
@@ -263,11 +273,6 @@
                     <i class="fa-solid fa-ruler-combined text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
                     <h3 style="font-size: 1.3rem;">Chapter 1: MENSURATION</h3>
                     <button class="menu-btn mt-2" style="width: 100%; background: #3b82f6; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
-                </div>
-                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Maths&chapter=2'" style="border: 2px solid var(--border);">
-                    <i class="fa-solid fa-puzzle-piece text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
-                    <h3 style="font-size: 1.3rem;">Chapter 2: PLAYING WITH NUMBERS</h3>
-                    <button class="menu-btn mt-2" style="width: 100%; background: #10b981; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
                 </div>
             </div>
             {% elif subject == 'Maths' and chapter == '1' and grade|lower == 'g8' %}
@@ -505,149 +510,6 @@
                 </div>
             </div>
 
-            {% elif subject == 'Maths' and chapter == '2' and grade|lower == 'g8' %}
-            <style>
-                .logic-notes-container {
-                    background: #ffffff;
-                    border-radius: 24px;
-                    border: 1px solid #e2e8f0;
-                    padding: 2.5rem;
-                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                }
-                .logic-card {
-                    background: #f8fafc;
-                    border-radius: 16px;
-                    padding: 1.5rem;
-                    margin-bottom: 2rem;
-                    border-left: 6px solid #818cf8;
-                    transition: transform 0.3s ease;
-                }
-                .logic-card:hover { transform: translateY(-3px); }
-                .magic-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 1rem 0;
-                    background: white;
-                    border-radius: 12px;
-                    overflow: hidden;
-                    border: 1px solid #e2e8f0;
-                }
-                .magic-table th, .magic-table td {
-                    padding: 1rem;
-                    border: 1px solid #e2e8f0;
-                    text-align: center;
-                }
-                .magic-table th { background: #f1f5f9; color: #1e40af; }
-                .rule-badge {
-                    background: #e0e7ff;
-                    color: #4338ca;
-                    padding: 0.2rem 0.6rem;
-                    border-radius: 99px;
-                    font-weight: 800;
-                    font-size: 0.8rem;
-                }
-            </style>
-            <div class="logic-notes-container">
-                <div id="math-g8-ch2-p1">
-                    <div class="math-hero">
-                        <img src="/static/games/grade8/maths/number_logic_hero.png" alt="Number Logic Hero">
-                        <div class="math-hero-text">PLAYING WITH NUMBERS</div>
-                    </div>
-                    <h2 style="color: #1e40af; margin-bottom: 1rem;"><i class="fa-solid fa-puzzle-piece"></i> 1. Numbers in General Form</h2>
-                    <p class="text-lg text-muted mb-2">Ever thought of numbers as secret codes? Let's break them down!</p>
-                    
-                    <div class="logic-card" style="border-left-color: #3b82f6;">
-                        <h3 style="color: #1e3a8a; margin-top: 0;">2-Digit Numbers</h3>
-                        <p>Any 2-digit number <b>ab</b> can be written as:</p>
-                        <div class="formula-box">
-                            10a + b
-                        </div>
-                        <p class="formula-desc">(Example: 52 = 10(5) + 2)</p>
-                    </div>
- 
-                    <div class="logic-card" style="border-left-color: #8b5cf6;">
-                        <h3 style="color: #5b21b6; margin-top: 0;">Reversing Numbers</h3>
-                        <p>If we reverse <b>ab</b> to get <b>ba</b>:</p>
-                        <div class="formula-box" style="color: #5b21b6; border-color: #ddd6fe; background: #f5f3ff;">
-                            Sum (ab + ba) is always divisible by 11!
-                        </div>
-                        <p class="formula-desc" style="color: #7c3aed;">(e.g., 52 + 25 = 77, divisible by 11)</p>
-                    </div>
- 
-                    <div style="text-align: right; margin-top: 2rem;">
-                        <button class="menu-btn" onclick="document.getElementById('math-g8-ch2-p1').style.display='none'; document.getElementById('math-g8-ch2-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto;">Next: Divisibility Magic <i class="fa-solid fa-arrow-right ml-1"></i></button>
-                    </div>
-                </div>
-
-                <!-- Page 2: Divisibility Rules -->
-                <div id="math-g8-ch2-p2" style="display: none;">
-                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> 2. Magic Divisibility Rules</h2>
-                    
-                    <div class="logic-card" style="border-left-color: #10b981;">
-                        <table class="magic-table">
-                            <thead>
-                                <tr>
-                                    <th>Divisible By</th>
-                                    <th>The "Magic" Rule</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="rule-badge">10</span></td>
-                                    <td>Last digit must be <b>0</b></td>
-                                </tr>
-                                <tr>
-                                    <td><span class="rule-badge">5</span></td>
-                                    <td>Last digit must be <b>0</b> or <b>5</b></td>
-                                </tr>
-                                <tr>
-                                    <td><span class="rule-badge">2</span></td>
-                                    <td>Last digit must be <b>0, 2, 4, 6, 8</b> (Even numbers)</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="rule-badge">9 / 3</span></td>
-                                    <td>Sum of digits is divisible by 9 or 3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
- 
-                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
-                        <button class="btn-logout" onclick="document.getElementById('math-g8-ch2-p2').style.display='none'; document.getElementById('math-g8-ch2-p1').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
-                        <button class="menu-btn" onclick="document.getElementById('math-g8-ch2-p2').style.display='none'; document.getElementById('math-g8-ch2-p3').style.display='block'; window.scrollTo(0,0);" style="width: auto;">Next: Palindromes <i class="fa-solid fa-arrow-right ml-1"></i></button>
-                    </div>
-                </div>
-
-                <!-- Page 3: Palindromes & Finish -->
-                <div id="math-g8-ch2-p3" style="display: none;">
-                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-arrows-left-right"></i> 3. Palindromes</h2>
-                    <p class="text-muted">A <b>Palindrome</b> is a number that reads the same forward and backward.</p>
-                    
-                    <div class="logic-card" style="text-align: center; border-left-color: #3b82f6;">
-                        <div style="font-size: 3rem; font-weight: 900; color: #1e40af; letter-spacing: 10px; margin-bottom: 1rem;">
-                            121
-                        </div>
-                        <p style="color: #3b82f6; font-weight: 700;">⬅️ READS SAME ➡️</p>
-                        <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem;">
-                            <div style="background: white; padding: 1rem; border-radius: 12px; border: 1px solid #e0e7ff; color: #1e40af; font-weight: bold;">1331</div>
-                            <div style="background: white; padding: 1rem; border-radius: 12px; border: 1px solid #e0e7ff; color: #1e40af; font-weight: bold;">444</div>
-                        </div>
-                    </div>
- 
-                    <div style="background: #eff6ff; padding: 2rem; border-radius: 12px; border: 2px dashed #3b82f6; text-align: center; margin-top: 1rem;">
-                        <h3 style="color: #1e40af; margin-bottom: 0.5rem;">Mission Complete! 🧩</h3>
-                        <p class="text-muted">You've mastered the logic of numbers. Ready to decode some games?</p>
-                        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
-                             <button class="menu-btn" onclick="window.location.href='/student/learn'" style="width: auto;">Choose Another Chapter <i class="fa-solid fa-layer-group ml-1"></i></button>
-                             <button class="btn-logout" style="width: auto; background: #3b82f6; color: white; border: none;" onclick="window.location.href='/student/play?subject=Maths&chapter=2'">Play Logic Games <i class="fa-solid fa-gamepad ml-1"></i></button>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
-                        <button class="btn-logout" onclick="document.getElementById('math-g8-ch2-p3').style.display='none'; document.getElementById('math-g8-ch2-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto; background: transparent; color: #94a3b8; border: 1px solid #334155;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
-                    </div>
-                </div>
-            </div>
 
             {% elif subject == 'Science' and sub_subject == 'Biology' and chapter == '1' %}
             <style>
@@ -962,6 +824,237 @@
                     
                     <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
                         <button class="btn-logout" onclick="document.getElementById('bio-iron').style.display='none'; document.getElementById('bio-iodine').style.display='block'; window.scrollTo(0,0);" style="width: auto; display: inline-block;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous: Iodine</button>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g8' and chapter == '1' %}
+            <style>
+                .space-notes-container {
+                    background: #ffffff;
+                    border-radius: 24px;
+                    border: 1px solid #e2e8f0;
+                    padding: 2.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                }
+                .space-hero {
+                    width: 100%;
+                    height: 250px;
+                    border-radius: 20px;
+                    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+                    margin-bottom: 2rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                    position: relative;
+                    border: 1px solid #bfdbfe;
+                }
+                .space-hero img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    opacity: 0.8;
+                }
+                .space-hero-text {
+                    position: absolute;
+                    bottom: 2rem;
+                    left: 2rem;
+                    font-family: 'Outfit', sans-serif;
+                    font-weight: 900;
+                    font-size: 2.5rem;
+                    color: #1e3a8a;
+                    text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+                }
+                .celestial-card {
+                    background: #f8fafc;
+                    border-radius: 16px;
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                    border-left: 6px solid #3b82f6;
+                    transition: transform 0.3s ease;
+                }
+                .celestial-card:hover { transform: translateY(-3px); }
+                .moon-phase-grid {
+                    display: grid;
+                    grid-template-columns: repeat(5, 1fr);
+                    gap: 1rem;
+                    margin: 1.5rem 0;
+                }
+                .moon-phase-box {
+                    text-align: center;
+                    background: white;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                }
+                .moon-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+                .planet-badge {
+                    display: inline-block;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 99px;
+                    font-weight: 800;
+                    font-size: 0.8rem;
+                    margin-bottom: 0.5rem;
+                    text-transform: uppercase;
+                }
+                .mnemonic-box {
+                    background: #eff6ff;
+                    padding: 1.5rem;
+                    border-radius: 12px;
+                    border: 2px dashed #3b82f6;
+                    text-align: center;
+                    margin: 2rem 0;
+                }
+                .constellation-img {
+                    width: 100%;
+                    border-radius: 16px;
+                    border: 1px solid #e2e8f0;
+                    margin: 1rem 0;
+                }
+                .rev-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 1rem;
+                }
+                .rev-table th, .rev-table td {
+                    padding: 1rem;
+                    border: 1px solid #e2e8f0;
+                    text-align: left;
+                }
+                .rev-table th { background: #f1f5f9; color: #1e293b; }
+            </style>
+            <div class="space-notes-container">
+                <!-- Page 1: Introduction & Moon -->
+                <div id="phys-g8-ch1-p1">
+                    <div class="space-hero">
+                        <img src="/static/games/grade8/physics/solar_system_hero.png" alt="Solar System Hero">
+                        <div class="space-hero-text">STARS & THE SOLAR SYSTEM</div>
+                    </div>
+                    
+                    <h2 style="color: #1e40af; margin-bottom: 1rem;"><i class="fa-solid fa-sparkles"></i> 1. Celestial Objects</h2>
+                    <p class="text-lg text-muted mb-4">All objects in space are called <b>celestial objects</b>. This includes Stars, Planets, the Moon, and more!</p>
+                    
+                    <div class="card-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem;">
+                        <div class="card" style="text-align: center; background: white;"><i class="fa-solid fa-star text-warning mb-2" style="font-size: 2rem;"></i><p>Stars</p></div>
+                        <div class="card" style="text-align: center; background: white;"><i class="fa-solid fa-earth-asia text-primary mb-2" style="font-size: 2rem;"></i><p>Planets</p></div>
+                        <div class="card" style="text-align: center; background: white;"><i class="fa-solid fa-moon text-secondary mb-2" style="font-size: 2rem;"></i><p>Moon</p></div>
+                        <div class="card" style="text-align: center; background: white;"><i class="fa-solid fa-meteor text-danger mb-2" style="font-size: 2rem;"></i><p>Asteroids</p></div>
+                    </div>
+
+                    <div class="celestial-card">
+                        <h3 style="color: #1e3a8a;"><i class="fa-solid fa-sun-bright"></i> 2. Stars</h3>
+                        <p>Stars are huge balls of hot gases that produce their own light and heat. The <b>Sun</b> is the nearest star to Earth.</p>
+                        <ul style="margin-top: 1rem; color: #64748b;">
+                            <li>Stars appear small because they are trillions of km away.</li>
+                            <li>They <b>twinkle</b> due to atmospheric filters, unlike planets.</li>
+                        </ul>
+                    </div>
+
+                    <div class="celestial-card" style="border-left-color: #8b5cf6;">
+                        <h3 style="color: #5b21b6;"><i class="fa-solid fa-moon"></i> 3. The Moon</h3>
+                        <p>Earth's natural satellite. It reflects sunlight and takes ~29 days for a full cycle.</p>
+                        <div class="moon-phase-grid">
+                            <div class="moon-phase-box"><span class="moon-icon">🌑</span><small>New Moon</small></div>
+                            <div class="moon-phase-box"><span class="moon-icon">🌒</span><small>Crescent</small></div>
+                            <div class="moon-phase-box"><span class="moon-icon">🌓</span><small>Quarter</small></div>
+                            <div class="moon-phase-box"><span class="moon-icon">🌕</span><small>Full Moon</small></div>
+                            <div class="moon-phase-box"><span class="moon-icon">🌗</span><small>Last Qtr</small></div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 2rem;">
+                        <button class="menu-btn" onclick="document.getElementById('phys-g8-ch1-p1').style.display='none'; document.getElementById('phys-g8-ch1-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto; background: #3b82f6; border: none;">Explore Constellations <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2: Constellations -->
+                <div id="phys-g8-ch1-p2" style="display: none;">
+                    <h2 style="color: #1e40af; margin-bottom: 1rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> 4. Constellations</h2>
+                    <p class="text-muted mb-4">Recognizable patterns of stars that tell ancient stories and guide navigation.</p>
+                    
+                    <img src="/static/games/grade8/physics/constellations_diagram.png" class="constellation-img" alt="Constellation Gallery">
+
+                    <div class="card-grid" style="margin-top: 2rem;">
+                        <div class="card" style="border-left: 4px solid #3b82f6; background: white;">
+                            <h4 style="color: #1e40af;">Ursa Major</h4>
+                            <p class="text-sm">The "Big Dipper". Helps locate the fixed <b>Pole Star</b> above the North Pole.</p>
+                        </div>
+                        <div class="card" style="border-left: 4px solid #10b981; background: white;">
+                            <h4 style="color: #059669;">Orion</h4>
+                            <p class="text-sm">The "Hunter". Visible in winter. Famous for the three stars in its "belt".</p>
+                        </div>
+                        <div class="card" style="border-left: 4px solid #f59e0b; background: white;">
+                            <h4 style="color: #b45309;">Cassiopeia</h4>
+                            <p class="text-sm">Recognizable "W" or "M" shape in the northern sky.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 3rem;">
+                        <button class="btn-logout" onclick="document.getElementById('phys-g8-ch1-p2').style.display='none'; document.getElementById('phys-g8-ch1-p1').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
+                        <button class="menu-btn" onclick="document.getElementById('phys-g8-ch1-p2').style.display='none'; document.getElementById('phys-g8-ch1-p3').style.display='block'; window.scrollTo(0,0);" style="width: auto; background: #3b82f6; border: none;">Visit the Solar System <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Solar System & Facts -->
+                <div id="phys-g8-ch1-p3" style="display: none;">
+                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-meteor"></i> 5. The Solar System</h2>
+                    <p class="text-muted">The Sun + everything orbiting it. Planets, satellites, and debris.</p>
+
+                    <div class="mnemonic-box">
+                        <h3 style="color: #1e3a8a; margin-top: 0;">Memorize the Order:</h3>
+                        <p style="font-size: 1.5rem; font-weight: 900; color: #1e40af; margin: 1rem 0;">
+                            "My Very Educated Mother Just Served Us Noodles"
+                        </p>
+                        <p class="text-sm text-muted">Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div class="celestial-card" style="border-left-color: #ef4444;">
+                            <h4 style="color: #b91c1c;">Inner Planets (Rocky)</h4>
+                            <ul class="text-sm">
+                                <li><b>Mercury</b>: Closest to Sun</li>
+                                <li><b>Venus</b>: Hottest (Trap heat)</li>
+                                <li><b>Earth</b>: Only planet with life</li>
+                                <li><b>Mars</b>: The "Red Planet"</li>
+                            </ul>
+                        </div>
+                        <div class="celestial-card" style="border-left-color: #3b82f6;">
+                            <h4 style="color: #1e40af;">Outer Planets (Gas Giants)</h4>
+                            <ul class="text-sm">
+                                <li><b>Jupiter</b>: Largest of all</li>
+                                <li><b>Saturn</b>: Stunning rings</li>
+                                <li><b>Uranus & Neptune</b>: Ice giants</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="celestial-card" style="border-left-color: #f59e0b; margin-top: 2rem;">
+                        <h3 style="color: #b45309;">6. Quick Revision Table 🧠</h3>
+                        <table class="rev-table">
+                            <thead><tr><th>Concept</th><th>Key Idea</th></tr></thead>
+                            <tbody>
+                                <tr><td><b>Star</b></td><td>Produces own light</td></tr>
+                                <tr><td><b>Planet</b></td><td>Reflects sunlight</td></tr>
+                                <tr><td><b>Moon</b></td><td>Earth’s satellite</td></tr>
+                                <tr><td><b>Asteroid</b></td><td>Rocky body (Belt)</td></tr>
+                                <tr><td><b>Meteor</b></td><td>Shooting star</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Final Checklist -->
+                    <div style="background: #eff6ff; padding: 2.5rem; border-radius: 24px; border: 2px dashed #3b82f6; text-align: center; margin-top: 3rem;">
+                        <h2 style="color: #1e3a8a; margin-top: 0;">Chapter Complete! 🚀</h2>
+                        <p>The universe is vast, and you've just taken your first step.</p>
+                        <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                             <button class="menu-btn" onclick="window.location.href='/student/learn'" style="width: auto; background: #3b82f6; border: none;">Explore Other Maps <i class="fa-solid fa-map-location-dot ml-1"></i></button>
+                             <button class="btn-logout" style="width: auto; background: #1e293b; color: white; border: none;" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=1'">Practice & Play <i class="fa-solid fa-gamepad ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('phys-g8-ch1-p3').style.display='none'; document.getElementById('phys-g8-ch1-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
                     </div>
                 </div>
             </div>
@@ -4255,14 +4348,6 @@
                         <span class="level-badge mt-1" style="display:inline-block; background: #e0e7ff; color: #3b82f6; border: 1px solid #bfdbfe;">Missions Ready</span>
                     </div>
                 </div>
-                <div class="card game-card" onclick="window.location.href='/student/play?subject=Maths&chapter=2'" style="border: 2px solid var(--border);">
-                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
-                    <h3 style="color: #065f46; font-size: 1.5rem;">Chapter 2</h3>
-                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">PLAYING WITH NUMBERS</p>
-                    <div style="text-align: center; margin-top: 1rem;">
-                        <span class="level-badge mt-1" style="display:inline-block; background: #dcfce7; color: #10b981; border: 1px solid #bbf7d0;">Missions Ready</span>
-                    </div>
-                </div>
             </div>
 
             {% elif subject == 'Maths' and grade|lower == 'g8' and chapter == '1' %}
@@ -4270,32 +4355,26 @@
                 <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #1e3a8a; background: #e0e7ff; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 1: MENSURATION</p>
             </div>
             <div class="card-grid">
-                <div class="card game-card" style="border: 2px solid var(--border);">
-                    <i class="fa-solid fa-cube text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
+                <div class="card game-card" onclick="window.location.href='/student/play/maths/g8/ch1_l1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-city text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
                     <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Mission 1</p>
-                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Shape Shifter</h3>
-                    <p class="text-muted mt-1 text-sm">Volume & Surface Area</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">City Builder</h3>
+                    <p class="text-muted mt-1 text-sm">Area & Volume Mastery</p>
                     <div style="text-align: center;">
-                        <span class="level-badge mt-1" style="display:inline-block; background: #94a3b8;">Coming Soon</span>
+                        <span class="level-badge mt-1" style="display:inline-block;">Play Game</span>
+                    </div>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/play/maths/g8/ch1_l2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-cookie text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #8b5cf6;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Mission 2</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Chocolate Cutter</h3>
+                    <p class="text-muted mt-1 text-sm">Visual Area Challenge</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #f5f3ff; color: #8b5cf6; border: 1px solid #ddd6fe;">Play Game</span>
                     </div>
                 </div>
             </div>
 
-            {% elif subject == 'Maths' and grade|lower == 'g8' and chapter == '2' %}
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #065f46; background: #dcfce7; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 2: PLAYING WITH NUMBERS</p>
-            </div>
-            <div class="card-grid">
-                <div class="card game-card" style="border: 2px solid var(--border);">
-                    <i class="fa-solid fa-arrows-left-right text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
-                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Mission 1</p>
-                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Palindrome Mirror</h3>
-                    <p class="text-muted mt-1 text-sm">Mirror Numbers & Logic</p>
-                    <div style="text-align: center;">
-                        <span class="level-badge mt-1" style="display:inline-block; background: #94a3b8;">Coming Soon</span>
-                    </div>
-                </div>
-            </div>
 
             {% elif subject == 'Science' and sub_subject == 'Chemistry' and grade|lower == 'g7' and not chapter %}
             <p class="text-muted mb-2">Select a Chapter to explore games!</p>
@@ -4658,6 +4737,102 @@
                         <span class="level-badge mt-1" style="display:inline-block; background: #10b981;">Play Game</span>
                     </div>
                 </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g8' and not chapter %}
+            <p class="text-muted mb-2">Select a Chapter to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
+                    <h3 style="color: #1e3a8a; font-size: 1.5rem;">Chapter 1</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">Stars and the Solar System</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe;">4 Games</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g8' and chapter == '1' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #1e3a8a; background: #eff6ff; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 1: Stars and the Solar System</p>
+            </div>
+            <div class="card-grid">
+                <!-- Level 1: Planet Order Race -->
+                <div class="card game-card" onclick="window.location.href='/student/play/phys/g8/ch1_l1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-sun text-warning" style="font-size: 2.5rem; margin-bottom: 1rem; color: #f59e0b;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Planet Order</h3>
+                    <p class="text-muted mt-1 text-sm">Solar System Race</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #3b82f6;">Play Game</span>
+                    </div>
+                </div>
+
+                <!-- Level 2: Constellation Connect -->
+                {% if completed_games and 'G8_Phys_Ch1_L1' in completed_games %}
+                <div class="card game-card" onclick="window.location.href='/student/play/phys/g8/ch1_l2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-wand-magic-sparkles text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #8b5cf6;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Connect Stars</h3>
+                    <p class="text-muted mt-1 text-sm">Constellation Patterns</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #8b5cf6;">Play Game</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card game-card" style="border: 2px solid var(--border); opacity: 0.6; cursor: not-allowed;" title="Complete Level 1 to unlock!">
+                    <i class="fa-solid fa-lock text-muted" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 2</p>
+                    <h3 class="text-muted" style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Connect Stars</h3>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Level 3: Moon Phase Puzzle -->
+                {% if completed_games and 'G8_Phys_Ch1_L2' in completed_games %}
+                <div class="card game-card" onclick="window.location.href='/student/play/phys/g8/ch1_l3'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-moon text-secondary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #64748b;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 3</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Moon Phases</h3>
+                    <p class="text-muted mt-1 text-sm">Lunar Cycle Sequence</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #64748b;">Play Game</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card game-card" style="border: 2px solid var(--border); opacity: 0.6; cursor: not-allowed;" title="Complete Level 2 to unlock!">
+                    <i class="fa-solid fa-lock text-muted" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 3</p>
+                    <h3 class="text-muted" style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Moon Phases</h3>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Level 4: Space Quiz Adventure -->
+                {% if completed_games and 'G8_Phys_Ch1_L3' in completed_games %}
+                <div class="card game-card" onclick="window.location.href='/student/play/phys/g8/ch1_l4'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-rocket text-danger" style="font-size: 2.5rem; margin-bottom: 1rem; color: #ef4444;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 4</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Space Quiz</h3>
+                    <p class="text-muted mt-1 text-sm">Solar System Journey</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #ef4444;">Play Game</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card game-card" style="border: 2px solid var(--border); opacity: 0.6; cursor: not-allowed;" title="Complete Level 3 to unlock!">
+                    <i class="fa-solid fa-lock text-muted" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Level 4</p>
+                    <h3 class="text-muted" style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Space Quiz</h3>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: var(--text-muted);"><i class="fa-solid fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
 
             {% elif subject == 'Science' and sub_subject == 'Chemistry' and grade|lower == 'g8' %}
