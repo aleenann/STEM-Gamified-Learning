@@ -43,10 +43,11 @@ GAME_REGISTRY = {
     },
     "G8": {
         "Maths": {
-            1: [],
-            2: []
+            1: ["G8_Maths_Ch1_L1", "G8_Maths_Ch1_L2"]
         },
-        "Science": {},
+        "Science": {
+            1: ["G8_Phys_Ch1_L1", "G8_Phys_Ch1_L2", "G8_Phys_Ch1_L3", "G8_Phys_Ch1_L4"]
+        },
         "Technology": {},
         "Engineering": {}
     },
@@ -821,6 +822,57 @@ def play_g6_chem_ch1_l1():
         return redirect("/")
     return render_template("g6_chem_ch1_l1.html")
 
+@app.route("/student/play/phys/g8/ch1_l1")
+def play_g8_phys_ch1_l1():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    return render_template("g8_phys_ch1_l1.html")
+
+@app.route("/student/play/phys/g8/ch1_l2")
+def play_g8_phys_ch1_l2():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    
+    username = session.get("username", "")
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM scores WHERE username=? AND game_name='G8_Phys_Ch1_L1'", (username,))
+    if not cursor.fetchone():
+        conn.close()
+        return redirect("/student/play?subject=Science&sub_subject=Physics&chapter=1")
+    conn.close()
+    return render_template("g8_phys_ch1_l2.html")
+
+@app.route("/student/play/phys/g8/ch1_l3")
+def play_g8_phys_ch1_l3():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    
+    username = session.get("username", "")
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM scores WHERE username=? AND game_name='G8_Phys_Ch1_L2'", (username,))
+    if not cursor.fetchone():
+        conn.close()
+        return redirect("/student/play?subject=Science&sub_subject=Physics&chapter=1")
+    conn.close()
+    return render_template("g8_phys_ch1_l3.html")
+
+@app.route("/student/play/phys/g8/ch1_l4")
+def play_g8_phys_ch1_l4():
+    if "name" not in session or session.get("role") != "student":
+        return redirect("/")
+    
+    username = session.get("username", "")
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM scores WHERE username=? AND game_name='G8_Phys_Ch1_L3'", (username,))
+    if not cursor.fetchone():
+        conn.close()
+        return redirect("/student/play?subject=Science&sub_subject=Physics&chapter=1")
+    conn.close()
+    return render_template("g8_phys_ch1_l4.html")
+
 # Grade 6 Biology Game 2 Route (Vitamin Diagnosis)
 @app.route("/student/play/bio/g6/ch1_l2")
 def play_g6_bio_ch1_l2():
@@ -912,6 +964,16 @@ def save_game_score():
     conn.close()
 
     return {"success": True, "saved": score if not existing else 0}
+
+@app.route("/student/play/maths/g8/ch1_l1")
+def g8_maths_ch1_l1():
+    if "username" not in session: return redirect("/login/student")
+    return render_template("g8_maths_ch1_l1.html")
+
+@app.route("/student/play/maths/g8/ch1_l2")
+def g8_maths_ch1_l2():
+    if "username" not in session: return redirect("/login/student")
+    return render_template("g8_maths_ch1_l2.html")
 
 
 if __name__ == "__main__":

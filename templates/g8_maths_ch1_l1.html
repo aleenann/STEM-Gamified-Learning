@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Builder Pro | Advanced Mensuration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --accent: #10b981;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --sidebar-w: 360px;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* --- Sidebar & Mission HUD --- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: white;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 3px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 10%;
+            transition: width 0.5s ease;
+        }
+
+        .mission-title { font-size: 1.6rem; font-weight: 900; margin: 0 0 1rem 0; line-height: 1.2; }
+        .mission-desc { font-size: 1.1rem; line-height: 1.6; color: #64748b; margin-bottom: 2rem; }
+
+        /* --- Input & MCQ Layouts --- */
+        .controls-area { flex: 1; display: flex; flex-direction: column; }
+        
+        .input-group { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; color: #64748b; }
+        input {
+            width: 100%; padding: 0.9rem; border: 2px solid var(--border); border-radius: 12px;
+            font-family: inherit; font-size: 1.2rem; font-weight: 600; transition: all 0.3s;
+        }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+
+        .mcq-grid { display: grid; grid-template-columns: 1fr; gap: 0.8rem; margin-top: 1rem; }
+        .mcq-btn {
+            padding: 1rem; background: white; border: 2px solid var(--border); border-radius: 12px;
+            font-family: inherit; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; text-align: left; display: flex; align-items: center; gap: 1rem;
+        }
+        .mcq-btn:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+        .mcq-btn.selected { border-color: var(--primary); background: var(--primary); color: white; }
+
+        .btn-action {
+            margin-top: auto; padding: 1.2rem; background: var(--primary); color: white; border: none;
+            border-radius: 16px; font-size: 1.1rem; font-weight: 700; cursor: pointer;
+            transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .btn-action:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2); }
+
+        /* --- Blueprint Visuals --- */
+        .canvas { flex: 1; background: #f1f5f9; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .grid-bg { position: absolute; top:0; left:0; width:100%; height:100%; background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 30px 30px; opacity: 0.5; }
+        
+        .blueprint-title { position: absolute; top: 2rem; left: 2rem; font-weight: 900; font-size: 2rem; color: #cbd5e1; pointer-events: none; }
+
+        .visual-container {
+            width: 400px; height: 400px; display: flex; align-items: center; justify-content: center;
+            border: 3px dashed #94a3b8; border-radius: 24px; background: rgba(255,255,255,0.4); position: relative;
+        }
+
+        .shape {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(37, 99, 235, 0.15); border: 3px solid var(--primary);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .dim-label { position: absolute; font-size: 0.8rem; font-weight: 800; background: white; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); }
+
+        /* --- Success Modal --- */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: white; padding: 3rem; border-radius: 32px; text-align: center; max-width: 450px; width: 90%; animation: pop 0.4s ease; }
+        @keyframes pop { from { transform: scale(0.9); opacity:0; } to { transform: scale(1); opacity:1; } }
+        .success-icon { font-size: 5rem; color: var(--accent); margin-bottom: 1rem; }
+        
+        .btn-exit { position: fixed; top: 20px; right: 20px; padding: 10px 20px; background: white; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-weight: 700; z-index: 20; color: #ef4444; }
+    </style>
+</head>
+<body>
+    <button class="btn-exit" onclick="history.back()">EXIT <i class="fa-solid fa-circle-xmark ml-1"></i></button>
+
+    <div class="sidebar">
+        <div class="level-badge"><i class="fa-solid fa-medal"></i> <span id="level-num">Level 1</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-bar"></div></div>
+        
+        <h1 id="q-title" class="mission-title">The City Park</h1>
+        <p id="q-text" class="mission-desc">Design a rectangular garden for the residents.</p>
+
+        <div class="controls-area">
+            <div id="input-zone">
+                <!-- Inputs or MCQs injected here -->
+            </div>
+            <button class="btn-action" onclick="handleSubmit()">
+                <i class="fa-solid fa-check-double"></i> Verify Blueprint
+            </button>
+        </div>
+    </div>
+
+    <div class="canvas">
+        <div class="grid-bg"></div>
+        <div class="blueprint-title">ARCHITECTURAL BLUEPRINT 0.1</div>
+        <div class="visual-container">
+            <div id="visual-shape" class="shape">
+                <!-- Dimensions injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="overlay" class="overlay">
+        <div class="modal">
+            <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <h2 id="modal-title">Blueprint Approved!</h2>
+            <p id="modal-desc">Your measurements for the fountain are flawless.</p>
+            <div style="font-size: 2.5rem; font-weight: 900; color: var(--primary); margin: 1rem 0;">+50 XP</div>
+            <button class="btn-action" onclick="nextQuestion()">Continue Building <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <!-- Final Results Modal -->
+    <div id="final-overlay" class="overlay">
+        <div class="modal" style="max-width: 500px;">
+            <div class="success-icon" style="color: #ffd700;"><i class="fa-solid fa-trophy"></i></div>
+            <h2 style="font-size: 2.2rem;">Master Architect!</h2>
+            <p>You have successfully completed 10 urban planning missions with surgical precision.</p>
+            <div class="target-box" style="background: var(--primary-light); border: none; margin: 2rem 0;">
+                <span class="target-label">Total Points Earned</span>
+                <span id="final-xp-display" class="target-value" style="font-size: 3rem;">500 XP</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button class="btn-action" style="background: #64748b;" onclick="history.back()">
+                    <i class="fa-solid fa-door-open"></i> Exit
+                </button>
+                <button class="btn-action" onclick="resetGame()">
+                    <i class="fa-solid fa-rotate-right"></i> Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questionBank = {
+            1: [ // Level 1: Basic Area
+                { title: "The Rectangular Park", text: "Length = 20m, Breadth = 10m. What is the area? (m²)", ans: 200, type: "input", shape: "rect", dims: ["20m", "10m"] },
+                { title: "Square Garden", text: "Side = 15m. Find the total area (m²).", ans: 225, type: "input", shape: "square", dims: ["15m"] },
+                { title: "Triangular Play Zone", text: "Base = 12m, Height = 8m. Calculate the area (m²).", ans: 48, type: "input", shape: "triangle", dims: ["12m", "8m"] }
+            ],
+            2: [ // Level 2: Choices & Advanced 2D
+                { 
+                    title: "Urban Planning", text: "You need a park of 100 m². Which dimensions work?", 
+                    type: "mcq", options: ["20 × 5", "10 × 12", "15 × 5", "30 × 3"], ans: "20 × 5", shape: "rect", dims: ["?", "?"] 
+                },
+                { title: "Circular Fountain", text: "Radius = 7m. Find the area (Use π = 22/7).", ans: 154, type: "input", shape: "circle", dims: ["r=7m"] },
+                { title: "Trapezium Land", text: "Parallel sides = 10m & 14m, Height = 5m. Total area?", ans: 60, type: "input", shape: "trapezium", dims: ["a=10", "b=14", "h=5"] }
+            ],
+            3: [ // Level 3: Volume
+                { title: "Water Reservoir", text: "Length = 10m, Breadth = 5m, Height = 4m. Volume (m³)?", ans: 200, type: "input", shape: "cuboid", dims: ["10", "5", "4"] },
+                { title: "Storage Cube", text: "Side = 6m. Find the total volume (m³).", ans: 216, type: "input", shape: "cube", dims: ["6m"] },
+                { title: "Cylindrical Tank", text: "Radius = 3m, Height = 7m. Volume (Use π = 22/7)?", ans: 198, type: "input", shape: "cylinder", dims: ["r=3", "h=7"] }
+            ],
+            4: [ // Level 4: Real-Life Challenges
+                { title: "Water Logistics", text: "Tank (r=7m, h=10m). Total Volume (m³)?", ans: 1540, type: "input", shape: "cylinder", dims: ["r=7", "h=10"] },
+                { title: "Flooring the Hall", text: "Length = 12m, Width = 8m. Total Cost at ₹50/m²?", ans: 4800, type: "input", shape: "rect", dims: ["12m", "8m"] },
+                { title: "Fencing the Square", text: "Square Park (Side = 20m). Cost of fencing (₹10/m)?", ans: 800, type: "input", shape: "square", dims: ["20m"] }
+            ],
+            5: [ // Level 5: Challenge Mode
+                { 
+                    title: "Comparison Challenge", text: "Park A (20x10) vs Park B (Square s=15). Which area is larger?", 
+                    type: "mcq", options: ["Park A (200m²)", "Park B (225m²)", "They are equal", "Data insufficient"], ans: "Park B (225m²)", shape: "square", dims: ["A vs B"] 
+                },
+                { title: "Optimal Tank", text: "Suggest dimensions for a 1000m³ tank. Length = 10, Width = 10. Height?", ans: 10, type: "input", shape: "cuboid", dims: ["10", "10", "h=?"] },
+                { title: "Perfect Design", text: "You have 100 m². If it is a square, find its side (m).", ans: 10, type: "input", shape: "square", dims: ["Area=100"] }
+            ]
+        };
+
+        let currentLevel = 1;
+        let missionsPerLevel = 2;
+        let sessionPool = [];
+        let currentIdx = 0;
+        let totalXP = 0;
+        let selectedMCQ = "";
+
+        function buildSession() {
+            sessionPool = [];
+            for (let lv = 1; lv <= 5; lv++) {
+                const shuffled = questionBank[lv].sort(() => 0.5 - Math.random());
+                sessionPool.push(...shuffled.slice(0, 2)); // 2 from each level
+            }
+            initMission();
+        }
+
+        function initMission() {
+            const q = sessionPool[currentIdx];
+            document.getElementById('level-num').innerText = `Level ${Math.floor(currentIdx/2) + 1}`;
+            document.getElementById('progress-bar').style.width = `${(currentIdx + 1) * 10}%`;
+            document.getElementById('q-title').innerText = q.title;
+            document.getElementById('q-text').innerText = q.text;
+
+            const zone = document.getElementById('input-zone');
+            zone.innerHTML = '';
+            selectedMCQ = "";
+
+            if (q.type === 'input') {
+                zone.innerHTML = `<label>Verification Result</label><input type="number" id="ans-input" placeholder="Type answer here...">`;
+            } else {
+                const mcqGrid = document.createElement('div');
+                mcqGrid.className = 'mcq-grid';
+                q.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'mcq-btn';
+                    btn.innerHTML = `<i class="fa-regular fa-circle"></i> ${opt}`;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.mcq-btn').forEach(b => {
+                            b.classList.remove('selected');
+                            b.querySelector('i').className = 'fa-regular fa-circle';
+                        });
+                        btn.classList.add('selected');
+                        btn.querySelector('i').className = 'fa-solid fa-circle-check';
+                        selectedMCQ = opt;
+                    };
+                    mcqGrid.appendChild(btn);
+                });
+                zone.appendChild(mcqGrid);
+            }
+
+            updateVisuals(q);
+        }
+
+        function updateVisuals(q) {
+            const visual = document.getElementById('visual-shape');
+            visual.style.width = "150px";
+            visual.style.height = "100px";
+            visual.style.borderRadius = "0";
+            visual.className = 'shape';
+            visual.innerHTML = "";
+
+            if (q.shape === 'rect') {
+                visual.style.width = "200px";
+            } else if (q.shape === 'square') {
+                visual.style.width = "150px";
+                visual.style.height = "150px";
+            } else if (q.shape === 'circle') {
+                visual.style.width = "180px";
+                visual.style.height = "180px";
+                visual.style.borderRadius = "50%";
+            } else if (q.shape === 'triangle') {
+                visual.style.clipPath = "polygon(50% 0%, 0% 100%, 100% 100%)";
+            } else if (q.shape === 'trapezium') {
+                visual.style.clipPath = "polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)";
+            } else if (q.shape === 'cylinder') {
+                visual.className = 'shape';
+                visual.style.borderRadius = "20px/10px";
+                visual.style.borderBottom = "3px solid #1e3a8a";
+            } else if (q.shape === 'cuboid') {
+                visual.style.transform = "rotateX(20deg) rotateY(20deg)";
+            }
+
+            // Labels
+            q.dims.forEach((d, i) => {
+                const label = document.createElement('div');
+                label.className = 'dim-label';
+                label.innerText = d;
+                label.style.top = `${i * 30}px`;
+                visual.appendChild(label);
+            });
+        }
+
+        function handleSubmit() {
+            const q = sessionPool[currentIdx];
+            let userAns;
+            if (q.type === 'input') {
+                userAns = parseFloat(document.getElementById('ans-input').value);
+            } else {
+                userAns = selectedMCQ;
+            }
+
+            if (userAns == q.ans) {
+                showSuccess();
+            } else {
+                alert(`Architectural error! Calculations show ${userAns} is incorrect. The target was something else. Try again!`);
+            }
+        }
+
+        function showSuccess() {
+            totalXP += 50;
+            const q = sessionPool[currentIdx];
+            document.getElementById('modal-title').innerText = "Verified by Engineering!";
+            document.getElementById('modal-desc').innerText = `Stage ${currentIdx+1}/10: The ${q.title} plan is perfectly balanced.`;
+            document.getElementById('overlay').style.display = 'flex';
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            document.getElementById('overlay').style.display = 'none';
+            if (currentIdx < sessionPool.length) {
+                initMission();
+            } else {
+                saveFinalScore();
+            }
+        }
+
+        function saveFinalScore() {
+            fetch("/student/games/save_score", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    game_name: "G8_Maths_Ch1_L1",
+                    xp: totalXP,
+                    subject: "Maths"
+                })
+            }).then(() => {
+                document.getElementById('final-xp-display').innerText = `${totalXP} XP`;
+                document.getElementById('final-overlay').style.display = 'flex';
+            });
+        }
+
+        function resetGame() {
+            totalXP = 0;
+            currentIdx = 0;
+            document.getElementById('final-overlay').style.display = 'none';
+            buildSession();
+        }
+
+        buildSession();
+    </script>
+</body>
+</html>
