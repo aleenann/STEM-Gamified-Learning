@@ -8,12 +8,18 @@ import random
 # Format: Grade -> Subject -> Chapter -> [Game IDs as stored in 'scores' table]
 GAME_REGISTRY = {
     "G6": {
-        "Maths": {1: ["G6_Maths_Ch1", "G6_Maths_Ch1_L2", "G6_Maths_Ch1_L3"]},
+        "Maths": {
+            1: ["G6_Maths_Ch1", "G6_Maths_Ch1_L2", "G6_Maths_Ch1_L3"]
+        },
         "Science": {
             1: ["G6_Bio_Ch1_L1", "G6_Bio_Ch1_L2", "G6_Chem_Ch1_L1"]
         },
-        "Technology": {1: ["G6_Tech_Ch1_L1"]},
-        "Engineering": {1: ["G6_Eng_Ch1_L1"]}
+        "Technology": {
+            1: ["G6_Tech_Ch1_L1"]
+        },
+        "Engineering": {
+            1: ["G6_Eng_Ch1_L1"]
+        }
     },
     "G7": {
         "Maths": {
@@ -28,19 +34,118 @@ GAME_REGISTRY = {
             ],
             2: ["G7_Bio_Ch2_L1"]
         },
-        "Technology": {1: ["G7_Tech_Ch1_L1"]},
-        "Engineering": {1: ["G7_Eng_Ch1_L1"]}
+        "Technology": {
+            1: ["G7_Tech_Ch1_L1"]
+        },
+        "Engineering": {
+            1: ["G7_Eng_Ch1_L1"]
+        }
     },
     "G9": {
         "Science": {
             5: ["G9_Bio_Ch5_L1"],
             9: ["G9_Phys_Ch9_L1", "G9_Phys_Ch9_L2", "G9_Phys_Ch9_L3"]
-        }
+        },
+        "Maths": {},
+        "Technology": {},
+        "Engineering": {}
     }
 }
 
 app = Flask(__name__)
 app.secret_key = "super_secret_stem_key_123"
+
+# --- Mastery Tracker Helpers ---
+ALL_SUBJECTS = ["Science", "Maths", "Technology", "Engineering"]
+
+def get_student_mastery_data(username):
+    """Calculates mastery stats, ranks, and colors for a student."""
+    grade = username.split('-')[0] if '-' in username else "G6"
+    
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    
+    # 1. Fetch scores
+    cursor.execute("SELECT game_name, MAX(score) FROM scores WHERE username = ? GROUP BY game_name", (username,))
+    raw_scores = cursor.fetchall()
+    score_map = {row[0]: row[1] for row in raw_scores}
+    completed_game_ids = set(score_map.keys())
+    
+    # 2. Process all subjects for the grade
+    subject_stats = []
+    total_xp = sum(score_map.values())
+    total_completed = 0
+    total_possible_in_grade = 0
+    
+    grade_registry = GAME_REGISTRY.get(grade, {})
+    
+    for subj in ALL_SUBJECTS:
+        subj_chapters = grade_registry.get(subj, {})
+        subj_total = 0
+        subj_completed = 0
+        subj_xp = 0
+        chap_details = []
+        
+        # Determine all chapters/games for this subject
+        for chap_num, game_ids in subj_chapters.items():
+            chap_total = len(game_ids)
+            chap_completed = sum(1 for gid in game_ids if gid in completed_game_ids)
+            chap_xp = sum(score_map.get(gid, 0) for gid in game_ids if gid in completed_game_ids)
+            
+            subj_total += chap_total
+            subj_completed += chap_completed
+            subj_xp += chap_xp
+            total_possible_in_grade += chap_total
+            total_completed += chap_completed
+            
+            chap_details.append({
+                "num": chap_num,
+                "completed": chap_completed,
+                "total": chap_total,
+                "xp": chap_xp,
+                "is_done": (chap_completed == chap_total)
+            })
+            
+        subject_stats.append({
+            "name": subj,
+            "total": subj_total,
+            "completed": subj_completed,
+            "xp": subj_xp,
+            "percentage": int((subj_completed / subj_total * 100)) if subj_total > 0 else 0,
+            "chapters": sorted(chap_details, key=lambda x: str(x['num']))
+        })
+
+    # 3. Rank Calculation
+    mastery_ranks = [
+        (0, "Novice Explorer", "#94a3b8", "148, 163, 184"),
+        (250, "STEM Apprentice", "#10b981", "16, 185, 129"),
+        (500, "Brainiac Scholar", "#3b82f6", "59, 130, 246"),
+        (1000, "Master Strategist", "#8b5cf6", "139, 92, 246"),
+        (2000, "Grand Master of STEM", "#f59e0b", "245, 158, 11")
+    ]
+    
+    mastery_rank = {"name": mastery_ranks[0][1], "color": mastery_ranks[0][2], "rgb": mastery_ranks[0][3]}
+    for m_xp, m_name, m_color, m_rgb in mastery_ranks:
+        if total_xp >= m_xp:
+            mastery_rank = {"name": m_name, "color": m_color, "rgb": m_rgb}
+            
+    conn.close()
+    
+    return {
+        "mastery_rank": mastery_rank,
+        "total_xp": total_xp,
+        "total_completed": total_completed,
+        "total_possible": total_possible_in_grade,
+        "subject_stats": subject_stats,
+        "completed_games": list(completed_game_ids)
+    }
+
+@app.context_processor
+def inject_mastery():
+    """Injects mastery data globally for all student templates."""
+    if session.get("role") == "student" and "username" in session:
+        return get_student_mastery_data(session["username"])
+    return {}
 
 # Home page (Role Selector)
 @app.route("/")
@@ -197,7 +302,7 @@ def student():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
     username = session.get("username", "")
-    grade = username.split('-')[0] if '-' in username else "Student"
+    grade = username.split('-')[0] if '-' in username else "G6"
     return render_template("student_dashboard.html", active_tab="dashboard", grade=grade)
 
 @app.route("/student/learn")
@@ -205,7 +310,7 @@ def student_learn():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
     username = session.get("username", "")
-    grade = username.split('-')[0] if '-' in username else "Student"
+    grade = username.split('-')[0] if '-' in username else "G6"
     subject = request.args.get("subject")
     sub_subject = request.args.get("sub_subject")
     chapter = request.args.get("chapter")
@@ -220,15 +325,9 @@ def student_play():
     sub_subject = request.args.get("sub_subject")
     chapter = request.args.get("chapter")
     username = session.get("username", "")
-    grade = username.split('-')[0] if '-' in username else "Student"
+    grade = username.split('-')[0] if '-' in username else "G6"
     
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT DISTINCT game_name FROM scores WHERE username=?", (username,))
-    completed_games = [row[0] for row in cursor.fetchall() if row[0]]
-    conn.close()
-    
-    return render_template("student_dashboard.html", active_tab="play", subject=subject, sub_subject=sub_subject, chapter=chapter, grade=grade, completed_games=completed_games)
+    return render_template("student_dashboard.html", active_tab="play", subject=subject, sub_subject=sub_subject, chapter=chapter, grade=grade)
 
 @app.route("/student/messages")
 def student_messages():
@@ -282,64 +381,19 @@ def student_progress():
     if "name" not in session or session.get("role") != "student":
         return redirect("/")
         
-    username = session.get("username")
-    # Identify grade from username (e.g., G7-01 -> G7)
-    grade = username.split('-')[0] if '-' in username else "G6"
     student_name = session.get("name")
     
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     
-    # 1. Fetch Teachers
+    # Fetch Teachers (This is the only tab-specific data needed now)
     cursor.execute("SELECT subject, teacher_name FROM student_teacher_assignments WHERE student_name = ?", (student_name,))
     assigned_teachers = {row[0]: row[1] for row in cursor.fetchall()}
+    conn.close()
     
-    # 2. Fetch All Student Scores
-    cursor.execute("SELECT game_name, score, subject FROM scores WHERE username = ?", (username,))
-    raw_scores = cursor.fetchall()
-    score_map = {row[0]: row[1] for row in raw_scores}
-    completed_game_ids = set(score_map.keys())
-    
-    # 3. Calculate Mastery & Progress
-    subject_stats = []
-    total_xp = sum(score_map.values())
-    total_completed = len(completed_game_ids)
-    
-    grade_registry = GAME_REGISTRY.get(grade, {})
-    total_possible_in_grade = 0
-    
-    for subj, chapters in grade_registry.items():
-        subj_total = 0
-        subj_completed = 0
-        subj_xp = 0
-        chap_details = []
-        
-        for chap_num, game_ids in chapters.items():
-            chap_total = len(game_ids)
-            chap_completed = sum(1 for gid in game_ids if gid in completed_game_ids)
-            chap_xp = sum(score_map.get(gid, 0) for gid in game_ids if gid in completed_game_ids)
-            
-            subj_total += chap_total
-            subj_completed += chap_completed
-            subj_xp += chap_xp
-            total_possible_in_grade += chap_total
-            
-            chap_details.append({
-                "num": chap_num,
-                "completed": chap_completed,
-                "total": chap_total,
-                "xp": chap_xp,
-                "is_done": (chap_completed == chap_total)
-            })
-            
-        subject_stats.append({
-            "name": subj,
-            "total": subj_total,
-            "completed": subj_completed,
-            "xp": subj_xp,
-            "percentage": int((subj_completed / subj_total * 100)) if subj_total > 0 else 0,
-            "chapters": chap_details
-        })
+    return render_template("student_dashboard.html", 
+                           active_tab="progress", 
+                           assigned_teachers=assigned_teachers)
 
     # 4. Mastery Level Calculation
     # Level 1: 0, Level 2: 250, Level 3: 500, Level 4: 1000, Level 5: 2000...
