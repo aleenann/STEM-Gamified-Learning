@@ -41,6 +41,15 @@ GAME_REGISTRY = {
             1: ["G7_Eng_Ch1_L1"]
         }
     },
+    "G8": {
+        "Maths": {
+            1: [],
+            2: []
+        },
+        "Science": {},
+        "Technology": {},
+        "Engineering": {}
+    },
     "G9": {
         "Science": {
             5: ["G9_Bio_Ch5_L1"],

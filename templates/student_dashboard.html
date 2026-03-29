@@ -255,6 +255,400 @@
                     <button class="menu-btn mt-2" style="width: 100%; background: #7c3aed; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
                 </div>
             </div>
+
+            {% elif subject == 'Maths' and grade|lower == 'g8' and not chapter %}
+            <p class="text-muted mb-2">Grade 8 Mathematics Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Maths&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-ruler-combined text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
+                    <h3 style="font-size: 1.3rem;">Chapter 1: MENSURATION</h3>
+                    <button class="menu-btn mt-2" style="width: 100%; background: #3b82f6; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Maths&chapter=2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-puzzle-piece text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
+                    <h3 style="font-size: 1.3rem;">Chapter 2: PLAYING WITH NUMBERS</h3>
+                    <button class="menu-btn mt-2" style="width: 100%; background: #10b981; border: none;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+            {% elif subject == 'Maths' and chapter == '1' and grade|lower == 'g8' %}
+            <style>
+                .math-notes-container {
+                    background: #ffffff;
+                    border-radius: 24px;
+                    border: 1px solid #e2e8f0;
+                    padding: 2.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                }
+                .math-hero {
+                    width: 100%;
+                    height: 200px;
+                    border-radius: 20px;
+                    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+                    margin-bottom: 2rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                    position: relative;
+                }
+                .math-hero img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    opacity: 0.6;
+                }
+                .math-hero-text {
+                    position: absolute;
+                    color: white;
+                    font-size: 2.5rem;
+                    font-weight: 900;
+                    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                    z-index: 10;
+                }
+                .math-card {
+                    background: #f8fafc;
+                    border-radius: 16px;
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                    border-left: 6px solid #3b82f6;
+                    transition: transform 0.3s ease;
+                }
+                .math-card:hover { transform: translateY(-3px); }
+                .formula-box {
+                    background: #eff6ff;
+                    border: 2px dashed #bfdbfe;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    text-align: center;
+                    font-family: 'Courier New', Courier, monospace;
+                    font-weight: 700;
+                    color: #1e40af;
+                    font-size: 1.3rem;
+                    margin: 1rem 0;
+                    animation: mathPulse 2s infinite ease-in-out;
+                }
+                @keyframes mathPulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.02); }
+                }
+                .formula-desc {
+                    font-size: 0.85rem;
+                    color: #64748b;
+                    margin-top: -0.5rem;
+                    margin-bottom: 1rem;
+                    font-style: italic;
+                    text-align: center;
+                }
+                .shape-display {
+                    display: flex;
+                    justify-content: center;
+                    gap: 2rem;
+                    margin: 1.5rem 0;
+                    flex-wrap: wrap;
+                }
+                .shape-item {
+                    background: white;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    border: 1px solid #e2e8f0;
+                    text-align: center;
+                    width: 150px;
+                }
+            </style>
+            <div class="math-notes-container">
+                <!-- Page 1: Introduction & Plane Figures -->
+                <div id="math-g8-ch1-p1">
+                    <div class="math-hero">
+                        <img src="/static/games/grade8/maths/mensuration_blueprint_hero.png" alt="Mensuration Hero">
+                        <div class="math-hero-text">MENSURATION</div>
+                    </div>
+                    <h2 style="color: #1e40af; margin-bottom: 1rem;"><i class="fa-solid fa-ruler-combined"></i> 1. Introduction</h2>
+                    <p class="text-lg text-muted mb-2">Mensuration is the branch of mathematics that deals with the measurement of geometric figures and their parameters like length, area, and volume.</p>
+                    
+                    <div class="math-card">
+                        <h3 style="color: #1e3a8a; margin-top: 0;"><i class="fa-solid fa-square mr-2"></i> 2. Area of Plane Figures</h3>
+                        <p>Let's recap the basic formulas for common 2D shapes:</p>
+                        
+                        <div class="shape-display">
+                            <div class="shape-item">
+                                <i class="fa-solid fa-vector-square" style="font-size: 2rem; color: #3b82f6;"></i>
+                                <h4 style="margin: 0.5rem 0;">Square</h4>
+                                <div class="formula-box" style="font-size: 1rem;">Area = a²</div>
+                                <p class="formula-desc">(a = side)</p>
+                            </div>
+                            <div class="shape-item">
+                                <i class="fa-solid fa-rectangle-ad" style="font-size: 2rem; color: #3b82f6;"></i>
+                                <h4 style="margin: 0.5rem 0;">Rectangle</h4>
+                                <div class="formula-box" style="font-size: 1rem;">Area = l × b</div>
+                                <p class="formula-desc">(l = length, b = breadth)</p>
+                            </div>
+                            <div class="shape-item">
+                                <i class="fa-solid fa-play" style="font-size: 2rem; color: #3b82f6; transform: rotate(-90deg);"></i>
+                                <h4 style="margin: 0.5rem 0;">Triangle</h4>
+                                <div class="formula-box" style="font-size: 1rem;">Area = ½bh</div>
+                                <p class="formula-desc">(b = base, h = height)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 2rem;">
+                        <button class="menu-btn" onclick="document.getElementById('math-g8-ch1-p1').style.display='none'; document.getElementById('math-g8-ch1-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto;">Next: Parallelogram & Trapezium <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2: Parallelogram & Trapezium -->
+                <div id="math-g8-ch1-p2" style="display: none;">
+                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-shapes"></i> Specialized Polygons</h2>
+                    
+                    <div class="math-card" style="border-left-color: #10b981;">
+                        <h3 style="color: #065f46; margin-top: 0;">🔷 Parallelogram</h3>
+                        <p>A parallelogram is a simple quadrilateral with two pairs of parallel sides.</p>
+                        <div class="formula-box" style="color: #065f46; background: #f0fdf4; border-color: #bbf7d0;">
+                            Area = base × height
+                        </div>
+                        <p class="formula-desc" style="color: #059669;">(base and height are perpendicular)</p>
+                    </div>
+
+                    <div class="math-card" style="border-left-color: #f59e0b;">
+                        <h3 style="color: #92400e; margin-top: 0;">📐 Trapezium</h3>
+                        <p>A trapezium is a quadrilateral with at least one pair of parallel sides.</p>
+                        <div class="formula-box" style="color: #92400e; background: #fffbeb; border-color: #fef3c7;">
+                            Area = ½ × (a + b) × h
+                        </div>
+                        <p class="formula-desc" style="color: #d97706;">(a, b = parallel sides, h = height)</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('math-g8-ch1-p2').style.display='none'; document.getElementById('math-g8-ch1-p1').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                        <button class="menu-btn" onclick="document.getElementById('math-g8-ch1-p2').style.display='none'; document.getElementById('math-g8-ch1-p3').style.display='block'; window.scrollTo(0,0);" style="width: auto;">Next: Area of a Circle <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Circles -->
+                <div id="math-g8-ch1-p3" style="display: none;">
+                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-circle"></i> 3. Area of a Circle</h2>
+                    
+                    <div class="math-card" style="text-align: center; background: radial-gradient(circle at 10% 20%, #eff6ff 0%, #ffffff 100%);">
+                        <div style="margin: 1rem auto; width: 120px; height: 120px; border: 3px solid #3b82f6; border-radius: 50%; position: relative;">
+                            <div style="position: absolute; top: 50%; left: 50%; width: 50%; height: 2px; background: #3b82f6; transform-origin: left;"></div>
+                            <span style="position: absolute; top: 40%; left: 60%; font-size: 0.8rem; font-weight: bold; color: #3b82f6;">r</span>
+                        </div>
+                        <div class="formula-box">Area = πr²</div>
+                        <p class="formula-desc">(r = radius)</p>
+                        <div class="formula-box" style="background: #fdf2f8; border-color: #fbcfe8; color: #be185d;">Circumference = 2πr</div>
+                        <p class="formula-desc" style="color: #db2777;">(π ≈ 22/7 or 3.14)</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('math-g8-ch1-p3').style.display='none'; document.getElementById('math-g8-ch1-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                        <button class="menu-btn" onclick="document.getElementById('math-g8-ch1-p3').style.display='none'; document.getElementById('math-g8-ch1-p4').style.display='block'; window.scrollTo(0,0);" style="width: auto;">Next: Surface Area & Volume <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 4: Surface Area & Volume -->
+                <div id="math-g8-ch1-p4" style="display: none;">
+                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-cube"></i> Surface Area & Volume</h2>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="math-card" style="border-left-color: #8b5cf6;">
+                            <h3 style="color: #5b21b6; margin-top: 0;">🧊 Cube</h3>
+                            <div class="formula-box" style="font-size: 0.9rem; background: #f5f3ff;">TSA = 6a²</div>
+                            <div class="formula-box" style="font-size: 0.9rem; background: #f5f3ff;">Volume = a³</div>
+                            <p class="formula-desc" style="color: #7c3aed;">(a = side)</p>
+                        </div>
+                        <div class="math-card" style="border-left-color: #8b5cf6;">
+                            <h3 style="color: #5b21b6; margin-top: 0;">📦 Cuboid</h3>
+                            <div class="formula-box" style="font-size: 0.9rem; background: #faf5ff;">TSA = 2(lb+bh+hl)</div>
+                            <div class="formula-box" style="font-size: 0.9rem; background: #faf5ff;">Volume = l×b×h</div>
+                            <p class="formula-desc" style="color: #7c3aed;">(l=length, b=breadth, h=height)</p>
+                        </div>
+                    </div>
+
+                    <div class="math-card" style="border-left-color: #ef4444; margin-top: 1rem;">
+                        <h3 style="color: #991b1b; margin-top: 0;">🧪 Cylinder</h3>
+                        <div class="formula-box" style="font-size: 1.1rem; background: #fef2f2; color: #991b1b;">TSA = 2πr(h+r)</div>
+                        <div class="formula-box" style="font-size: 1.1rem; background: #fef2f2; color: #991b1b;">Volume = πr²h</div>
+                        <p class="formula-desc" style="color: #ef4444;">(r = radius, h = height)</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('math-g8-ch1-p4').style.display='none'; document.getElementById('math-g8-ch1-p3').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                        <button class="menu-btn" onclick="document.getElementById('math-g8-ch1-p4').style.display='none'; document.getElementById('math-g8-ch1-p5').style.display='block'; window.scrollTo(0,0);" style="width: auto;">Next: Unit Conversion <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 5: Unit Conversion & Mission Complete -->
+                <div id="math-g8-ch1-p5" style="display: none;">
+                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-arrow-right-arrow-left"></i> 5. Unit Conversion</h2>
+                    
+                    <div class="math-card" style="border-left-color: #64748b;">
+                        <ul style="line-height: 2; font-size: 1.1rem;">
+                            <li><b>Length:</b> 1 m = 100 cm</li>
+                            <li><b>Area:</b> 1 m² = 10,000 cm²</li>
+                            <li><b>Volume:</b> 1 m³ = 1,000,000 cm³</li>
+                            <li><b>Capacity:</b> 1 litre = 1000 cm³</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #eff6ff; padding: 2rem; border-radius: 12px; border: 2px dashed #3b82f6; text-align: center; margin-top: 1rem;">
+                        <h3 style="color: #1e40af; margin-bottom: 0.5rem;">Chapter 1 Mastered! 🏆</h3>
+                        <p>You've unlocked the secrets of Mensuration. Ready for the next challenge?</p>
+                        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
+                             <button class="menu-btn" onclick="window.location.href='/student/learn'" style="width: auto;">Choose Another Chapter <i class="fa-solid fa-layer-group ml-1"></i></button>
+                             <button class="btn-logout" style="width: auto; background: #3b82f6; color: white; border: none;" onclick="window.location.href='/student/play?subject=Maths&chapter=1'">Practice with Games <i class="fa-solid fa-gamepad ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('math-g8-ch1-p5').style.display='none'; document.getElementById('math-g8-ch1-p4').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Maths' and chapter == '2' and grade|lower == 'g8' %}
+            <style>
+                .logic-notes-container {
+                    background: #ffffff;
+                    border-radius: 24px;
+                    border: 1px solid #e2e8f0;
+                    padding: 2.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                }
+                .logic-card {
+                    background: #f8fafc;
+                    border-radius: 16px;
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                    border-left: 6px solid #818cf8;
+                    transition: transform 0.3s ease;
+                }
+                .logic-card:hover { transform: translateY(-3px); }
+                .magic-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 1rem 0;
+                    background: white;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    border: 1px solid #e2e8f0;
+                }
+                .magic-table th, .magic-table td {
+                    padding: 1rem;
+                    border: 1px solid #e2e8f0;
+                    text-align: center;
+                }
+                .magic-table th { background: #f1f5f9; color: #1e40af; }
+                .rule-badge {
+                    background: #e0e7ff;
+                    color: #4338ca;
+                    padding: 0.2rem 0.6rem;
+                    border-radius: 99px;
+                    font-weight: 800;
+                    font-size: 0.8rem;
+                }
+            </style>
+            <div class="logic-notes-container">
+                <div id="math-g8-ch2-p1">
+                    <div class="math-hero">
+                        <img src="/static/games/grade8/maths/number_logic_hero.png" alt="Number Logic Hero">
+                        <div class="math-hero-text">PLAYING WITH NUMBERS</div>
+                    </div>
+                    <h2 style="color: #1e40af; margin-bottom: 1rem;"><i class="fa-solid fa-puzzle-piece"></i> 1. Numbers in General Form</h2>
+                    <p class="text-lg text-muted mb-2">Ever thought of numbers as secret codes? Let's break them down!</p>
+                    
+                    <div class="logic-card" style="border-left-color: #3b82f6;">
+                        <h3 style="color: #1e3a8a; margin-top: 0;">2-Digit Numbers</h3>
+                        <p>Any 2-digit number <b>ab</b> can be written as:</p>
+                        <div class="formula-box">
+                            10a + b
+                        </div>
+                        <p class="formula-desc">(Example: 52 = 10(5) + 2)</p>
+                    </div>
+ 
+                    <div class="logic-card" style="border-left-color: #8b5cf6;">
+                        <h3 style="color: #5b21b6; margin-top: 0;">Reversing Numbers</h3>
+                        <p>If we reverse <b>ab</b> to get <b>ba</b>:</p>
+                        <div class="formula-box" style="color: #5b21b6; border-color: #ddd6fe; background: #f5f3ff;">
+                            Sum (ab + ba) is always divisible by 11!
+                        </div>
+                        <p class="formula-desc" style="color: #7c3aed;">(e.g., 52 + 25 = 77, divisible by 11)</p>
+                    </div>
+ 
+                    <div style="text-align: right; margin-top: 2rem;">
+                        <button class="menu-btn" onclick="document.getElementById('math-g8-ch2-p1').style.display='none'; document.getElementById('math-g8-ch2-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto;">Next: Divisibility Magic <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2: Divisibility Rules -->
+                <div id="math-g8-ch2-p2" style="display: none;">
+                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> 2. Magic Divisibility Rules</h2>
+                    
+                    <div class="logic-card" style="border-left-color: #10b981;">
+                        <table class="magic-table">
+                            <thead>
+                                <tr>
+                                    <th>Divisible By</th>
+                                    <th>The "Magic" Rule</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="rule-badge">10</span></td>
+                                    <td>Last digit must be <b>0</b></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rule-badge">5</span></td>
+                                    <td>Last digit must be <b>0</b> or <b>5</b></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rule-badge">2</span></td>
+                                    <td>Last digit must be <b>0, 2, 4, 6, 8</b> (Even numbers)</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="rule-badge">9 / 3</span></td>
+                                    <td>Sum of digits is divisible by 9 or 3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+ 
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('math-g8-ch2-p2').style.display='none'; document.getElementById('math-g8-ch2-p1').style.display='block'; window.scrollTo(0,0);" style="width: auto;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                        <button class="menu-btn" onclick="document.getElementById('math-g8-ch2-p2').style.display='none'; document.getElementById('math-g8-ch2-p3').style.display='block'; window.scrollTo(0,0);" style="width: auto;">Next: Palindromes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Palindromes & Finish -->
+                <div id="math-g8-ch2-p3" style="display: none;">
+                    <h2 style="color: #1e40af; margin-bottom: 1.5rem;"><i class="fa-solid fa-arrows-left-right"></i> 3. Palindromes</h2>
+                    <p class="text-muted">A <b>Palindrome</b> is a number that reads the same forward and backward.</p>
+                    
+                    <div class="logic-card" style="text-align: center; border-left-color: #3b82f6;">
+                        <div style="font-size: 3rem; font-weight: 900; color: #1e40af; letter-spacing: 10px; margin-bottom: 1rem;">
+                            121
+                        </div>
+                        <p style="color: #3b82f6; font-weight: 700;">⬅️ READS SAME ➡️</p>
+                        <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem;">
+                            <div style="background: white; padding: 1rem; border-radius: 12px; border: 1px solid #e0e7ff; color: #1e40af; font-weight: bold;">1331</div>
+                            <div style="background: white; padding: 1rem; border-radius: 12px; border: 1px solid #e0e7ff; color: #1e40af; font-weight: bold;">444</div>
+                        </div>
+                    </div>
+ 
+                    <div style="background: #eff6ff; padding: 2rem; border-radius: 12px; border: 2px dashed #3b82f6; text-align: center; margin-top: 1rem;">
+                        <h3 style="color: #1e40af; margin-bottom: 0.5rem;">Mission Complete! 🧩</h3>
+                        <p class="text-muted">You've mastered the logic of numbers. Ready to decode some games?</p>
+                        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
+                             <button class="menu-btn" onclick="window.location.href='/student/learn'" style="width: auto;">Choose Another Chapter <i class="fa-solid fa-layer-group ml-1"></i></button>
+                             <button class="btn-logout" style="width: auto; background: #3b82f6; color: white; border: none;" onclick="window.location.href='/student/play?subject=Maths&chapter=2'">Play Logic Games <i class="fa-solid fa-gamepad ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
+                        <button class="btn-logout" onclick="document.getElementById('math-g8-ch2-p3').style.display='none'; document.getElementById('math-g8-ch2-p2').style.display='block'; window.scrollTo(0,0);" style="width: auto; background: transparent; color: #94a3b8; border: 1px solid #334155;"><i class="fa-solid fa-arrow-left mr-1"></i> Previous</button>
+                    </div>
+                </div>
+            </div>
+
             {% elif subject == 'Science' and sub_subject == 'Biology' and chapter == '1' %}
             <style>
                 .bio-notes-container {
@@ -3846,6 +4240,59 @@
                     <p class="text-muted mt-1 text-sm">Difficulty: Beginner</p>
                     <div style="text-align: center;">
                         <span class="level-badge mt-1" style="display:inline-block;">Play Game</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Maths' and grade|lower == 'g8' and not chapter %}
+            <p class="text-muted mb-2">Select a Chapter to explore games!</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Maths&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
+                    <h3 style="color: #1e3a8a; font-size: 1.5rem;">Chapter 1</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">MENSURATION</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #e0e7ff; color: #3b82f6; border: 1px solid #bfdbfe;">Missions Ready</span>
+                    </div>
+                </div>
+                <div class="card game-card" onclick="window.location.href='/student/play?subject=Maths&chapter=2'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-folder-open text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
+                    <h3 style="color: #065f46; font-size: 1.5rem;">Chapter 2</h3>
+                    <p class="text-muted mt-1" style="font-size: 1.1rem; font-weight: 500;">PLAYING WITH NUMBERS</p>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #dcfce7; color: #10b981; border: 1px solid #bbf7d0;">Missions Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Maths' and grade|lower == 'g8' and chapter == '1' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #1e3a8a; background: #e0e7ff; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 1: MENSURATION</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-cube text-primary" style="font-size: 2.5rem; margin-bottom: 1rem; color: #3b82f6;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Mission 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Shape Shifter</h3>
+                    <p class="text-muted mt-1 text-sm">Volume & Surface Area</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #94a3b8;">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+
+            {% elif subject == 'Maths' and grade|lower == 'g8' and chapter == '2' %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #065f46; background: #dcfce7; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 2: PLAYING WITH NUMBERS</p>
+            </div>
+            <div class="card-grid">
+                <div class="card game-card" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-arrows-left-right text-success" style="font-size: 2.5rem; margin-bottom: 1rem; color: #10b981;"></i>
+                    <p class="text-muted" style="margin-bottom: 0.2rem; font-weight: bold;">Mission 1</p>
+                    <h3 style="font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem;">Palindrome Mirror</h3>
+                    <p class="text-muted mt-1 text-sm">Mirror Numbers & Logic</p>
+                    <div style="text-align: center;">
+                        <span class="level-badge mt-1" style="display:inline-block; background: #94a3b8;">Coming Soon</span>
                     </div>
                 </div>
             </div>
