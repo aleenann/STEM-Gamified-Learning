@@ -466,6 +466,16 @@
                 </div>
             </div>
 
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g6' and not chapter %}
+            <p class="text-muted mb-2">Grade 6 Physics Chapters</p>
+            <div class="card-grid">
+                <div class="card game-card" onclick="window.location.href='/student/learn?subject=Science&sub_subject=Physics&chapter=1'" style="border: 2px solid var(--border);">
+                    <i class="fa-solid fa-lightbulb text-warning" style="font-size: 2.5rem; margin-bottom: 1rem; color: #fbbf24;"></i>
+                    <h3 style="color: #1e3a8a; font-size: 1.3rem;">Chapter 1: Light, Shadows and Reflections</h3>
+                    <button class="menu-btn mt-2" style="width: 100%; background: #fbbf24; border: none; color: #1e3a8a; font-weight: bold;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
             {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g9' and not chapter %}
             <p class="text-muted mb-2">Grade 9 Physics Chapters</p>
             <div class="card-grid">
@@ -946,7 +956,7 @@
             </div>
 
 
-            {% elif subject == 'Science' and sub_subject == 'Biology' and chapter == '1' %}
+            {% elif subject == 'Science' and sub_subject == 'Biology' and grade|lower == 'g6' and chapter == '1' %}
             <style>
                 .bio-notes-container {
                     background: var(--surface);
@@ -1263,7 +1273,237 @@
                 </div>
             </div>
 
-            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g8' and chapter == '1' %}
+                        {% elif subject == 'Science' and sub_subject == 'Physics' and chapter == '1' and grade|lower == 'g6' %}
+            <style>
+                .light-notes-container {
+                    background: #fff;
+                    border-radius: 24px;
+                    border: 1px solid #e2e8f0;
+                    padding: 2.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+                    color: #1e293b;
+                    font-family: 'Outfit', sans-serif;
+                    position: relative;
+                    overflow: hidden;
+                    animation: fadeIn 0.8s ease-out;
+                }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                
+                .light-hero {
+                    width: 100%; height: 200px; border-radius: 20px;
+                    background: linear-gradient(135deg, #fbbf24 0%, #3b82f6 100%);
+                    margin-bottom: 2rem; display: flex; align-items: center; justify-content: center;
+                    position: relative; overflow: hidden; border: 2px solid #fde047;
+                }
+                .light-hero::after {
+                    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+                    background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.3) 10%, transparent 20%);
+                    animation: beamRotate 10s infinite linear;
+                }
+                @keyframes beamRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                
+                .light-hero-text {
+                    position: relative; color: white; font-size: 2.5rem; font-weight: 900;
+                    text-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 10;
+                }
+                
+                .note-card {
+                    background: #f8fafc; border-radius: 16px; padding: 1.5rem;
+                    margin-bottom: 1.5rem; border-left: 6px solid #fbbf24;
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.3s;
+                }
+                .note-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+                
+                .source-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem; }
+                .source-item { background: white; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; }
+                
+                .material-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+                .material-card {
+                    padding: 1rem; border-radius: 12px; text-align: center; background: white; border: 1px solid #e2e8f0;
+                    cursor: pointer; transition: all 0.3s;
+                }
+                .material-card:hover { background: #fefce8; border-color: #fbbf24; transform: scale(1.05); }
+                
+                .light-btn {
+                    background: #fbbf24; color: #1e3a8a; border: none; padding: 0.8rem 1.5rem;
+                    border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+                    display: inline-flex; align-items: center; gap: 0.5rem;
+                }
+                .light-btn:hover { background: #f59e0b; transform: scale(1.05); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+                
+                .reflection-box {
+                    border: 2px dashed #3b82f6; border-radius: 12px; padding: 1rem; text-align: center;
+                    background: #eff6ff; margin: 1rem 0;
+                }
+                
+                .glow-pulse { animation: glowPulse 2s infinite ease-in-out; }
+                @keyframes glowPulse { 0%, 100% { filter: drop-shadow(0 0 5px #fbbf24); } 50% { filter: drop-shadow(0 0 15px #fbbf24); } }
+            </style>
+
+            <div class="light-notes-container">
+                <!-- Page 1: What is Light & Sources -->
+                <div id="phys-g6-ch1-p1">
+                    <div class="light-hero">
+                        <div class="light-hero-text">LIGHT & REFLECTIONS</div>
+                    </div>
+                    <h2 style="color: #1e3a8a; margin-bottom: 1rem;"><i class="fa-solid fa-sun-bright glow-pulse" style="color: #fbbf24;"></i> 1. What is Light?</h2>
+                    <p style="font-size: 1.1rem; line-height: 1.6;">Light is a form of <strong>energy</strong> that helps us see objects. We can see things only when light falls on them and reflects into our eyes.</p>
+                    
+                    <div class="note-card" style="border-left-color: #fbbf24;">
+                        <h3 style="color: #d97706; margin-top: 0;"><i class="fa-solid fa-lightbulb mr-2"></i> Sources of Light</h3>
+                        <p>Objects that give out light are called <strong>luminous objects</strong>.</p>
+                        <div class="source-grid">
+                            <div class="source-item">
+                                <i class="fa-solid fa-cloud-sun text-warning" style="font-size: 2.5rem; color: #f59e0b;"></i>
+                                <h4 style="margin: 0.5rem 0;">Sun</h4>
+                                <small class="text-muted">Natural Source</small>
+                            </div>
+                            <div class="source-item">
+                                <i class="fa-solid fa-bolt text-primary" style="font-size: 2.5rem; color: #3b82f6;"></i>
+                                <h4 style="margin: 0.5rem 0;">Artificial</h4>
+                                <small class="text-muted">Bulb, Candle, Torch</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #64748b; background: #f1f5f9;">
+                        <h3 style="color: #475569; margin-top: 0;"><i class="fa-solid fa-moon mr-2"></i> Non-luminous Objects</h3>
+                        <p>Objects that do not produce light. They are visible because they <strong>reflect</strong> light from luminous sources.</p>
+                        <p style="margin-top: 0.5rem; font-weight: 500;">Examples: Book, table, moon.</p>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 2rem;">
+                        <button class="light-btn" onclick="document.getElementById('phys-g6-ch1-p1').style.display='none'; document.getElementById('phys-g6-ch1-p2').style.display='block'; window.scrollTo(0,0);">Next: Materials <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2: Materials -->
+                <div id="phys-g6-ch1-p2" style="display: none;">
+                    <h2 style="color: #1e3a8a; margin-bottom: 1.5rem;"><i class="fa-solid fa-eye-low-vision" style="color: #3b82f6;"></i> 2. Transparent, Translucent & Opaque</h2>
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem;">Objects behave differently when light hits them. Let's see how much light they let through:</p>
+                    
+                    <div class="material-box">
+                        <div class="material-card" style="border-top: 6px solid #34d399;">
+                            <h4 style="color: #059669;">Transparent</h4>
+                            <p style="font-size: 0.85rem; margin: 0.5rem 0;">Allow light to pass through <strong>completely</strong>.</p>
+                            <small style="color: #059669; font-weight: 700;">Glass, Clean Water</small>
+                        </div>
+                        <div class="material-card" style="border-top: 6px solid #fbbf24;">
+                            <h4 style="color: #d97706;">Translucent</h4>
+                            <p style="font-size: 0.85rem; margin: 0.5rem 0;">Allow <strong>some</strong> light to pass (blurred images).</p>
+                            <small style="color: #d97706; font-weight: 700;">Butter paper, frosted glass</small>
+                        </div>
+                        <div class="material-card" style="border-top: 6px solid #ef4444;">
+                            <h4 style="color: #dc2626;">Opaque</h4>
+                            <p style="font-size: 0.85rem; margin: 0.5rem 0;">Do <strong>not</strong> allow light to pass at all.</p>
+                            <small style="color: #dc2626; font-weight: 700;">Wood, Metal, Walls</small>
+                        </div>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #3b82f6; background: #eff6ff;">
+                        <h3 style="color: #1e40af; margin-top: 0;"><i class="fa-solid fa-circle-info mr-2"></i> Scientist Tip!</h3>
+                        <p>Opaque objects form the darkest shadows because they completely block the path of light!</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="light-btn" style="background: #e2e8f0; color: #475569;" onclick="document.getElementById('phys-g6-ch1-p2').style.display='none'; document.getElementById('phys-g6-ch1-p1').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="light-btn" onclick="document.getElementById('phys-g6-ch1-p2').style.display='none'; document.getElementById('phys-g6-ch1-p3').style.display='block'; window.scrollTo(0,0);">Next: Shadows <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Formation of Shadows -->
+                <div id="phys-g6-ch1-p3" style="display: none;">
+                    <h2 style="color: #1e3a8a; margin-bottom: 1.5rem;"><i class="fa-solid fa-ghost" style="color: #475569;"></i> 3. Formation of Shadows</h2>
+                    <div class="note-card">
+                        <h3 style="color: #1e3a8a; margin-top: 0;">What is a Shadow?</h3>
+                        <p style="font-size: 1.1rem;">A <strong>dark patch</strong> formed when an opaque object blocks the path of light.</p>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #ef4444;">
+                        <h4 style="color: #dc2626; margin-top: 0;"><i class="fa-solid fa-check-double mr-2"></i> Necessary Conditions:</h4>
+                        <ol style="margin-top: 0.75rem; line-height: 1.8;">
+                            <li>A <strong>Source of Light</strong></li>
+                            <li>An <strong>Opaque Object</strong></li>
+                            <li>A <strong>Screen</strong> (surface like a wall or ground)</li>
+                        </ol>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #1e3a8a; background: #f8fafc;">
+                        <h4 style="color: #1e3a8a; margin-top: 0;"><i class="fa-solid fa-ruler mr-2"></i> Features of Shadows</h4>
+                        <ul style="margin-top: 0.75rem; line-height: 1.8;">
+                            <li>Always <strong>dark</strong>, no matter the object's color.</li>
+                            <li>Shows only the <strong>shape</strong>, not the details (texture, color).</li>
+                            <li>Size changes based on the distance from the light source.</li>
+                        </ul>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="light-btn" style="background: #e2e8f0; color: #475569;" onclick="document.getElementById('phys-g6-ch1-p3').style.display='none'; document.getElementById('phys-g6-ch1-p2').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="light-btn" onclick="document.getElementById('phys-g6-ch1-p3').style.display='none'; document.getElementById('phys-g6-ch1-p4').style.display='block'; window.scrollTo(0,0);">Next: Pinhole Camera <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 4: Pinhole Camera -->
+                <div id="phys-g6-ch1-p4" style="display: none;">
+                    <h2 style="color: #1e3a8a; margin-bottom: 1.5rem;"><i class="fa-solid fa-camera-retro" style="color: #8b5cf6;"></i> 4. Pinhole Camera</h2>
+                    <p style="font-size: 1.1rem;">A simple device that forms images based on the principle that <strong>light travels in straight lines</strong>.</p>
+                    
+                    <div class="note-card" style="text-align: center; background: #fafaf9; border-left-color: #8b5cf6;">
+                        <div style="margin: 2rem auto; width: 240px; height: 140px; border: 3px solid #8b5cf6; border-radius: 12px; position: relative; background: #0f172a; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                            <div style="position: absolute; left: -2px; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; background: #fbbf24; border-radius: 50%; box-shadow: 0 0 10px #fbbf24;"></div>
+                            <div style="position: absolute; left: 30px; top: 15px; color: #fbbf24; font-size: 3rem;"><i class="fa-solid fa-tree"></i></div>
+                            <div style="position: absolute; right: 30px; bottom: 15px; color: #fbbf24; font-size: 1.5rem; transform: rotate(180deg); opacity: 0.6;"><i class="fa-solid fa-tree"></i></div>
+                        </div>
+                        <p style="font-weight: 800; color: #5b21b6; font-size: 1.2rem; margin-bottom: 1rem;">Image Characteristics:</p>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                            <div class="source-item" style="border-color: #ddd6fe; color: #5b21b6; font-weight: bold;">Real</div>
+                            <div class="source-item" style="border-color: #ddd6fe; color: #5b21b6; font-weight: bold;">Inverted (Upside down)</div>
+                            <div class="source-item" style="border-color: #ddd6fe; color: #5b21b6; font-weight: bold;">Smaller</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="light-btn" style="background: #e2e8f0; color: #475569;" onclick="document.getElementById('phys-g6-ch1-p4').style.display='none'; document.getElementById('phys-g6-ch1-p3').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="light-btn" onclick="document.getElementById('phys-g6-ch1-p4').style.display='none'; document.getElementById('phys-g6-ch1-p5').style.display='block'; window.scrollTo(0,0);">Next: Reflections <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 5: Reflection & Mirrors -->
+                <div id="phys-g6-ch1-p5" style="display: none;">
+                    <h2 style="color: #1e3a8a; margin-bottom: 1.5rem;"><i class="fa-solid fa-arrows-spin" style="color: #3b82f6;"></i> 5. Reflection & Mirrors</h2>
+                    <p style="font-size: 1.1rem;">When light hits a smooth surface (like a mirror) and <strong>bounces back</strong>, it is called reflection.</p>
+                    
+                    <div class="reflection-box">
+                        <i class="fa-solid fa-truck-medical" style="font-size: 3rem; color: #ef4444; display: block; margin-bottom: 0.5rem;"></i>
+                        <h4 style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; letter-spacing: 8px; font-weight: 900; color: #1e293b;">ECNALUBMA</h4>
+                        <p style="font-size: 0.8rem; color: #475569; margin-top: 0.5rem;"><strong>Lateral Inversion:</strong> Ambulance is written in reverse so it reads correctly in rearview mirrors!</p>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #3b82f6;">
+                        <h3 style="color: #1e3a8a; margin-top: 0;"><i class="fa-solid fa-clone mr-2"></i> Plane Mirror Properties:</h3>
+                        <ul style="margin-top: 0.75rem; line-height: 1.8;">
+                            <li><strong>Virtual:</strong> The image cannot be caught on a screen.</li>
+                            <li><strong>Erect:</strong> The image is upright.</li>
+                            <li><strong>Same Size:</strong> The image is the same size as the object.</li>
+                            <li><strong>Laterally Inverted:</strong> Left appears as Right and Right as Left!</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 2.5rem; border-radius: 24px; border: 2px dashed #3b82f6; text-align: center; margin-top: 2rem;">
+                        <h2 style="color: #1e3a8a; margin-top: 0;">Chapter Mastery Complete! 🌟</h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">You've unlocked the secrets of Light, Shadows and Reflections.</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                             <button class="light-btn" onclick="window.location.href='/student/learn'" style="background: #94a3b8; color: white;">Return to Map</button>
+                             <button class="light-btn" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=1'">Go Play & Earn XP <i class="fa-solid fa-gamepad"></i></button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
+                        <button class="light-btn" style="background: #e2e8f0; color: #475569;" onclick="document.getElementById('phys-g6-ch1-p5').style.display='none'; document.getElementById('phys-g6-ch1-p4').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    </div>
+                </div>
+            </div>
+{% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g8' and chapter == '1' %}
             <style>
                 .space-notes-container {
                     background: #ffffff;
@@ -4186,7 +4426,7 @@
                     <button class="menu-btn mt-2" style="width: 100%;">Read Notes <i class="fa-solid fa-arrow-right ml-1"></i></button>
                 </div>
             </div>
-            {% elif subject == 'Science' and sub_subject == 'Physics' and chapter == '1' %}
+            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g7' and chapter == '1' %}
             <style>
                 .phys-notes-container {
                     background: var(--surface);
@@ -5217,7 +5457,237 @@
                 </div>
             </div>
 
-            {% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g8' and chapter == '1' %}
+                        {% elif subject == 'Science' and sub_subject == 'Physics' and chapter == '1' and grade|lower == 'g6' %}
+            <style>
+                .light-notes-container {
+                    background: #fff;
+                    border-radius: 24px;
+                    border: 1px solid #e2e8f0;
+                    padding: 2.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+                    color: #1e293b;
+                    font-family: 'Outfit', sans-serif;
+                    position: relative;
+                    overflow: hidden;
+                    animation: fadeIn 0.8s ease-out;
+                }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+                
+                .light-hero {
+                    width: 100%; height: 200px; border-radius: 20px;
+                    background: linear-gradient(135deg, #fbbf24 0%, #3b82f6 100%);
+                    margin-bottom: 2rem; display: flex; align-items: center; justify-content: center;
+                    position: relative; overflow: hidden; border: 2px solid #fde047;
+                }
+                .light-hero::after {
+                    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+                    background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.3) 10%, transparent 20%);
+                    animation: beamRotate 10s infinite linear;
+                }
+                @keyframes beamRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                
+                .light-hero-text {
+                    position: relative; color: white; font-size: 2.5rem; font-weight: 900;
+                    text-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 10;
+                }
+                
+                .note-card {
+                    background: #f8fafc; border-radius: 16px; padding: 1.5rem;
+                    margin-bottom: 1.5rem; border-left: 6px solid #fbbf24;
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.3s;
+                }
+                .note-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+                
+                .source-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem; }
+                .source-item { background: white; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; }
+                
+                .material-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
+                .material-card {
+                    padding: 1rem; border-radius: 12px; text-align: center; background: white; border: 1px solid #e2e8f0;
+                    cursor: pointer; transition: all 0.3s;
+                }
+                .material-card:hover { background: #fefce8; border-color: #fbbf24; transform: scale(1.05); }
+                
+                .light-btn {
+                    background: #fbbf24; color: #1e3a8a; border: none; padding: 0.8rem 1.5rem;
+                    border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+                    display: inline-flex; align-items: center; gap: 0.5rem;
+                }
+                .light-btn:hover { background: #f59e0b; transform: scale(1.05); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+                
+                .reflection-box {
+                    border: 2px dashed #3b82f6; border-radius: 12px; padding: 1rem; text-align: center;
+                    background: #eff6ff; margin: 1rem 0;
+                }
+                
+                .glow-pulse { animation: glowPulse 2s infinite ease-in-out; }
+                @keyframes glowPulse { 0%, 100% { filter: drop-shadow(0 0 5px #fbbf24); } 50% { filter: drop-shadow(0 0 15px #fbbf24); } }
+            </style>
+
+            <div class="light-notes-container">
+                <!-- Page 1: What is Light & Sources -->
+                <div id="phys-g6-ch1-p1">
+                    <div class="light-hero">
+                        <div class="light-hero-text">LIGHT & REFLECTIONS</div>
+                    </div>
+                    <h2 style="color: #1e3a8a; margin-bottom: 1rem;"><i class="fa-solid fa-sun-bright glow-pulse" style="color: #fbbf24;"></i> 1. What is Light?</h2>
+                    <p style="font-size: 1.1rem; line-height: 1.6;">Light is a form of <strong>energy</strong> that helps us see objects. We can see things only when light falls on them and reflects into our eyes.</p>
+                    
+                    <div class="note-card" style="border-left-color: #fbbf24;">
+                        <h3 style="color: #d97706; margin-top: 0;"><i class="fa-solid fa-lightbulb mr-2"></i> Sources of Light</h3>
+                        <p>Objects that give out light are called <strong>luminous objects</strong>.</p>
+                        <div class="source-grid">
+                            <div class="source-item">
+                                <i class="fa-solid fa-cloud-sun text-warning" style="font-size: 2.5rem; color: #f59e0b;"></i>
+                                <h4 style="margin: 0.5rem 0;">Sun</h4>
+                                <small class="text-muted">Natural Source</small>
+                            </div>
+                            <div class="source-item">
+                                <i class="fa-solid fa-bolt text-primary" style="font-size: 2.5rem; color: #3b82f6;"></i>
+                                <h4 style="margin: 0.5rem 0;">Artificial</h4>
+                                <small class="text-muted">Bulb, Candle, Torch</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #64748b; background: #f1f5f9;">
+                        <h3 style="color: #475569; margin-top: 0;"><i class="fa-solid fa-moon mr-2"></i> Non-luminous Objects</h3>
+                        <p>Objects that do not produce light. They are visible because they <strong>reflect</strong> light from luminous sources.</p>
+                        <p style="margin-top: 0.5rem; font-weight: 500;">Examples: Book, table, moon.</p>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 2rem;">
+                        <button class="light-btn" onclick="document.getElementById('phys-g6-ch1-p1').style.display='none'; document.getElementById('phys-g6-ch1-p2').style.display='block'; window.scrollTo(0,0);">Next: Materials <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 2: Materials -->
+                <div id="phys-g6-ch1-p2" style="display: none;">
+                    <h2 style="color: #1e3a8a; margin-bottom: 1.5rem;"><i class="fa-solid fa-eye-low-vision" style="color: #3b82f6;"></i> 2. Transparent, Translucent & Opaque</h2>
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem;">Objects behave differently when light hits them. Let's see how much light they let through:</p>
+                    
+                    <div class="material-box">
+                        <div class="material-card" style="border-top: 6px solid #34d399;">
+                            <h4 style="color: #059669;">Transparent</h4>
+                            <p style="font-size: 0.85rem; margin: 0.5rem 0;">Allow light to pass through <strong>completely</strong>.</p>
+                            <small style="color: #059669; font-weight: 700;">Glass, Clean Water</small>
+                        </div>
+                        <div class="material-card" style="border-top: 6px solid #fbbf24;">
+                            <h4 style="color: #d97706;">Translucent</h4>
+                            <p style="font-size: 0.85rem; margin: 0.5rem 0;">Allow <strong>some</strong> light to pass (blurred images).</p>
+                            <small style="color: #d97706; font-weight: 700;">Butter paper, frosted glass</small>
+                        </div>
+                        <div class="material-card" style="border-top: 6px solid #ef4444;">
+                            <h4 style="color: #dc2626;">Opaque</h4>
+                            <p style="font-size: 0.85rem; margin: 0.5rem 0;">Do <strong>not</strong> allow light to pass at all.</p>
+                            <small style="color: #dc2626; font-weight: 700;">Wood, Metal, Walls</small>
+                        </div>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #3b82f6; background: #eff6ff;">
+                        <h3 style="color: #1e40af; margin-top: 0;"><i class="fa-solid fa-circle-info mr-2"></i> Scientist Tip!</h3>
+                        <p>Opaque objects form the darkest shadows because they completely block the path of light!</p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="light-btn" style="background: #e2e8f0; color: #475569;" onclick="document.getElementById('phys-g6-ch1-p2').style.display='none'; document.getElementById('phys-g6-ch1-p1').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="light-btn" onclick="document.getElementById('phys-g6-ch1-p2').style.display='none'; document.getElementById('phys-g6-ch1-p3').style.display='block'; window.scrollTo(0,0);">Next: Shadows <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 3: Formation of Shadows -->
+                <div id="phys-g6-ch1-p3" style="display: none;">
+                    <h2 style="color: #1e3a8a; margin-bottom: 1.5rem;"><i class="fa-solid fa-ghost" style="color: #475569;"></i> 3. Formation of Shadows</h2>
+                    <div class="note-card">
+                        <h3 style="color: #1e3a8a; margin-top: 0;">What is a Shadow?</h3>
+                        <p style="font-size: 1.1rem;">A <strong>dark patch</strong> formed when an opaque object blocks the path of light.</p>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #ef4444;">
+                        <h4 style="color: #dc2626; margin-top: 0;"><i class="fa-solid fa-check-double mr-2"></i> Necessary Conditions:</h4>
+                        <ol style="margin-top: 0.75rem; line-height: 1.8;">
+                            <li>A <strong>Source of Light</strong></li>
+                            <li>An <strong>Opaque Object</strong></li>
+                            <li>A <strong>Screen</strong> (surface like a wall or ground)</li>
+                        </ol>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #1e3a8a; background: #f8fafc;">
+                        <h4 style="color: #1e3a8a; margin-top: 0;"><i class="fa-solid fa-ruler mr-2"></i> Features of Shadows</h4>
+                        <ul style="margin-top: 0.75rem; line-height: 1.8;">
+                            <li>Always <strong>dark</strong>, no matter the object's color.</li>
+                            <li>Shows only the <strong>shape</strong>, not the details (texture, color).</li>
+                            <li>Size changes based on the distance from the light source.</li>
+                        </ul>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="light-btn" style="background: #e2e8f0; color: #475569;" onclick="document.getElementById('phys-g6-ch1-p3').style.display='none'; document.getElementById('phys-g6-ch1-p2').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="light-btn" onclick="document.getElementById('phys-g6-ch1-p3').style.display='none'; document.getElementById('phys-g6-ch1-p4').style.display='block'; window.scrollTo(0,0);">Next: Pinhole Camera <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 4: Pinhole Camera -->
+                <div id="phys-g6-ch1-p4" style="display: none;">
+                    <h2 style="color: #1e3a8a; margin-bottom: 1.5rem;"><i class="fa-solid fa-camera-retro" style="color: #8b5cf6;"></i> 4. Pinhole Camera</h2>
+                    <p style="font-size: 1.1rem;">A simple device that forms images based on the principle that <strong>light travels in straight lines</strong>.</p>
+                    
+                    <div class="note-card" style="text-align: center; background: #fafaf9; border-left-color: #8b5cf6;">
+                        <div style="margin: 2rem auto; width: 240px; height: 140px; border: 3px solid #8b5cf6; border-radius: 12px; position: relative; background: #0f172a; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                            <div style="position: absolute; left: -2px; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; background: #fbbf24; border-radius: 50%; box-shadow: 0 0 10px #fbbf24;"></div>
+                            <div style="position: absolute; left: 30px; top: 15px; color: #fbbf24; font-size: 3rem;"><i class="fa-solid fa-tree"></i></div>
+                            <div style="position: absolute; right: 30px; bottom: 15px; color: #fbbf24; font-size: 1.5rem; transform: rotate(180deg); opacity: 0.6;"><i class="fa-solid fa-tree"></i></div>
+                        </div>
+                        <p style="font-weight: 800; color: #5b21b6; font-size: 1.2rem; margin-bottom: 1rem;">Image Characteristics:</p>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                            <div class="source-item" style="border-color: #ddd6fe; color: #5b21b6; font-weight: bold;">Real</div>
+                            <div class="source-item" style="border-color: #ddd6fe; color: #5b21b6; font-weight: bold;">Inverted (Upside down)</div>
+                            <div class="source-item" style="border-color: #ddd6fe; color: #5b21b6; font-weight: bold;">Smaller</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                        <button class="light-btn" style="background: #e2e8f0; color: #475569;" onclick="document.getElementById('phys-g6-ch1-p4').style.display='none'; document.getElementById('phys-g6-ch1-p3').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                        <button class="light-btn" onclick="document.getElementById('phys-g6-ch1-p4').style.display='none'; document.getElementById('phys-g6-ch1-p5').style.display='block'; window.scrollTo(0,0);">Next: Reflections <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Page 5: Reflection & Mirrors -->
+                <div id="phys-g6-ch1-p5" style="display: none;">
+                    <h2 style="color: #1e3a8a; margin-bottom: 1.5rem;"><i class="fa-solid fa-arrows-spin" style="color: #3b82f6;"></i> 5. Reflection & Mirrors</h2>
+                    <p style="font-size: 1.1rem;">When light hits a smooth surface (like a mirror) and <strong>bounces back</strong>, it is called reflection.</p>
+                    
+                    <div class="reflection-box">
+                        <i class="fa-solid fa-truck-medical" style="font-size: 3rem; color: #ef4444; display: block; margin-bottom: 0.5rem;"></i>
+                        <h4 style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; letter-spacing: 8px; font-weight: 900; color: #1e293b;">ECNALUBMA</h4>
+                        <p style="font-size: 0.8rem; color: #475569; margin-top: 0.5rem;"><strong>Lateral Inversion:</strong> Ambulance is written in reverse so it reads correctly in rearview mirrors!</p>
+                    </div>
+
+                    <div class="note-card" style="border-left-color: #3b82f6;">
+                        <h3 style="color: #1e3a8a; margin-top: 0;"><i class="fa-solid fa-clone mr-2"></i> Plane Mirror Properties:</h3>
+                        <ul style="margin-top: 0.75rem; line-height: 1.8;">
+                            <li><strong>Virtual:</strong> The image cannot be caught on a screen.</li>
+                            <li><strong>Erect:</strong> The image is upright.</li>
+                            <li><strong>Same Size:</strong> The image is the same size as the object.</li>
+                            <li><strong>Laterally Inverted:</strong> Left appears as Right and Right as Left!</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 2.5rem; border-radius: 24px; border: 2px dashed #3b82f6; text-align: center; margin-top: 2rem;">
+                        <h2 style="color: #1e3a8a; margin-top: 0;">Chapter Mastery Complete! 🌟</h2>
+                        <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">You've unlocked the secrets of Light, Shadows and Reflections.</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                             <button class="light-btn" onclick="window.location.href='/student/learn'" style="background: #94a3b8; color: white;">Return to Map</button>
+                             <button class="light-btn" onclick="window.location.href='/student/play?subject=Science&sub_subject=Physics&chapter=1'">Go Play & Earn XP <i class="fa-solid fa-gamepad"></i></button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-start; margin-top: 2rem;">
+                        <button class="light-btn" style="background: #e2e8f0; color: #475569;" onclick="document.getElementById('phys-g6-ch1-p5').style.display='none'; document.getElementById('phys-g6-ch1-p4').style.display='block'; window.scrollTo(0,0);"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    </div>
+                </div>
+            </div>
+{% elif subject == 'Science' and sub_subject == 'Physics' and grade|lower == 'g8' and chapter == '1' %}
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <p class="text-muted" style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #1e3a8a; background: #eff6ff; padding: 0.5rem 1rem; border-radius: 8px;">Chapter 1: Stars and the Solar System</p>
             </div>
